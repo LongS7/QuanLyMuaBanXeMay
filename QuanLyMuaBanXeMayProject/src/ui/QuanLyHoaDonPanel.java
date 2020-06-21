@@ -139,6 +139,8 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		String[] hoaDonHeader = {"Mã hóa đơn", "Mã nhân viên", "Mã khách hàng", "Ngày lập"};
 		modelHoaDon = new DefaultTableModel(hoaDonHeader, 0);
 		tableHoaDon = new JTable(modelHoaDon);
+		tableHoaDon.setRowHeight(25);
+		tableHoaDon.setFont(NORMAL_FONT);
 		JScrollPane scroll = new JScrollPane(tableHoaDon);
 		scroll.setPreferredSize(new Dimension(scroll.getPreferredSize().width, 300));
 		
