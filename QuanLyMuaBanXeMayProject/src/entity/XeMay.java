@@ -1,4 +1,4 @@
-package quanlymuabanxemay;
+package entity;
 
 public class XeMay {
 	private String maXe;
