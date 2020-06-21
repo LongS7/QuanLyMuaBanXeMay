@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Point;
-import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -16,7 +14,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -56,6 +53,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	private JButton btnMenu;
 	private JScrollPane scrollMenu;
 	private QuanLyHoaDonPanel pnlQLHD;
+	private QuanLyXeMayPanel pnlQLXM;
 	private JPanel menuTrangChu;
 	private JPanel menuHoSo;
 	private JPanel menuQLKH;
@@ -112,6 +110,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
 		pnlTrangChu = new TrangChuPanel(isManager);
 		pnlQLHD = new QuanLyHoaDonPanel();
+		pnlQLXM = new QuanLyXeMayPanel();
 		pnlQLHD.setPopupMenu(popMenu);
 
 	}
@@ -132,6 +131,12 @@ public class MainFrame extends JFrame implements ActionListener {
 			public void mouseClicked(MouseEvent e) {
 				changePanel(pnlQLHD);
 				pnlQLHD.loadDataToTable();
+			}
+		});
+		menuQLXM.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				changePanel(pnlQLXM);
 			}
 		});
 		menuTrangChu.addMouseListener(new MouseAdapter() {

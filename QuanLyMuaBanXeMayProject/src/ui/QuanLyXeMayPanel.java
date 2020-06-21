@@ -42,6 +42,7 @@ public class QuanLyXeMayPanel extends JPanel{
 	private JButton btnXoa;
 	private JButton btnSua;
 	private JButton btnQuayLai;
+	private JButton btnXoaTrang;
 	private JTable tableXeMay;
 	private JScrollPane scroll;
 	private DefaultTableModel defaultTable;
@@ -192,11 +193,12 @@ public class QuanLyXeMayPanel extends JPanel{
 		Box boxButton;
 		
 		boxButton = Box.createVerticalBox();
-		boxButton.add(Box.createVerticalStrut(100));
+		boxButton.add(Box.createVerticalStrut(50));
 		btnThem = addButtonTo(boxButton, "Thêm");
 		btnSua = addButtonTo(boxButton, "Sửa");
 		btnXoa = addButtonTo(boxButton, "Xoá");
 		btnQuayLai = addButtonTo(boxButton, "Quay lại");
+		btnXoaTrang = addButtonTo(boxButton, "Xoá trắng");
 		
 		this.add(boxButton, BorderLayout.EAST);
 	}
