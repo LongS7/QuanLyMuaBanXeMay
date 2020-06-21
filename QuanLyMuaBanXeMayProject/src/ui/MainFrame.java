@@ -114,6 +114,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		pnlQLXM = new QuanLyXeMayPanel();
 		pnlQLKH = new QuanLyKhachHangPanel();
 		pnlQLHD.setPopupMenu(popMenu);
+		pnlQLXM.setPopupMenu(popMenu);
 
 	}
 
@@ -139,6 +140,7 @@ public class MainFrame extends JFrame implements ActionListener {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				changePanel(pnlQLXM);
+				pnlQLXM.loadDataToTable();
 			}
 		});
 		menuQLKH.addMouseListener(new MouseAdapter() {

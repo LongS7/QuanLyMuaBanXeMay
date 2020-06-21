@@ -5,15 +5,17 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-
+import java.sql.SQLException;
+import java.util.ArrayList;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
@@ -24,12 +26,16 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.table.DefaultTableModel;
 
+import dao.DanhSachXeMay;
+import entity.XeMay;
+
 public class QuanLyXeMayPanel extends JPanel{
 
 	private static final long serialVersionUID = 1L;
 	private final Font HEADER_FONT = new Font("Times new roman", Font.BOLD, 20);
 	private final Font NORMAL_FONT = new Font("Times new roman", Font.PLAIN, 14);
 	private final Color HEADER_COLOR = new Color(0x1E1346);
+	private DanhSachXeMay listXeMay;
 	private JTextField txtMaXe;
 	private JTextField txtLoaiXe;
 	private JTextField txtDungTich;
@@ -61,6 +67,8 @@ public class QuanLyXeMayPanel extends JPanel{
 		addNorth();
 		addCenter();
 		addEast();
+		
+		listXeMay = new DanhSachXeMay();
 		
 	}
 	public static void main(String[] args) {
@@ -180,7 +188,7 @@ public class QuanLyXeMayPanel extends JPanel{
 	}
 	private void addCenter() {
 		
-		String[] header = {"Mã xe", "Tên xe", "Loại xe", "Hãng xe", "Dung tích", "Màu xe", "Nước sản xuất", "Số lượng tồn"};
+		String[] header = {"Mã xe", "Tên xe", "Loại xe", "Hãng xe", "Dung tích", "Màu xe", "Nước sản xuất", "Số lượng tồn", "Đơn giá"};
 		defaultTable = new DefaultTableModel(header, 0);
 		tableXeMay = new JTable(defaultTable);
 		tableXeMay.setFont(NORMAL_FONT);
@@ -260,5 +268,30 @@ public class QuanLyXeMayPanel extends JPanel{
 		box.add(Box.createVerticalStrut(5));
 		
 		return text;
+	}
+	public void loadDataToTable() {
+		try {
+			listXeMay.getAll();
+			ArrayList<XeMay> dsxm = listXeMay.getDsXM();
+			for (XeMay xeMay : dsxm) {
+				defaultTable.addRow(new Object[] {
+					xeMay.getMaXe(), xeMay.getTenXe(), xeMay.getLoaiXe(),
+					xeMay.getHangXe(), xeMay.getDungTich(), xeMay.getMauXe(),
+					xeMay.getNuocSanXuat(), xeMay.getSoLuongTon(), xeMay.getDonGia()});		
+			}
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "Lỗi kết nối!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	public void setPopupMenu(JPopupMenu popup) {
+		txtMaXe.setComponentPopupMenu(popup);
+		txtTenXe.setComponentPopupMenu(popup);
+		txtLoaiXe.setComponentPopupMenu(popup);
+		txtNuocSanXuat.setComponentPopupMenu(popup);
+		txtDungTich.setComponentPopupMenu(popup);
+		txtMauXe.setComponentPopupMenu(popup);
+		txtSoLuongTon.setComponentPopupMenu(popup);
+		txtDonGia.setComponentPopupMenu(popup);
+		txtSearch.setComponentPopupMenu(popup);
 	}
 }
