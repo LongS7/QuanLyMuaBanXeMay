@@ -33,6 +33,7 @@ public class TrangChuPanel extends JPanel {
 	private final Font NORMAL_FONT = new Font("Times new roman", Font.PLAIN, 18);
 	private final Color HEADER_COLOR = new Color(0x1E1346);
 	private final Color HOVER_COLOR = new Color(0xFCCB49);
+	private final Color CLICKED_COLOR = new Color(0x49FCFC);
 	private final Color NORMAL_COLOR = new Color(0xFFFFFF);
 	private final Color DISABLE_COLOR = new Color(0x666666);
 	private Object pnlQLKH;
@@ -112,33 +113,6 @@ public class TrangChuPanel extends JPanel {
 		
 	}
 	
-	private Thread thread;
-	@SuppressWarnings("deprecation")
-	private void stopAnimation(JPanel panel) {
-		if(thread != null && thread.isAlive())
-			thread.stop();
-	}
-	@SuppressWarnings("deprecation")
-	private void animation(JPanel panel) {
-		if(thread != null && thread.isAlive())
-			thread.stop();
-		thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				for(int i = 255; i >= 0; i--) {
-					panel.setBackground(new Color(255, 255, i));
-					try {
-						Thread.sleep(2);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-		thread.start();
-	}
-	
 	private JPanel createPanel(Container container, String name, String iconPath) {
 		JPanel pnl = new JPanel();
 		
@@ -147,22 +121,24 @@ public class TrangChuPanel extends JPanel {
 		pnl.setBorder(null);
 		
 		
-//		pnl.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseEntered(MouseEvent e) {
-//				if(!pnl.isEnabled())
-//					return;
-//				animation(pnl);
-//				pnl.setBackground(HOVER_COLOR);
-//			}
-//			@Override
-//			public void mouseExited(MouseEvent e) {
-//				if(!pnl.isEnabled())
-//					return;
-//				stopAnimation(pnl);
-//				pnl.setBackground(NORMAL_COLOR);
-//			}
-//		});
+		pnl.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				if(!pnl.isEnabled())
+					return;
+				pnl.setBackground(HOVER_COLOR);
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				if(!pnl.isEnabled())
+					return;
+				pnl.setBackground(NORMAL_COLOR);
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				pnl.setBackground(CLICKED_COLOR);
+			}
+		});
 		
 		JLabel lblIcon = new JLabel(new ImageIcon(iconPath));
 		JLabel lblName = new JLabel(name); lblName.setFont(NORMAL_FONT);
