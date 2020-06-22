@@ -113,7 +113,6 @@ public class QuanLyKhachHangPanel extends JPanel {
 		Box box2 = Box.createHorizontalBox();
 		box2.add(Box.createHorizontalStrut(20));
 		JLabel lblDiaChi = new JLabel("Địa chỉ");
-		lblDiaChi.setPreferredSize(lblMa.getPreferredSize());
 		JLabel lblGioiTinh = new JLabel("Giới tính");
 		String[] items = { "Nam", "Nữ" };
 		jcbGioiTinh = new JComboBox<String>(items);
@@ -130,19 +129,26 @@ public class QuanLyKhachHangPanel extends JPanel {
 		Box box3 = Box.createHorizontalBox();
 		box3.add(Box.createHorizontalStrut(20));
 		JLabel lblEmail = new JLabel("Email");
-		lblEmail.setPreferredSize(lblMa.getPreferredSize());
 		JLabel lblSdt = new JLabel("Số điện thoại");
 		box3.add(lblEmail);
 		box3.add(Box.createHorizontalStrut(10));
 		txtEmail = new JTextField();
 		
 		box3.add(txtEmail);
-		box3.add(Box.createHorizontalStrut(10));
+		box3.add(Box.createHorizontalStrut(20));
 		box3.add(lblSdt);
 		box3.add(Box.createHorizontalStrut(10));
 		txtSdt = new JTextField();
 		box3.add(txtSdt);
 		box3.add(Box.createHorizontalStrut(20));
+		Dimension d = new Dimension(100, 25);
+		
+		
+		lblDiaChi.setPreferredSize(d);
+		lblEmail.setPreferredSize(d);
+		lblGioiTinh.setPreferredSize(d);
+		lblMa.setPreferredSize(d);
+		lblSdt.setPreferredSize(d);
 		
 
 		boxNorth.add(box1);
@@ -236,6 +242,7 @@ public class QuanLyKhachHangPanel extends JPanel {
 	
 	public void loadDataToTable() {
 		try {
+			deleteDataInTable();
 			dsKH.getAll();
 			
 			ArrayList<KhachHang> list = dsKH.getDsKH();
@@ -249,6 +256,12 @@ public class QuanLyKhachHangPanel extends JPanel {
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this, "Lỗi kết nối!", "Lỗi", JOptionPane.ERROR_MESSAGE);
 			
+		}
+	}
+	
+	private void deleteDataInTable() {
+		while(modelKhachHang.getRowCount() > 0) {
+			modelKhachHang.removeRow(0);
 		}
 	}
 
