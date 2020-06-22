@@ -38,7 +38,8 @@ public class DanhSachHoaDon {
 			
 			HoaDon hd = new HoaDon(maHD, null, null, ngayLap);
 			
-			dsHD.add(hd);
+			if(!dsHD.contains(hd))
+				dsHD.add(hd);
 		}
 		
 		conn.close();
