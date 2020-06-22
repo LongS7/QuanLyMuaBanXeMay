@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -14,6 +16,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -23,6 +26,10 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
+
+import dao.DanhSachKhachHang;
+import entity.HoaDon;
+import entity.KhachHang;
 
 public class QuanLyKhachHangPanel extends JPanel {
 	/**
@@ -46,7 +53,8 @@ public class QuanLyKhachHangPanel extends JPanel {
 	private JTable tableKhachHang;
 	private DefaultTableModel modelKhachHang;
 	private JComboBox<String> jcbGioiTinh;
-	private final Font NORMAL_FONT = new Font("Times new roman", Font.PLAIN, 14);
+	private DanhSachKhachHang dsKH = new DanhSachKhachHang();
+	private final Font NORMAL_FONT = new Font("Arial", Font.PLAIN, 13);
 
 	public QuanLyKhachHangPanel() {
 		setLookAndFeel();
@@ -149,6 +157,8 @@ public class QuanLyKhachHangPanel extends JPanel {
 		String[] header = { "Mã khách hàng", "Tên khách hàng", "Địa chỉ", "Giới tính", "Số điện thoại", "Email" };
 		modelKhachHang = new DefaultTableModel(header, 0);
 		tableKhachHang = new JTable(modelKhachHang);
+		tableKhachHang.setRowHeight(25);
+		tableKhachHang.setFont(NORMAL_FONT);
 		JScrollPane pane = new JScrollPane(tableKhachHang);
 
 		boxCenter.add(pane);
@@ -199,14 +209,7 @@ public class QuanLyKhachHangPanel extends JPanel {
 
 	}
 
-	public static void main(String[] args) {
-		JFrame f = new JFrame();
-		f.setSize(900, 650);
-		f.setVisible(true);
-		f.setLocationRelativeTo(null);
-		f.getContentPane().add(new QuanLyKhachHangPanel());
-
-	}
+	
 
 	private void setFontComponent(JComponent c) {
 		c.setFont(NORMAL_FONT);
@@ -231,6 +234,24 @@ public class QuanLyKhachHangPanel extends JPanel {
 
 	public void focus() {
 		txtTimKiem.requestFocus();
+	}
+	
+	public void loadDataToTable() {
+		try {
+			dsKH.getAll();
+			
+			ArrayList<KhachHang> list = dsKH.getDsKH();
+			
+			for(KhachHang item : list) {
+				String[] row = {item.getMaKH(), item.getHoTenKH(), item.getDiaChiKH(), item.isGioiTinhKH()? "Nam" : "Nữ",item.getSdtKH(),item.getEmailKH()};
+				
+				modelKhachHang.addRow(row);
+			}
+			
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "Lỗi kết nối!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			
+		}
 	}
 
 }

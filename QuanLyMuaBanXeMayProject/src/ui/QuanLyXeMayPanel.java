@@ -192,6 +192,7 @@ public class QuanLyXeMayPanel extends JPanel{
 		defaultTable = new DefaultTableModel(header, 0);
 		tableXeMay = new JTable(defaultTable);
 		tableXeMay.setFont(NORMAL_FONT);
+		tableXeMay.setRowHeight(25);
 		scroll = new JScrollPane(tableXeMay, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
 		this.add(scroll, BorderLayout.CENTER);
@@ -274,10 +275,11 @@ public class QuanLyXeMayPanel extends JPanel{
 			listXeMay.getAll();
 			ArrayList<XeMay> dsxm = listXeMay.getDsXM();
 			for (XeMay xeMay : dsxm) {
+				String donGia = String.format("%f", xeMay.getDonGia());
 				defaultTable.addRow(new Object[] {
 					xeMay.getMaXe(), xeMay.getTenXe(), xeMay.getLoaiXe(),
 					xeMay.getHangXe(), xeMay.getDungTich(), xeMay.getMauXe(),
-					xeMay.getNuocSanXuat(), xeMay.getSoLuongTon(), xeMay.getDonGia()});		
+					xeMay.getNuocSanXuat(), xeMay.getSoLuongTon(), donGia});		
 			}
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this, "Lỗi kết nối!", "Lỗi", JOptionPane.ERROR_MESSAGE);

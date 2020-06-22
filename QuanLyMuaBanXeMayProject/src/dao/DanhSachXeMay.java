@@ -35,7 +35,7 @@ public class DanhSachXeMay {
 			String mauxe = result.getString("mauXe");
 			String nuocsx = result.getString("nuocSX");
 			int soluongton = Integer.parseInt(result.getString("soLuongTon"));
-			double dongia = Double.parseDouble(result.getString("donGia"));
+			double dongia = result.getDouble("donGia");
 			
 			XeMay xm = new XeMay(maxe, tenxe, loaixe, hangxe, dungtich, mauxe, nuocsx, soluongton, dongia);
 			dsXM.add(xm);

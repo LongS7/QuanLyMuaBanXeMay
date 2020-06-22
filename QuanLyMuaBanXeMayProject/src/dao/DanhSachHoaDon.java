@@ -50,6 +50,7 @@ public class DanhSachHoaDon {
 		String query = "select Count(*) from HoaDon where ?";
 		
 		Statement st = conn.createStatement();
+		
 		ResultSet rs = st.executeQuery(query);
 		
 		

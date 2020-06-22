@@ -94,7 +94,6 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this, "Lỗi kết nối!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-			
 		}
 	}
 
