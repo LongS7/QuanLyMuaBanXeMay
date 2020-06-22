@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -20,6 +22,9 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.UIManager.LookAndFeelInfo;
+
+import dao.DatabaseConnection;
+import dao.QuanLyDangNhap;
 
 public class DangNhapFrame extends JFrame implements ActionListener {
 
@@ -184,11 +189,6 @@ public class DangNhapFrame extends JFrame implements ActionListener {
 		boxMatKhau.add(lblHinhMatKhau);
 		boxMatKhau.add(txtMatKhau);
 
-		Box boxTuCach = Box.createHorizontalBox();
-		boxTuCach.add(Box.createHorizontalGlue());
-		boxTuCach.add(chkTuCach);
-		boxTuCach.add(Box.createHorizontalGlue());
-
 		Box boxButton = Box.createHorizontalBox();
 		boxButton.add(btnDangNhap);
 		boxButton.add(Box.createHorizontalStrut(20));
@@ -201,8 +201,6 @@ public class DangNhapFrame extends JFrame implements ActionListener {
 		boxForm.add(boxLabelMK);
 		boxForm.add(Box.createVerticalStrut(5));
 		boxForm.add(boxMatKhau);
-		boxForm.add(Box.createVerticalStrut(5));
-		boxForm.add(boxTuCach);
 		boxForm.add(Box.createVerticalStrut(20));
 		boxForm.add(boxButton);
 
@@ -236,22 +234,24 @@ public class DangNhapFrame extends JFrame implements ActionListener {
 					JOptionPane.WARNING_MESSAGE);
 			return;
 		}
-		if (txtTenTK.getText().equals("admin")) {
-			if (getPassword(txtMatKhau.getPassword()).equals("admin")) {
-				this.setVisible(false);
-				new MainFrame(chkTuCach.isSelected()).setVisible(true);
 
-			} else {
-				JOptionPane.showMessageDialog(this, "Tên tài khoản hoặc mật khẩu không chính xác!", "Cảnh báo",
-						JOptionPane.WARNING_MESSAGE);
-				return;
-			}
+		DatabaseConnection.userName = txtTenTK.getText();
+		DatabaseConnection.password = getPassword(txtMatKhau.getPassword());
 
-		} else {
-			JOptionPane.showMessageDialog(this, "Tên tài khoản hoặc mật khẩu không chính xác!", "Cảnh báo",
-					JOptionPane.WARNING_MESSAGE);
+		try {
+			Connection conn = DatabaseConnection.getConnection();
+			
+			this.setVisible(false);
+			new MainFrame(QuanLyDangNhap.laQuanLyVien()).setVisible(true);
+			
+			conn.close();
+			
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "Không thể kết nối!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 			return;
 		}
+		
+
 	}
 
 }

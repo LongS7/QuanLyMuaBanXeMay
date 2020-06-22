@@ -6,18 +6,18 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
-import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -33,7 +33,7 @@ public class QuanLyXeMayPanel extends JPanel{
 
 	private static final long serialVersionUID = 1L;
 	private final Font HEADER_FONT = new Font("Times new roman", Font.BOLD, 20);
-	private final Font NORMAL_FONT = new Font("Times new roman", Font.PLAIN, 14);
+	private final Font NORMAL_FONT = new Font("Arial", Font.PLAIN, 13);
 	private final Color HEADER_COLOR = new Color(0x1E1346);
 	private DanhSachXeMay listXeMay;
 	private JTextField txtMaXe;
@@ -70,17 +70,6 @@ public class QuanLyXeMayPanel extends JPanel{
 		
 		listXeMay = new DanhSachXeMay();
 		
-	}
-	public static void main(String[] args) {
-		QuanLyXeMayPanel abc = new QuanLyXeMayPanel();
-		JFrame frame = new JFrame();
-		frame.setLocationRelativeTo(null);
-		frame.setTitle("test");
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().add(abc, BorderLayout.NORTH);
-		frame.getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
-		frame.pack();
 	}
 	private void addNorth() {
 		Box boxNorth, boxSearch, boxLineRad;
@@ -272,10 +261,12 @@ public class QuanLyXeMayPanel extends JPanel{
 	}
 	public void loadDataToTable() {
 		try {
+			deleteDataInTable();
+			NumberFormat nf = NumberFormat.getInstance(new Locale("vn", "VN"));
 			listXeMay.getAll();
-			ArrayList<XeMay> dsxm = listXeMay.getDsXM();
+			ArrayList<XeMay> dsxm = listXeMay.getdanhSach();
 			for (XeMay xeMay : dsxm) {
-				String donGia = String.format("%f", xeMay.getDonGia());
+				String donGia = nf.format(xeMay.getDonGia());
 				defaultTable.addRow(new Object[] {
 					xeMay.getMaXe(), xeMay.getTenXe(), xeMay.getLoaiXe(),
 					xeMay.getHangXe(), xeMay.getDungTich(), xeMay.getMauXe(),
@@ -285,6 +276,13 @@ public class QuanLyXeMayPanel extends JPanel{
 			JOptionPane.showMessageDialog(this, "Lỗi kết nối!", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
 	}
+	
+	private void deleteDataInTable() {
+		while(defaultTable.getRowCount() > 0) {
+			defaultTable.removeRow(0);
+		}
+	}
+	
 	public void setPopupMenu(JPopupMenu popup) {
 		txtMaXe.setComponentPopupMenu(popup);
 		txtTenXe.setComponentPopupMenu(popup);
