@@ -198,16 +198,6 @@ public class QuanLyKhachHangPanel extends JPanel {
 		this.setPreferredSize(new Dimension(500, 600));
 
 	}
-
-	public static void main(String[] args) {
-		JFrame f = new JFrame();
-		f.setSize(900, 650);
-		f.setVisible(true);
-		f.setLocationRelativeTo(null);
-		f.getContentPane().add(new QuanLyKhachHangPanel());
-
-	}
-
 	private void setFontComponent(JComponent c) {
 		c.setFont(NORMAL_FONT);
 	}

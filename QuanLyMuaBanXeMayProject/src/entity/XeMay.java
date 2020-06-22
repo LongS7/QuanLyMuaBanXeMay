@@ -67,6 +67,9 @@ public class XeMay {
 	public XeMay() {
 		super();
 	}
+	public XeMay(String maXe) {
+		this.maXe = maXe;
+	}
 	public XeMay(String maXe, String tenXe, String loaiXe, String hangXe, int dungTich, String mauXe,
 			String nuocSanXuat, int soLuongTon, double donGia) {
 		super();
