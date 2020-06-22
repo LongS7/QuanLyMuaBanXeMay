@@ -60,6 +60,7 @@ public class DangNhapFrame extends JFrame implements ActionListener, KeyListener
 		btnDangNhap.addKeyListener(this);
 		btnThoat.addKeyListener(this);
 		txtMatKhau.addKeyListener(this);
+		txtTenTK.addKeyListener(this);
 	}
 
 	private void setLookAndFeel() {
@@ -275,6 +276,8 @@ public class DangNhapFrame extends JFrame implements ActionListener, KeyListener
 				dangNhap();
 			if (o.equals(btnThoat))
 				System.exit(0);
+			if (o.equals(txtTenTK))
+				txtTenTK.transferFocus();
 		}
 	}
 

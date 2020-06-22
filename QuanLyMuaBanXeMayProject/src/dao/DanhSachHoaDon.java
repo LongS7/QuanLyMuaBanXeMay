@@ -14,7 +14,6 @@ import entity.KhachHang;
 public class DanhSachHoaDon {
 	private ArrayList<HoaDon> dsHD;
 	private DanhSachKhachHang dsKH;
-	private DanhSachKhachHang dsNV;
 
 	public ArrayList<HoaDon> getDsHD() {
 		return dsHD;
@@ -38,7 +37,7 @@ public class DanhSachHoaDon {
 		while(result.next()) {
 			String maHD = result.getString("maHD");
 			String maKH = result.getString("maKH");
-			String maNV = result.getString("maNV");
+//			String maNV = result.getString("maNV");
 			Date ngayLap = result.getDate("ngayLap");
 			
 			KhachHang kh = null;

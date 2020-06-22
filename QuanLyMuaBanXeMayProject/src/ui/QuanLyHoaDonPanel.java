@@ -2,7 +2,6 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -29,7 +28,6 @@ import javax.swing.table.DefaultTableModel;
 
 import dao.DanhSachHoaDon;
 import entity.HoaDon;
-import entity.KhachHang;
 
 public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 
@@ -63,7 +61,6 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 	private JButton btnXoaHD;
 	private JButton btnSuaHD;
 	private JButton btnXoaRong;
-	private JButton btnQuayLai;
 	private DanhSachHoaDon dsHD;
 	
 	public QuanLyHoaDonPanel() {
@@ -126,6 +123,13 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 	
 	private void addEvent() {
 		btnThemHD.addActionListener(this);
+		btnSearch.addActionListener(this);
+		btnXoaHD.addActionListener(this);
+		btnXoaRong.addActionListener(this);
+		btnSuaHD.addActionListener(this);
+		btnThemCTHD.addActionListener(this);
+		btnXoaCTHD.addActionListener(this);
+		btnSuaCTHD.addActionListener(this);
 	}
 
 	@Override
@@ -153,7 +157,6 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		btnXoaHD = addButtonTo(boxEast, "Xóa hóa đơn");
 		btnSuaHD = addButtonTo(boxEast, "Sửa hóa đơn");
 		btnXoaRong = addButtonTo(boxEast, "Xoá rỗng");
-		btnQuayLai = addButtonTo(boxEast, "Quay lại");
 	}
 
 	private void addCenter() {

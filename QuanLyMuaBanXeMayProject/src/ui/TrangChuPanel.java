@@ -1,18 +1,13 @@
 package ui;
 
-import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -20,7 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.border.EmptyBorder;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 public class TrangChuPanel extends JPanel {
@@ -33,16 +27,17 @@ public class TrangChuPanel extends JPanel {
 	private final Font NORMAL_FONT = new Font("Times new roman", Font.PLAIN, 18);
 	private final Color HEADER_COLOR = new Color(0x1E1346);
 	private final Color HOVER_COLOR = new Color(0xFCCB49);
-	private final Color CLICKED_COLOR = new Color(0x49FCFC);
 	private final Color NORMAL_COLOR = new Color(0xFFFFFF);
-	private final Color DISABLE_COLOR = new Color(0x666666);
-	private Object pnlQLKH;
+	private JPanel pnlQLKH;
 	private JPanel pnlQLNV;
 	private JPanel pnlQLXM;
 	private JPanel pnlQLHD;
 	private boolean isManager;
+	private MainFrame mainFrame;
+	private JPanel pnlTKDT;
 
-	public TrangChuPanel(boolean isManager) {
+	public TrangChuPanel(MainFrame mainFrame, boolean isManager) {
+		this.mainFrame = mainFrame;
 		this.isManager = isManager;
 		setPreferredSize(new Dimension(500, 600));
 		setLayout(new BorderLayout());
@@ -110,6 +105,14 @@ public class TrangChuPanel extends JPanel {
 			pnlQLNV = createPanel(pnlCenter, "Quản lý nhân viên", "Images/employees.png");
 		pnlQLXM = createPanel(pnlCenter, "Quản lý xe máy", "Images/motobikes.png");
 		pnlQLHD = createPanel(pnlCenter, "Quản lý hóa đơn", "Images/orders.png");
+		if(isManager) {
+			createPanel(pnlCenter, "", "");
+			pnlTKDT = createPanel(pnlCenter, "Thống kê doanh thu", "Images/revenue.png");
+		}
+		else {
+			createPanel(pnlCenter, "", "");
+		}
+		
 		
 	}
 	
@@ -136,7 +139,17 @@ public class TrangChuPanel extends JPanel {
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				pnl.setBackground(CLICKED_COLOR);
+				Object o = e.getSource();
+				
+				if(o.equals(pnlQLHD))
+					mainFrame.changePanel(mainFrame.getPnlQLHD());
+				if(o.equals(pnlQLKH))
+					mainFrame.changePanel(mainFrame.getPnlQLKH());
+				if(o.equals(pnlQLXM))
+					mainFrame.changePanel(mainFrame.getPnlQLXM());
+				if(o.equals(pnlQLNV));
+				if(o.equals(pnlTKDT));
+				
 			}
 		});
 		

@@ -11,7 +11,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.BorderFactory;
@@ -25,11 +24,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -72,8 +68,42 @@ public class MainFrame extends JFrame implements ActionListener {
 	private JMenuItem miPaste;
 	private String tempData = "";
 	private QuanLyKhachHangPanel pnlQLKH;
+
+	public QuanLyHoaDonPanel getPnlQLHD() {
+		return pnlQLHD;
+	}
+
+	public void setPnlQLHD(QuanLyHoaDonPanel pnlQLHD) {
+		this.pnlQLHD = pnlQLHD;
+	}
+
+	public QuanLyXeMayPanel getPnlQLXM() {
+		return pnlQLXM;
+	}
+
+	public void setPnlQLXM(QuanLyXeMayPanel pnlQLXM) {
+		this.pnlQLXM = pnlQLXM;
+	}
+
+	public TrangChuPanel getPnlTrangChu() {
+		return pnlTrangChu;
+	}
+
+	public void setPnlTrangChu(TrangChuPanel pnlTrangChu) {
+		this.pnlTrangChu = pnlTrangChu;
+	}
+
+	public QuanLyKhachHangPanel getPnlQLKH() {
+		return pnlQLKH;
+	}
+
+	public void setPnlQLKH(QuanLyKhachHangPanel pnlQLKH) {
+		this.pnlQLKH = pnlQLKH;
+	}
+
 	private JButton btnPrevious;
 	private JPanel previousPanel = null;
+	private JPanel menuTKDT;
 
 	/**
 	 * Hàm khởi tạo
@@ -116,7 +146,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
 		addEvent();
 
-		pnlTrangChu = new TrangChuPanel(isManager);
+		pnlTrangChu = new TrangChuPanel(this, isManager);
 		pnlQLHD = new QuanLyHoaDonPanel();
 		pnlQLXM = new QuanLyXeMayPanel();
 		pnlQLKH = new QuanLyKhachHangPanel();
@@ -126,8 +156,9 @@ public class MainFrame extends JFrame implements ActionListener {
 	}
 
 	private void warningBeforeClose() {
-		int rs = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn thoát?", "Xác nhận", JOptionPane.OK_CANCEL_OPTION);
-		if(rs == JOptionPane.OK_OPTION)
+		int rs = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn thoát?", "Xác nhận",
+				JOptionPane.OK_CANCEL_OPTION);
+		if (rs == JOptionPane.OK_OPTION)
 			System.exit(0);
 	}
 
@@ -174,7 +205,27 @@ public class MainFrame extends JFrame implements ActionListener {
 				changePanel(pnlTrangChu);
 			}
 		});
+		menuHoSo.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
 
+			}
+		});
+		if(isManager) {
+			menuQLNV.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+
+				}
+			});
+			menuTKDT.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+
+				}
+			});
+		}
+		
 		miCut.addActionListener(this);
 		miCopy.addActionListener(this);
 		miPaste.addActionListener(this);
@@ -216,7 +267,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
 	}
 
-	private void changePanel(JPanel panel) {
+	public void changePanel(JPanel panel) {
 		if (getCenter().getComponents().length != 0) {
 			previousPanel = (JPanel) getCenter().getComponent(0);
 			btnPrevious.setEnabled(true);
@@ -315,6 +366,8 @@ public class MainFrame extends JFrame implements ActionListener {
 			menuQLNV = addMenuItem("Quản lý nhân viên", "Images/employee_white.png");
 		menuQLHD = addMenuItem("Quản lý hóa đơn", "Images/order_white.png");
 		menuQLXM = addMenuItem("Quản lý xe máy", "Images/product_white.png");
+		if (isManager) 
+			menuTKDT = addMenuItem("Thống kê doanh thu", "Images/ledger.png");
 	}
 
 	private void addSouth() {
@@ -330,9 +383,10 @@ public class MainFrame extends JFrame implements ActionListener {
 		btnPrevious = new JButton("Quay lại trước");
 		btnPrevious.setEnabled(false);
 
-		boxSouth.add(Box.createHorizontalGlue());
-		boxSouth.add(btnPrevious);
 		boxSouth.add(Box.createHorizontalStrut(30));
+		boxSouth.add(btnPrevious);
+		boxSouth.add(Box.createHorizontalGlue());
+		
 	}
 
 	private void addNorthOfCenter() {
