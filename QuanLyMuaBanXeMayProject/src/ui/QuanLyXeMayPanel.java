@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ import javax.swing.table.DefaultTableModel;
 import dao.DanhSachXeMay;
 import entity.XeMay;
 
-public class QuanLyXeMayPanel extends JPanel{
+public class QuanLyXeMayPanel extends JPanel implements MouseListener{
 
 	private static final long serialVersionUID = 1L;
 	private final Font HEADER_FONT = new Font("Times new roman", Font.BOLD, 20);
@@ -69,6 +71,7 @@ public class QuanLyXeMayPanel extends JPanel{
 		addEast();
 		
 		listXeMay = new DanhSachXeMay();
+		tableXeMay.addMouseListener(this);
 		
 	}
 	private void addNorth() {
@@ -172,6 +175,7 @@ public class QuanLyXeMayPanel extends JPanel{
 		boxGroup.add(Box.createHorizontalStrut(20));
 		boxNorth.add(boxGroup);
 		boxNorth.add(boxCkb);
+		boxNorth.add(Box.createVerticalStrut(20));
 		
 		this.add(boxNorth, BorderLayout.NORTH);
 	}
@@ -293,5 +297,29 @@ public class QuanLyXeMayPanel extends JPanel{
 		txtSoLuongTon.setComponentPopupMenu(popup);
 		txtDonGia.setComponentPopupMenu(popup);
 		txtSearch.setComponentPopupMenu(popup);
+	}
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		
+	}
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

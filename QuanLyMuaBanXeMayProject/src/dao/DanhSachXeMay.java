@@ -25,7 +25,7 @@ public class DanhSachXeMay {
 		String query = "select * from XeMay";
 		Statement stmt = con.createStatement();
 		ResultSet result = stmt.executeQuery(query);
-		
+	
 		while(result.next()) {
 			String maxe = result.getString("maXe");
 			String tenxe = result.getString("tenXe");

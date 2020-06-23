@@ -54,6 +54,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	private JScrollPane scrollMenu;
 	private QuanLyHoaDonPanel pnlQLHD;
 	private QuanLyXeMayPanel pnlQLXM;
+	private ProfilePanel pnlProfile;
 	private JPanel menuTrangChu;
 	private JPanel menuHoSo;
 	private JPanel menuQLKH;
@@ -113,6 +114,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		pnlQLHD = new QuanLyHoaDonPanel();
 		pnlQLXM = new QuanLyXeMayPanel();
 		pnlQLKH = new QuanLyKhachHangPanel();
+		pnlProfile = new ProfilePanel();
 		pnlQLHD.setPopupMenu(popMenu);
 		pnlQLXM.setPopupMenu(popMenu);
 
@@ -148,6 +150,13 @@ public class MainFrame extends JFrame implements ActionListener {
 			public void mouseClicked(MouseEvent e) {
 				changePanel(pnlQLKH);
 				pnlQLKH.loadDataToTable();
+			}
+		});
+		menuHoSo.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				changePanel(pnlProfile);
+				pnlProfile.LoadDataFromDatabaseToPanel();
 			}
 		});
 		menuTrangChu.addMouseListener(new MouseAdapter() {
