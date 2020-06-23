@@ -24,7 +24,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 
 import dao.DatabaseConnection;
 import dao.QuanLyDangNhap;
-import entity.HoSo;
+import entity.NhanVien;
 import entity.XeMay;
 import dao.QuanLyHoSo;
 
@@ -187,14 +187,14 @@ public class ProfilePanel extends JPanel{
 	public void LoadDataFromDatabaseToPanel() {
 		try {
 			hoSo.getProfile();
-			HoSo hoso = hoSo.getHoSo();
-			txtMaNhanVien.setText(hoso.getMaNhanVien());
-			txtHoTen.setText(hoso.getHoTen());
-			ckbGioiTinh.setSelectedItem(hoso.getGioiTinh()? "Nam" : "Nữ");
-			txtDiaChi.setText(hoso.getDiaChi());
-			txtSoDienThoai.setText(hoso.getSoDienThoai());
-			txtEmail.setText(hoso.getEmail());
-			ckbChucVu.setSelectedItem(hoso.getChucVu()? "Quản lý viên" : "Nhân viên");
+			NhanVien nhanvien = hoSo.getNhanVien();
+			txtMaNhanVien.setText(nhanvien.getMaNhanVien());
+			txtHoTen.setText(nhanvien.getHoTen());
+			ckbGioiTinh.setSelectedItem(nhanvien.getGioiTinh()? "Nam" : "Nữ");
+			txtDiaChi.setText(nhanvien.getDiaChi());
+			txtSoDienThoai.setText(nhanvien.getSoDienThoai());
+			txtEmail.setText(nhanvien.getEmail());
+			ckbChucVu.setSelectedItem(nhanvien.getChucVu()? "Quản lý viên" : "Nhân viên");
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this, "Lỗi kết nối!", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
