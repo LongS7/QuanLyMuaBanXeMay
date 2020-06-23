@@ -30,7 +30,6 @@ import dao.DanhSachHoaDon;
 import entity.HoaDon;
 
 public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
-
 	/**
 	 * 
 	 */
