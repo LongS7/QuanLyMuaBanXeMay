@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -8,9 +9,11 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import entity.HoaDon;
+import entity.KhachHang;
 
 public class DanhSachHoaDon {
 	private ArrayList<HoaDon> dsHD;
+	private DanhSachKhachHang dsKH;
 
 	public ArrayList<HoaDon> getDsHD() {
 		return dsHD;
@@ -18,9 +21,10 @@ public class DanhSachHoaDon {
 
 	public DanhSachHoaDon() {
 		dsHD = new ArrayList<HoaDon>();
+		dsKH = new DanhSachKhachHang();
 	}
 	
-	public void getAll() throws SQLException {
+	public void updateData() throws SQLException {
 		Connection conn = null;
 		
 		conn = DatabaseConnection.getConnection();
@@ -33,32 +37,46 @@ public class DanhSachHoaDon {
 		while(result.next()) {
 			String maHD = result.getString("maHD");
 			String maKH = result.getString("maKH");
-			String maNV = result.getString("maNV");
+//			String maNV = result.getString("maNV");
 			Date ngayLap = result.getDate("ngayLap");
 			
-			HoaDon hd = new HoaDon(maHD, null, null, ngayLap);
+			KhachHang kh = null;
 			
-			dsHD.add(hd);
+			dsKH.getAll();
+			ArrayList<KhachHang> list = dsKH.getDsKH();
+			for(KhachHang item : list) {
+				if(item.getMaKH().equals(maKH))
+					kh = item;
+			}
+			
+			HoaDon hd = new HoaDon(maHD, null, kh, ngayLap);
+			
+			if(!dsHD.contains(hd))
+				dsHD.add(hd);
 		}
 		
 		conn.close();
 	}
 
 	public boolean themHoaDon(HoaDon hd) throws SQLException {
-		Connection conn = DatabaseConnection.getConnection();
-		
-		String query = "select Count(*) from HoaDon where ?";
-		
-		Statement st = conn.createStatement();
-		
-		ResultSet rs = st.executeQuery(query);
-		
-		
-		
 		if (dsHD.contains(hd))
 			return false;
+		
+		Connection conn = DatabaseConnection.getConnection();
+		
+		String query = "insert into HoaDon values (?, ?, ?, ?)";
+		
+		PreparedStatement st = conn.prepareStatement(query);
+		st.setString(1, hd.getMaHD());
+		st.setString(2, "nv03");
+		st.setString(3, hd.getKhachHang().getMaKH());
+		st.setDate(4, (java.sql.Date) hd.getNgayLap());
+		
+		boolean x = st.execute(query);
+		
 		dsHD.add(hd);
-		return true;
+		
+		return x;
 	}
 
 	public boolean xoaHoaDon(String maHD) {

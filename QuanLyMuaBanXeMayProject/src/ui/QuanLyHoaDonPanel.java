@@ -2,7 +2,6 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -53,7 +52,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 	private JTextField txtDonGia;
 	private DefaultTableModel modelHoaDon;
 	private JTable tableHoaDon;
-	private JButton btnThem;
+	private JButton btnThemHD;
 	private JTextField txtSearch;
 	private JButton btnSearch;
 	private JRadioButton radMaHD;
@@ -62,7 +61,6 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 	private JButton btnXoaHD;
 	private JButton btnSuaHD;
 	private JButton btnXoaRong;
-	private JButton btnQuayLai;
 	private DanhSachHoaDon dsHD;
 	
 	public QuanLyHoaDonPanel() {
@@ -80,14 +78,23 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		
 	}
 	
+	private void deleteDataInTable() {
+		while(modelHoaDon.getRowCount() > 0) {
+			modelHoaDon.removeRow(0);
+		}
+	}
+	
 	public void loadDataToTable() {
 		try {
-			dsHD.getAll();
+			deleteDataInTable();
+			
+			if(dsHD.getDsHD().size() == 0)
+				dsHD.updateData();
 			
 			ArrayList<HoaDon> list = dsHD.getDsHD();
 			
 			for(HoaDon item : list) {
-				String[] row = {item.getMaHD(), "", "", item.getNgayLap().toString()};
+				String[] row = {item.getMaHD(), "", item.getKhachHang().getMaKH(), item.getNgayLap().toString()};
 				
 				modelHoaDon.addRow(row);
 			}
@@ -115,23 +122,41 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 	}
 	
 	private void addEvent() {
+		btnThemHD.addActionListener(this);
+		btnSearch.addActionListener(this);
+		btnXoaHD.addActionListener(this);
+		btnXoaRong.addActionListener(this);
+		btnSuaHD.addActionListener(this);
+		btnThemCTHD.addActionListener(this);
+		btnXoaCTHD.addActionListener(this);
+		btnSuaCTHD.addActionListener(this);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		Object o = e.getSource();
 		
+		if(o.equals(btnThemHD))
+			themHoaDon();
 	}
 	
 	
+	private void themHoaDon() {
+		if(txtMaHD.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Mã hóa đơn không được bỏ trống!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+			txtMaHD.requestFocus();
+			return;
+		}
+	}
+
 	private void addEast() {
 		Box boxEast = Box.createVerticalBox();
 		this.add(boxEast, BorderLayout.EAST);
 		
-		btnThem = addButtonTo(boxEast, "Thêm hóa đơn");
+		btnThemHD = addButtonTo(boxEast, "Thêm hóa đơn");
 		btnXoaHD = addButtonTo(boxEast, "Xóa hóa đơn");
 		btnSuaHD = addButtonTo(boxEast, "Sửa hóa đơn");
 		btnXoaRong = addButtonTo(boxEast, "Xoá rỗng");
-		btnQuayLai = addButtonTo(boxEast, "Quay lại");
 	}
 
 	private void addCenter() {

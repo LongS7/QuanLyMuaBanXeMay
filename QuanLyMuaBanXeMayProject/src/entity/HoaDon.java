@@ -52,6 +52,11 @@ public class HoaDon {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	public HoaDon(String maHD) {
+		super();
+		this.maHD = maHD;
+	}
 
 	@Override
 	public String toString() {

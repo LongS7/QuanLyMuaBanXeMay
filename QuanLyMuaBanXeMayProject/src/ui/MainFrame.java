@@ -11,7 +11,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.BorderFactory;
@@ -22,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -70,6 +70,42 @@ public class MainFrame extends JFrame implements ActionListener {
 	private String tempData = "";
 	private QuanLyKhachHangPanel pnlQLKH;
 
+	public QuanLyHoaDonPanel getPnlQLHD() {
+		return pnlQLHD;
+	}
+
+	public void setPnlQLHD(QuanLyHoaDonPanel pnlQLHD) {
+		this.pnlQLHD = pnlQLHD;
+	}
+
+	public QuanLyXeMayPanel getPnlQLXM() {
+		return pnlQLXM;
+	}
+
+	public void setPnlQLXM(QuanLyXeMayPanel pnlQLXM) {
+		this.pnlQLXM = pnlQLXM;
+	}
+
+	public TrangChuPanel getPnlTrangChu() {
+		return pnlTrangChu;
+	}
+
+	public void setPnlTrangChu(TrangChuPanel pnlTrangChu) {
+		this.pnlTrangChu = pnlTrangChu;
+	}
+
+	public QuanLyKhachHangPanel getPnlQLKH() {
+		return pnlQLKH;
+	}
+
+	public void setPnlQLKH(QuanLyKhachHangPanel pnlQLKH) {
+		this.pnlQLKH = pnlQLKH;
+	}
+
+	private JButton btnPrevious;
+	private JPanel previousPanel = null;
+	private JPanel menuTKDT;
+
 	/**
 	 * Hàm khởi tạo
 	 * 
@@ -77,8 +113,8 @@ public class MainFrame extends JFrame implements ActionListener {
 	 */
 	public MainFrame(boolean isManager) {
 		this.isManager = isManager;
-		setSize(900, 700);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setSize(900, 750);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setTitle("Ứng Dụng Quản Lý Mua Bán Xe Máy");
 
@@ -102,7 +138,8 @@ public class MainFrame extends JFrame implements ActionListener {
 
 		miCut = new JMenuItem("Cut", new ImageIcon("Images/cut.png"));
 		miCopy = new JMenuItem("Copy", new ImageIcon("Images/copy.png"));
-		miPaste = new JMenuItem("Paste", new ImageIcon("Images/paste.png")); miPaste.setEnabled(false);
+		miPaste = new JMenuItem("Paste", new ImageIcon("Images/paste.png"));
+		miPaste.setEnabled(false);
 
 		popMenu.add(miCut);
 		popMenu.add(miCopy);
@@ -110,7 +147,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
 		addEvent();
 
-		pnlTrangChu = new TrangChuPanel(isManager);
+		pnlTrangChu = new TrangChuPanel(this, isManager);
 		pnlQLHD = new QuanLyHoaDonPanel();
 		pnlQLXM = new QuanLyXeMayPanel();
 		pnlQLKH = new QuanLyKhachHangPanel();
@@ -120,6 +157,13 @@ public class MainFrame extends JFrame implements ActionListener {
 
 	}
 
+	private void warningBeforeClose() {
+		int rs = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn thoát?", "Xác nhận",
+				JOptionPane.OK_CANCEL_OPTION);
+		if (rs == JOptionPane.OK_OPTION)
+			System.exit(0);
+	}
+
 	private void addEvent() {
 		this.addWindowListener(new WindowAdapter() {
 			@Override
@@ -127,6 +171,11 @@ public class MainFrame extends JFrame implements ActionListener {
 				menuTrangChu.setBackground(ACTIVE_COLOR);
 				changePanel(pnlTrangChu);
 				selectedMenuItem = menuTrangChu;
+			}
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				warningBeforeClose();
 			}
 		});
 
@@ -165,49 +214,73 @@ public class MainFrame extends JFrame implements ActionListener {
 				changePanel(pnlTrangChu);
 			}
 		});
+		menuHoSo.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
 
+			}
+		});
+		if(isManager) {
+			menuQLNV.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+
+				}
+			});
+			menuTKDT.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+
+				}
+			});
+		}
+		
 		miCut.addActionListener(this);
 		miCopy.addActionListener(this);
 		miPaste.addActionListener(this);
 		popMenu.addPopupMenuListener(new PopupMenuListener() {
-			
+
 			@Override
 			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-				if(tempData.isEmpty())
+				if (tempData.isEmpty())
 					miPaste.setEnabled(false);
 				Component c = popMenu.getInvoker();
 				if (c == null)
 					return;
-				if(c instanceof JTextField) {
-					JTextField txt = (JTextField)c;
-					if(txt.getSelectedText() == null) {
+				if (c instanceof JTextField) {
+					JTextField txt = (JTextField) c;
+					if (txt.getSelectedText() == null) {
 						miCopy.setEnabled(false);
 						miCut.setEnabled(false);
-					}
-					else {
+					} else {
 						miCopy.setEnabled(true);
 						miCut.setEnabled(true);
 					}
 				}
 			}
-			
+
 			@Override
 			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void popupMenuCanceled(PopupMenuEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
-		
-		
+
+		btnPrevious.addActionListener(this);
+
 	}
 
-	private void changePanel(JPanel panel) {
+	public void changePanel(JPanel panel) {
+		if (getCenter().getComponents().length != 0) {
+			previousPanel = (JPanel) getCenter().getComponent(0);
+			btnPrevious.setEnabled(true);
+		}
 		getCenter().removeAll();
 		getCenter().add(panel);
 		if (panel.equals(pnlTrangChu))
@@ -216,6 +289,23 @@ public class MainFrame extends JFrame implements ActionListener {
 			pnlQLHD.focus();
 		getCenter().revalidate();
 		getCenter().repaint();
+
+		if (selectedMenuItem != null)
+			selectedMenuItem.setBackground(WEST_BACKGROUND);
+
+		if (panel.equals(pnlQLKH)) {
+			menuQLKH.setBackground(ACTIVE_COLOR);
+			selectedMenuItem = menuQLKH;
+		}
+		if (panel.equals(pnlQLHD)) {
+			menuQLHD.setBackground(ACTIVE_COLOR);
+			selectedMenuItem = menuQLHD;
+		}
+		if (panel.equals(pnlQLXM)) {
+			menuQLXM.setBackground(ACTIVE_COLOR);
+			selectedMenuItem = menuQLXM;
+		}
+
 	}
 
 	private void setLookAndFeel() {
@@ -285,9 +375,27 @@ public class MainFrame extends JFrame implements ActionListener {
 			menuQLNV = addMenuItem("Quản lý nhân viên", "Images/employee_white.png");
 		menuQLHD = addMenuItem("Quản lý hóa đơn", "Images/order_white.png");
 		menuQLXM = addMenuItem("Quản lý xe máy", "Images/product_white.png");
+		if (isManager) 
+			menuTKDT = addMenuItem("Thống kê doanh thu", "Images/ledger.png");
 	}
 
 	private void addSouth() {
+		Box boxSouthVertical = Box.createVerticalBox();
+		this.add(boxSouthVertical, BorderLayout.SOUTH);
+
+		Box boxSouth = Box.createHorizontalBox();
+
+		boxSouthVertical.add(Box.createVerticalStrut(10));
+		boxSouthVertical.add(boxSouth);
+		boxSouthVertical.add(Box.createVerticalStrut(10));
+
+		btnPrevious = new JButton("Quay lại trước");
+		btnPrevious.setEnabled(false);
+
+		boxSouth.add(Box.createHorizontalStrut(30));
+		boxSouth.add(btnPrevious);
+		boxSouth.add(Box.createHorizontalGlue());
+		
 	}
 
 	private void addNorthOfCenter() {
@@ -405,14 +513,18 @@ public class MainFrame extends JFrame implements ActionListener {
 			copyData();
 		if (o.equals(miPaste))
 			pasteData();
+		if (o.equals(btnPrevious)) {
+			changePanel(previousPanel);
+		}
+
 	}
 
 	private void pasteData() {
 		Component c = popMenu.getInvoker();
 		if (c == null)
 			return;
-		if(c instanceof JTextField) {
-			JTextField txt = (JTextField)c;
+		if (c instanceof JTextField) {
+			JTextField txt = (JTextField) c;
 			txt.replaceSelection(tempData);
 		}
 	}
@@ -421,8 +533,8 @@ public class MainFrame extends JFrame implements ActionListener {
 		Component c = popMenu.getInvoker();
 		if (c == null)
 			return;
-		if(c instanceof JTextField) {
-			JTextField txt = (JTextField)c;
+		if (c instanceof JTextField) {
+			JTextField txt = (JTextField) c;
 			tempData = txt.getSelectedText();
 			miPaste.setEnabled(true);
 		}
@@ -432,8 +544,8 @@ public class MainFrame extends JFrame implements ActionListener {
 		Component c = popMenu.getInvoker();
 		if (c == null)
 			return;
-		if(c instanceof JTextField) {
-			JTextField txt = (JTextField)c;
+		if (c instanceof JTextField) {
+			JTextField txt = (JTextField) c;
 			tempData = txt.getSelectedText();
 			txt.replaceSelection("");
 			miPaste.setEnabled(true);

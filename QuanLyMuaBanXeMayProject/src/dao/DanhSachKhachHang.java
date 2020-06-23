@@ -35,7 +35,8 @@ public class DanhSachKhachHang {
 			String sdt = result.getString("sdt");
 			
 			KhachHang kh = new KhachHang(maKH, hoTen, gioiTinh, diaChi, sdt, email);
-			dsKH.add(kh);
+			if(!dsKH.contains(kh))
+				dsKH.add(kh);
 		}
 		
 		conn.close();
