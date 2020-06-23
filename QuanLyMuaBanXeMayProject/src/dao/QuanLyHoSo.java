@@ -5,26 +5,26 @@ import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 
-import entity.HoSo;
+import entity.NhanVien;
 
 public class QuanLyHoSo {
-	private HoSo hoSo;
+	private NhanVien nhanVien;
 	
 	
-	public HoSo getHoSo() {
-		return hoSo;
+	public NhanVien getNhanVien() {
+		return nhanVien;
 	}
-	public void setHoSo(HoSo hoSo) {
-		this.hoSo = hoSo;
+	public void setnhanVien(NhanVien nhanVien) {
+		this.nhanVien = nhanVien;
 	}
-	public void suaHoSo(HoSo New) {
-		hoSo.setMaNhanVien(New.getMaNhanVien());
-		hoSo.setHoTen(New.getHoTen());
-		hoSo.setGioiTinh(New.getGioiTinh());
-		hoSo.setDiaChi(New.getDiaChi());
-		hoSo.setSoDienThoai(New.getSoDienThoai());
-		hoSo.setEmail(New.getEmail());
-		hoSo.setChucVu(New.getChucVu());
+	public void suanhanVien(NhanVien New) {
+		nhanVien.setMaNhanVien(New.getMaNhanVien());
+		nhanVien.setHoTen(New.getHoTen());
+		nhanVien.setGioiTinh(New.getGioiTinh());
+		nhanVien.setDiaChi(New.getDiaChi());
+		nhanVien.setSoDienThoai(New.getSoDienThoai());
+		nhanVien.setEmail(New.getEmail());
+		nhanVien.setChucVu(New.getChucVu());
 	}
 	public void getProfile() throws SQLException{
 		
@@ -43,7 +43,7 @@ public class QuanLyHoSo {
 			String email = result.getString("email");
 			boolean chucvu = result.getBoolean("quanLyVien");
 				
-			hoSo = new HoSo(manv, hoten, gioitinh, diachi, sdt, email, chucvu);
+			nhanVien = new NhanVien(manv, hoten, gioitinh, diachi, sdt, email, chucvu);
 		}
 		
 		con.close();

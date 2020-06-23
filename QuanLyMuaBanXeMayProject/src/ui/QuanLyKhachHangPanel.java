@@ -235,6 +235,7 @@ public class QuanLyKhachHangPanel extends JPanel {
 	}
 	
 	public void loadDataToTable() {
+		deleteDataInTable();
 		try {
 			dsKH.getAll();
 			
@@ -251,5 +252,9 @@ public class QuanLyKhachHangPanel extends JPanel {
 			
 		}
 	}
-
+	private void deleteDataInTable() {
+		while(modelKhachHang.getRowCount() > 0) {
+			modelKhachHang.removeRow(0);
+		}
+	}
 }
