@@ -248,7 +248,6 @@ public class DangNhapFrame extends JFrame implements ActionListener, KeyListener
 			Connection conn = DatabaseConnection.getConnection();
 
 			this.setVisible(false);
-			
 			new MainFrame(QuanLyDangNhap.laQuanLyVien()).setVisible(true);
 
 			conn.close();

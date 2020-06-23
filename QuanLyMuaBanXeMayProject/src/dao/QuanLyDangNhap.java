@@ -21,6 +21,8 @@ public class QuanLyDangNhap {
 				return true;
 		}
 		
+		conn.close();
+		
 		return false;
 	
 	}
