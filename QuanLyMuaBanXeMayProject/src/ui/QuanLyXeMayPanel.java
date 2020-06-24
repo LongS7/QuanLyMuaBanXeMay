@@ -4,12 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -31,7 +34,7 @@ import javax.swing.table.DefaultTableModel;
 import dao.DanhSachXeMay;
 import entity.XeMay;
 
-public class QuanLyXeMayPanel extends JPanel implements MouseListener{
+public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseListener{
 
 	private static final long serialVersionUID = 1L;
 	private final Font HEADER_FONT = new Font("Times new roman", Font.BOLD, 20);
@@ -60,6 +63,7 @@ public class QuanLyXeMayPanel extends JPanel implements MouseListener{
 	private JRadioButton radTimTheoMa;
 	private JRadioButton radTimTheoHang;
 	private JRadioButton radTimTheoDungTich;
+	private JComboBox<String> ckbHangXe;
 	public QuanLyXeMayPanel() {
 		
 		setPreferredSize(new Dimension(500, 600));
@@ -72,6 +76,12 @@ public class QuanLyXeMayPanel extends JPanel implements MouseListener{
 		
 		listXeMay = new DanhSachXeMay();
 		tableXeMay.addMouseListener(this);
+		btnSearch.addActionListener(this);
+		btnThem.addActionListener(this);
+		btnXoa.addActionListener(this);
+		btnXoaTrang.addActionListener(this);
+		btnSua.addActionListener(this);
+		btnQuayLai.addActionListener(this);
 		
 	}
 	private void addNorth() {
@@ -139,7 +149,7 @@ public class QuanLyXeMayPanel extends JPanel implements MouseListener{
 		txtDonGia = new JTextField();
 
 		
-		JComboBox<String> ckbHangXe = new JComboBox<String>();
+		ckbHangXe = new JComboBox<String>();
 		ckbHangXe.addItem("Honda");
 		ckbHangXe.addItem("Yamaha");
 		ckbHangXe.addItem("Suzuki");
@@ -212,7 +222,25 @@ public class QuanLyXeMayPanel extends JPanel implements MouseListener{
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		
+		Object o = e.getSource();
+		try {
+			if(o.equals(btnThem))
+				themXeMay();
+			else if(o.equals(btnXoa))
+				xoaXeMay();
+			else if(o.equals(btnSua))
+				suaTTXeMay();
+			else if(o.equals(btnSearch) && radTimTheoDungTich.isSelected())
+				timTheoDungTich();
+			else if(o.equals(btnSearch) && radTimTheoHang.isSelected())
+				timTheoHangXe();
+			else if(o.equals(btnSearch) && radTimTheoMa.isSelected())
+				timTheoMa();
+			else
+				xoaTrang();
+		}catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage());
+		}
 	}
 	private void setLookAndFeel() {
 		for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -267,8 +295,8 @@ public class QuanLyXeMayPanel extends JPanel implements MouseListener{
 		try {
 			deleteDataInTable();
 			NumberFormat nf = NumberFormat.getInstance(new Locale("vn", "VN"));
-			listXeMay.getAll();
-			ArrayList<XeMay> dsxm = listXeMay.getdanhSach();
+			
+			List<XeMay> dsxm = listXeMay.getAll();
 			for (XeMay xeMay : dsxm) {
 				String donGia = nf.format(xeMay.getDonGia());
 				defaultTable.addRow(new Object[] {
@@ -300,7 +328,16 @@ public class QuanLyXeMayPanel extends JPanel implements MouseListener{
 	}
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		
+		int row = tableXeMay.getSelectedRow();
+		txtMaXe.setText(tableXeMay.getValueAt(row, 0).toString());
+		txtTenXe.setText(tableXeMay.getValueAt(row, 1).toString());
+		txtLoaiXe.setText(tableXeMay.getValueAt(row, 2).toString());
+		ckbHangXe.setSelectedItem(tableXeMay.getValueAt(row, 3).toString());
+		txtDungTich.setText(tableXeMay.getValueAt(row, 4).toString());
+		txtMauXe.setText(tableXeMay.getValueAt(row, 5).toString());
+		txtNuocSanXuat.setText(tableXeMay.getValueAt(row, 6).toString());
+		txtSoLuongTon.setText(tableXeMay.getValueAt(row, 7).toString());
+		txtDonGia.setText(tableXeMay.getValueAt(row, 8).toString());
 	}
 	@Override
 	public void mousePressed(MouseEvent e) {
@@ -321,5 +358,134 @@ public class QuanLyXeMayPanel extends JPanel implements MouseListener{
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+	private void themXeMay() throws SQLException {
+		XeMay xm = new XeMay(txtMaXe.getText().trim(),
+				txtTenXe.getText().trim(), txtLoaiXe.getText().trim(),
+				ckbHangXe.getSelectedItem().toString(), Integer.parseInt(txtDungTich.getText()),
+				txtMauXe.getText().trim(), txtNuocSanXuat.getText().trim(),
+				Integer.parseInt(txtSoLuongTon.getText()), Double.parseDouble(txtDonGia.getText()));
+		if(listXeMay.themXeMay(xm)) {
+			loadDataToTable();
+			xoaTrang();
+			JOptionPane.showMessageDialog(this, "Thêm thành công");
+		}else 
+			JOptionPane.showMessageDialog(this, "Thêm không thành công");
+	}
+	private void xoaXeMay() throws SQLException{
+		int row = tableXeMay.getSelectedRow();
+		if(row == -1)
+			JOptionPane.showMessageDialog(this, "Phải chọn xe cần xoá");
+		else {
+			int replay = JOptionPane.showConfirmDialog(this, "Bạn chó chắc muốn xoá dòng này!!", "Cảnh báo", JOptionPane.YES_NO_OPTION);
+			if(replay == JOptionPane.YES_OPTION) {
+				List<XeMay> dsxm = listXeMay.getAll();
+				int rows = tableXeMay.getSelectedRow();
+				if(rows >=0 || rows < dsxm.size()) {
+					XeMay xm = dsxm.get(rows);
+					if(listXeMay.xoaXeMay(xm)) {
+						loadDataToTable();
+						xoaTrang();
+						JOptionPane.showMessageDialog(this, "Xoá thành công");
+					}else
+						JOptionPane.showMessageDialog(this, "Xoá không thành công");
+				}
+			}
+			return;
+		}
+	}
+	private void suaTTXeMay() throws SQLException {
+		int row = tableXeMay.getSelectedRow();
+		if(row == -1)
+			JOptionPane.showMessageDialog(this, "Phải chọn xe cần sửa");
+		else {
+			XeMay xm = new XeMay(txtMaXe.getText().trim(),
+					txtTenXe.getText().trim(), txtLoaiXe.getText().trim(),
+					ckbHangXe.getSelectedItem().toString(), Integer.parseInt(txtDungTich.getText()),
+					txtMauXe.getText().trim(), txtNuocSanXuat.getText().trim(),
+					Integer.parseInt(txtSoLuongTon.getText()), Double.parseDouble(txtDonGia.getText()));
+			if(!xm.getMaXe().equalsIgnoreCase(tableXeMay.getValueAt(row, 0).toString()))
+				JOptionPane.showMessageDialog(this, "Không được sửa mã xe máy!!");
+			else {
+				if(listXeMay.suaTTXeMay(xm)) {
+					loadDataToTable();
+					JOptionPane.showMessageDialog(this, "Sửa thành công");
+			}else 
+				JOptionPane.showMessageDialog(this, "Sửa không thành công");
+			}
+		}
+	}
+	private void xoaTrang() {
+		txtMaXe.setText("");
+		txtTenXe.setText("");
+		txtLoaiXe.setText("");
+		ckbHangXe.setSelectedItem("");
+		txtDungTich.setText("");
+		txtMauXe.setText("");
+		txtNuocSanXuat.setText("");
+		txtSoLuongTon.setText("");
+		txtDonGia.setText("");
+		txtMaXe.requestFocus();
+	}
+	private void timTheoMa() throws SQLException{
+		if(txtSearch.getText().equals(""))
+			loadDataToTable();
+		else {
+			XeMay xeMay = new XeMay();
+			xeMay = listXeMay.timTheoMa(txtSearch.getText());
+			if(xeMay == null)
+				JOptionPane.showMessageDialog(this, "Không tìm thấy!");
+			else {
+				deleteDataInTable();
+				NumberFormat nf = NumberFormat.getInstance(new Locale("vn", "VN"));
+				String donGia = nf.format(xeMay.getDonGia());
+				defaultTable.addRow(new Object[] {
+						xeMay.getMaXe(), xeMay.getTenXe(), xeMay.getLoaiXe(),
+						xeMay.getHangXe(), xeMay.getDungTich(), xeMay.getMauXe(),
+						xeMay.getNuocSanXuat(), xeMay.getSoLuongTon(), donGia});
+			}
+		}
+	}
+	private void timTheoDungTich() throws SQLException {
+		if(txtSearch.getText().equals(""))
+			loadDataToTable();
+		else {
+			List<XeMay> dsxm = new ArrayList<XeMay>();
+			dsxm = listXeMay.timTheoDungTich(Integer.parseInt(txtSearch.getText()));
+			if(dsxm == null)
+				JOptionPane.showMessageDialog(this, "Không tìm thấy!");
+			else {
+				deleteDataInTable();
+				NumberFormat nf = NumberFormat.getInstance(new Locale("vn", "VN"));
+				for (XeMay xeMay : dsxm) {
+					String donGia = nf.format(xeMay.getDonGia());
+					defaultTable.addRow(new Object[] {
+							xeMay.getMaXe(), xeMay.getTenXe(), xeMay.getLoaiXe(),
+							xeMay.getHangXe(), xeMay.getDungTich(), xeMay.getMauXe(),
+							xeMay.getNuocSanXuat(), xeMay.getSoLuongTon(), donGia});
+				}
+			}
+		}
+	}
+		private void timTheoHangXe() throws SQLException {
+			if(txtSearch.getText().equals(""))
+				loadDataToTable();
+			else {
+				List<XeMay> dsxm = new ArrayList<XeMay>();
+				dsxm = listXeMay.timTheoHangXe(txtSearch.getText());
+				if(dsxm == null)
+					JOptionPane.showMessageDialog(this, "Không tìm thấy!");
+				else {
+					deleteDataInTable();
+					NumberFormat nf = NumberFormat.getInstance(new Locale("vn", "VN"));
+					for (XeMay xeMay : dsxm) {
+						String donGia = nf.format(xeMay.getDonGia());
+						defaultTable.addRow(new Object[] {
+								xeMay.getMaXe(), xeMay.getTenXe(), xeMay.getLoaiXe(),
+								xeMay.getHangXe(), xeMay.getDungTich(), xeMay.getMauXe(),
+								xeMay.getNuocSanXuat(), xeMay.getSoLuongTon(), donGia});
+					}
+				}
+			}
 	}
 }
