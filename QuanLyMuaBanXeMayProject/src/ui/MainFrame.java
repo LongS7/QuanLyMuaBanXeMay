@@ -184,7 +184,6 @@ public class MainFrame extends JFrame implements ActionListener {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				changePanel(pnlQLHD);
-				pnlQLHD.loadDataToTable();
 			}
 		});
 		menuQLXM.addMouseListener(new MouseAdapter() {
