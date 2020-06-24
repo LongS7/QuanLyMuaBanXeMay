@@ -30,7 +30,6 @@ import dao.DanhSachHoaDon;
 import entity.HoaDon;
 
 public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
-
 	/**
 	 * 
 	 */
@@ -74,7 +73,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		
 		addEvent();
 		
-		dsHD = new DanhSachHoaDon();
+		dsHD = null;
 		
 	}
 	
