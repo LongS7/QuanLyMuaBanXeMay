@@ -73,7 +73,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		
 		addEvent();
 		
-		dsHD = new DanhSachHoaDon();
+		dsHD = null;
 		
 	}
 	

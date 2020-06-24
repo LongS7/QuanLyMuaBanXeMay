@@ -380,14 +380,16 @@ public class MainFrame extends JFrame implements ActionListener {
 	}
 
 	private void addSouth() {
-		Box boxSouthVertical = Box.createVerticalBox();
-		this.add(boxSouthVertical, BorderLayout.SOUTH);
+		JPanel pnlSouth = new JPanel();
+		pnlSouth.setLayout(new BoxLayout(pnlSouth, BoxLayout.Y_AXIS));
+		pnlSouth.setBackground(NORTH_BACKGROUND);
+		this.add(pnlSouth, BorderLayout.SOUTH);
 
 		Box boxSouth = Box.createHorizontalBox();
 
-		boxSouthVertical.add(Box.createVerticalStrut(10));
-		boxSouthVertical.add(boxSouth);
-		boxSouthVertical.add(Box.createVerticalStrut(10));
+		pnlSouth.add(Box.createVerticalStrut(10));
+		pnlSouth.add(boxSouth);
+		pnlSouth.add(Box.createVerticalStrut(10));
 
 		btnPrevious = new JButton("Quay lại trước");
 		btnPrevious.setEnabled(false);
