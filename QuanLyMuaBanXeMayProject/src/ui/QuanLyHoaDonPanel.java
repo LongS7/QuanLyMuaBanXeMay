@@ -96,7 +96,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			ArrayList<HoaDon> list = dsHD.getAll();
 
 			for (HoaDon item : list) {
-				String[] row = { item.getMaHD(), item.getNhanVien().getMaNhanVien(), item.getKhachHang().getMaKH(),
+				String[] row = { item.getMaHD(), item.getNhanVien().getMaNV(), item.getKhachHang().getMaKH(),
 						item.getNgayLap().toString() };
 
 				modelHoaDon.addRow(row);
@@ -112,7 +112,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		deleteDataInTable();
 
 		for (HoaDon item : data) {
-			String[] row = { item.getMaHD(), item.getNhanVien().getMaNhanVien(), item.getKhachHang().getMaKH(),
+			String[] row = { item.getMaHD(), item.getNhanVien().getMaNV(), item.getKhachHang().getMaKH(),
 					item.getNgayLap().toString() };
 
 			modelHoaDon.addRow(row);
@@ -304,7 +304,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			if (mess != null) {
 				JOptionPane.showMessageDialog(this, mess, "Lỗi", JOptionPane.ERROR_MESSAGE);
 			} else {
-				modelHoaDon.addRow(new Object[] { maHD, nv.getMaNhanVien(), maKH, ngayLap.toString() });
+				modelHoaDon.addRow(new Object[] { maHD, nv.getMaNV(), maKH, ngayLap.toString() });
 				tableHoaDon.addRowSelectionInterval(modelHoaDon.getRowCount() - 1, modelHoaDon.getRowCount() - 1);
 				JOptionPane.showMessageDialog(this, "Thêm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 			}

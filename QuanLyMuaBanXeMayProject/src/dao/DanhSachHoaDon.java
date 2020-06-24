@@ -82,7 +82,7 @@ public class DanhSachHoaDon {
 		st = conn.prepareStatement(query);
 		st.setString(1, hd.getMaHD());
 		st.setString(2, hd.getKhachHang().getMaKH());
-		st.setString(3, hd.getNhanVien().getMaNhanVien());
+		st.setString(3, hd.getNhanVien().getMaNV());
 		st.setDate(4, java.sql.Date.valueOf(hd.getNgayLap()));
 
 		st.execute();
