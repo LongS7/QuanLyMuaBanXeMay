@@ -18,13 +18,13 @@ public class QuanLyHoSo {
 		this.nhanVien = nhanVien;
 	}
 	public void suanhanVien(NhanVien New) {
-		nhanVien.setMaNhanVien(New.getMaNhanVien());
-		nhanVien.setHoTen(New.getHoTen());
-		nhanVien.setGioiTinh(New.getGioiTinh());
+		nhanVien.setMaNV(New.getMaNV());
+		nhanVien.setHoTenNV(New.getHoTenNV());
+		nhanVien.setGioiTinh(New.isGioiTinh());
 		nhanVien.setDiaChi(New.getDiaChi());
-		nhanVien.setSoDienThoai(New.getSoDienThoai());
+		nhanVien.setSDT(New.getSDT());
 		nhanVien.setEmail(New.getEmail());
-		nhanVien.setChucVu(New.getChucVu());
+		nhanVien.setQuanLyVien(New.isQuanLyVien());
 	}
 	public void getProfile() throws SQLException{
 		

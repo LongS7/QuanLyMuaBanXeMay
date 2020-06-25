@@ -188,13 +188,13 @@ public class ProfilePanel extends JPanel{
 		try {
 			hoSo.getProfile();
 			NhanVien nhanvien = hoSo.getNhanVien();
-			txtMaNhanVien.setText(nhanvien.getMaNhanVien());
-			txtHoTen.setText(nhanvien.getHoTen());
-			ckbGioiTinh.setSelectedItem(nhanvien.getGioiTinh()? "Nam" : "Nữ");
+			txtMaNhanVien.setText(nhanvien.getMaNV());
+			txtHoTen.setText(nhanvien.getHoTenNV());
+			ckbGioiTinh.setSelectedItem(nhanvien.isGioiTinh()? "Nam" : "Nữ");
 			txtDiaChi.setText(nhanvien.getDiaChi());
-			txtSoDienThoai.setText(nhanvien.getSoDienThoai());
+			txtSoDienThoai.setText(nhanvien.getSDT());
 			txtEmail.setText(nhanvien.getEmail());
-			ckbChucVu.setSelectedItem(nhanvien.getChucVu()? "Quản lý viên" : "Nhân viên");
+			ckbChucVu.setSelectedItem(nhanvien.isQuanLyVien()? "Quản lý viên" : "Nhân viên");
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this, "Lỗi kết nối!", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
