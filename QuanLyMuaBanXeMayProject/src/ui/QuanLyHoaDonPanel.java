@@ -29,11 +29,14 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
+import dao.DanhSachCTHD;
 import dao.DanhSachHoaDon;
 import dao.DatabaseConnection;
+import entity.ChiTietHD;
 import entity.HoaDon;
 import entity.KhachHang;
 import entity.NhanVien;
+import entity.XeMay;
 
 public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 	/**
@@ -67,6 +70,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 	private JButton btnSuaHD;
 	private JButton btnXoaRong;
 	private DanhSachHoaDon dsHD;
+	private DanhSachCTHD dsCTHD;
 
 	public QuanLyHoaDonPanel() {
 		setPreferredSize(new Dimension(500, 600));
@@ -80,12 +84,19 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		addEvent();
 
 		dsHD = new DanhSachHoaDon();
+		dsCTHD = new DanhSachCTHD();
 
 	}
 
 	private void deleteDataInTable() {
 		while (modelHoaDon.getRowCount() > 0) {
 			modelHoaDon.removeRow(0);
+		}
+	}
+	
+	private void deleteDataInTableCTHD() {
+		while(modelCTHD.getRowCount() > 0) {
+			modelCTHD.removeRow(0);
 		}
 	}
 
@@ -105,6 +116,23 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this, "Lỗi kết nối!", "Lỗi", JOptionPane.ERROR_MESSAGE);
 			return;
+		}
+	}
+	
+	public void loadAllDataToChiTietHDTable() {
+		try {
+			deleteDataInTableCTHD();
+			ArrayList<ChiTietHD> list = dsCTHD.getAll();
+			
+			for (ChiTietHD item : list) {
+				XeMay xm = item.getXeMay();
+				modelCTHD.addRow(new Object[] {
+						xm.getMaXe(), item.getSoLuong(), item.getDonGia(), item.getSoLuong()*item.getDonGia()
+				});
+			}
+		} catch (SQLException e) {
+			//JOptionPane.showMessageDialog(this, "Lỗi kết nối!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
 		}
 	}
 
