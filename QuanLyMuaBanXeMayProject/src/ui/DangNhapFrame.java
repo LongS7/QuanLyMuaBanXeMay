@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -26,7 +28,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import dao.DatabaseConnection;
 import dao.QuanLyDangNhap;
 
-public class DangNhapFrame extends JFrame implements ActionListener {
+public class DangNhapFrame extends JFrame implements ActionListener, KeyListener {
 
 	/**
 	 * 
@@ -55,6 +57,10 @@ public class DangNhapFrame extends JFrame implements ActionListener {
 	private void addEvent() {
 		btnDangNhap.addActionListener(this);
 		btnThoat.addActionListener(this);
+		btnDangNhap.addKeyListener(this);
+		btnThoat.addKeyListener(this);
+		txtMatKhau.addKeyListener(this);
+		txtTenTK.addKeyListener(this);
 	}
 
 	private void setLookAndFeel() {
@@ -240,17 +246,44 @@ public class DangNhapFrame extends JFrame implements ActionListener {
 
 		try {
 			Connection conn = DatabaseConnection.getConnection();
-			
+
 			this.setVisible(false);
 			new MainFrame(QuanLyDangNhap.laQuanLyVien()).setVisible(true);
-			
+
 			conn.close();
-			
+
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this, "Không thể kết nối!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 			return;
 		}
-		
+
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		Object o = e.getSource();
+
+		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+			if (o.equals(btnDangNhap))
+				dangNhap();
+			if (o.equals(txtMatKhau))
+				dangNhap();
+			if (o.equals(btnThoat))
+				System.exit(0);
+			if (o.equals(txtTenTK))
+				txtTenTK.transferFocus();
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
 
 	}
 

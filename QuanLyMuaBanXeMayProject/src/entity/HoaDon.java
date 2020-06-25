@@ -1,12 +1,12 @@
 package entity;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class HoaDon {
 	private String maHD;
 	private NhanVien nhanVien;
 	private KhachHang khachHang;
-	private Date ngayLap;
+	private LocalDate ngayLap;
 
 	public String getMaHD() {
 		return maHD;
@@ -32,15 +32,15 @@ public class HoaDon {
 		this.khachHang = khachHang;
 	}
 
-	public Date getNgayLap() {
+	public LocalDate getNgayLap() {
 		return ngayLap;
 	}
 
-	public void setNgayLap(Date ngayLap) {
+	public void setNgayLap(LocalDate ngayLap) {
 		this.ngayLap = ngayLap;
 	}
 
-	public HoaDon(String maHD, NhanVien nhanVien, KhachHang khachHang, Date ngayLap) {
+	public HoaDon(String maHD, NhanVien nhanVien, KhachHang khachHang, LocalDate ngayLap) {
 		super();
 		this.maHD = maHD;
 		this.nhanVien = nhanVien;
@@ -51,6 +51,11 @@ public class HoaDon {
 	public HoaDon() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+	
+	public HoaDon(String maHD) {
+		super();
+		this.maHD = maHD;
 	}
 
 	@Override
