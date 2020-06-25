@@ -119,10 +119,12 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		}
 	}
 	
-	public void loadAllDataToChiTietHDTable() {
+	public void loadDataToChiTietHDTable(String ma) {
 		try {
+			
 			deleteDataInTableCTHD();
-			ArrayList<ChiTietHD> list = dsCTHD.getAll();
+			
+			ArrayList<ChiTietHD> list = dsCTHD.timTheoMaHD(ma);
 			
 			for (ChiTietHD item : list) {
 				XeMay xm = item.getXeMay();
@@ -177,6 +179,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				changeText();
+				updateCTHDTable();
 			}
 		});
 	}
@@ -193,6 +196,18 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			xoaRong();
 		if (o.equals(btnTimKiem))
 			timKiem();
+	}
+	
+	private void updateCTHDTable() {
+		int selected = tableHoaDon.getSelectedRow();
+		if (selected == -1 || tableHoaDon.getSelectedRows().length > 1) {
+			deleteDataInTableCTHD();
+			return;
+		}
+		
+		String maHD = (String) tableHoaDon.getValueAt(selected, 0);
+		
+		loadDataToChiTietHDTable(maHD);
 	}
 
 	private void timKiem() {

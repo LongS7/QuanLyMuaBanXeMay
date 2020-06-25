@@ -184,7 +184,7 @@ public class ProfilePanel extends JPanel{
 		
 		return text;
 	}
-	public void LoadDataFromDatabaseToPanel() {
+	public void loadDataFromDatabaseToPanel() {
 		try {
 			hoSo.getProfile();
 			NhanVien nhanvien = hoSo.getNhanVien();
