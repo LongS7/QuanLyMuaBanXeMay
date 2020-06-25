@@ -69,8 +69,6 @@ public class MainFrame extends JFrame implements ActionListener {
 	private JMenuItem miPaste;
 	private String tempData = "";
 	private QuanLyKhachHangPanel pnlQLKH;
-
-	
 	
 	public QuanLyHoaDonPanel getPnlQLHD() {
 		return pnlQLHD;
@@ -92,6 +90,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	private JPanel previousPanel = null;
 	private JPanel menuTKDT;
 	private QuanLyNhanVienPanel pnlQLNV;
+	private ThongKeDoanhThuPanel pnlThongKeDoanhThu;
 
 	/**
 	 * Hàm khởi tạo
@@ -142,6 +141,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		pnlQLHD.setPopupMenu(popMenu);
 		pnlQLXM.setPopupMenu(popMenu);
 		pnlQLNV = new QuanLyNhanVienPanel();
+		pnlThongKeDoanhThu = new ThongKeDoanhThuPanel();
 
 	}
 
@@ -201,23 +201,17 @@ public class MainFrame extends JFrame implements ActionListener {
 				changePanel(pnlTrangChu);
 			}
 		});
-		menuQLNV.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				changePanel(pnlQLNV);
-			}
-		});
 		if(isManager) {
 			menuQLNV.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-
+					changePanel(pnlQLNV);
 				}
 			});
 			menuTKDT.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-
+					changePanel(pnlThongKeDoanhThu);
 				}
 			});
 		}
