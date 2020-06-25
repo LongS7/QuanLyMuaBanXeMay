@@ -264,5 +264,6 @@ public class QuanLyKhachHangPanel extends JPanel {
 			modelKhachHang.removeRow(0);
 		}
 	}
+	
 
 }
