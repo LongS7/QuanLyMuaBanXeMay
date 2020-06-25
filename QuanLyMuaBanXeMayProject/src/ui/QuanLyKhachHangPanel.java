@@ -72,7 +72,7 @@ public class QuanLyKhachHangPanel extends JPanel {
 		pnlTimKiem.add(txtTimKiem);
 		btnTimKiem = new JButton("Tìm kiếm");
 		pnlTimKiem.add(btnTimKiem);
-		
+
 		JPanel pnlTimTuyChon = new JPanel();
 		pnlTimTuyChon.setLayout(new FlowLayout(FlowLayout.CENTER, 100, 5));
 		radTimTheoMa = new JRadioButton("Tìm theo mã");
@@ -87,11 +87,10 @@ public class QuanLyKhachHangPanel extends JPanel {
 		pnlNorth.add(pnlTitle);
 		pnlNorth.add(pnlTimKiem);
 		pnlNorth.add(pnlTimTuyChon);
-		
 
 		// center
 		Box boxNorth = Box.createVerticalBox();
-		
+
 		pnlNorth.add(boxNorth);
 		/// line1
 		Box box1 = Box.createHorizontalBox();
@@ -135,7 +134,7 @@ public class QuanLyKhachHangPanel extends JPanel {
 		box3.add(lblEmail);
 		box3.add(Box.createHorizontalStrut(10));
 		txtEmail = new JTextField();
-		
+
 		box3.add(txtEmail);
 		box3.add(Box.createHorizontalStrut(10));
 		box3.add(lblSdt);
@@ -143,7 +142,6 @@ public class QuanLyKhachHangPanel extends JPanel {
 		txtSdt = new JTextField();
 		box3.add(txtSdt);
 		box3.add(Box.createHorizontalStrut(20));
-		
 
 		boxNorth.add(box1);
 		boxNorth.add(Box.createVerticalStrut(10));
@@ -153,7 +151,7 @@ public class QuanLyKhachHangPanel extends JPanel {
 
 		// south
 		Box boxCenter = Box.createHorizontalBox();
-		
+
 		String[] header = { "Mã khách hàng", "Tên khách hàng", "Địa chỉ", "Giới tính", "Số điện thoại", "Email" };
 		modelKhachHang = new DefaultTableModel(header, 0);
 		tableKhachHang = new JTable(modelKhachHang);
@@ -165,9 +163,9 @@ public class QuanLyKhachHangPanel extends JPanel {
 
 //		JPanel pnlRight = new JPanel();
 //		pnlRight.setLayout(new BoxLayout(pnlRight, BoxLayout.Y_AXIS));
-		
+
 		Box boxEast = Box.createVerticalBox();
-		
+
 		btnThem = new JButton("Thêm");
 		btnSua = new JButton("Sửa");
 		btnXoa = new JButton("Xóa");
@@ -233,33 +231,30 @@ public class QuanLyKhachHangPanel extends JPanel {
 	public void focus() {
 		txtTimKiem.requestFocus();
 	}
-	
+
 	public void loadDataToTable() {
 		deleteDataInTable();
 		try {
 			dsKH.getAll();
-			
+
 			ArrayList<KhachHang> list = dsKH.getDsKH();
-			
-			for(KhachHang item : list) {
-				String[] row = {item.getMaKH(), item.getHoTenKH(), item.getDiaChiKH(), item.isGioiTinhKH()? "Nam" : "Nữ",item.getSdtKH(),item.getEmailKH()};
-				
+
+			for (KhachHang item : list) {
+				String[] row = { item.getMaKH(), item.getHoTenKH(), item.getDiaChiKH(),
+						item.isGioiTinhKH() ? "Nam" : "Nữ", item.getSdtKH(), item.getEmailKH() };
+
 				modelKhachHang.addRow(row);
 			}
-			
+
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this, "Lỗi kết nối!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-			
+
 		}
 	}
+
 	private void deleteDataInTable() {
-		while(modelKhachHang.getRowCount() > 0) {
+		while (modelKhachHang.getRowCount() > 0) {
 			modelKhachHang.removeRow(0);
 		}
 	}
-<<<<<<< HEAD
-	
-
-=======
->>>>>>> bddb11c88d01f1b6a57b0aa04219617b700a31cf
 }
