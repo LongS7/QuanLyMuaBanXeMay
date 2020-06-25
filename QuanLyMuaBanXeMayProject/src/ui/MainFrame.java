@@ -70,36 +70,22 @@ public class MainFrame extends JFrame implements ActionListener {
 	private String tempData = "";
 	private QuanLyKhachHangPanel pnlQLKH;
 
+	
+	
 	public QuanLyHoaDonPanel getPnlQLHD() {
 		return pnlQLHD;
-	}
-
-	public void setPnlQLHD(QuanLyHoaDonPanel pnlQLHD) {
-		this.pnlQLHD = pnlQLHD;
 	}
 
 	public QuanLyXeMayPanel getPnlQLXM() {
 		return pnlQLXM;
 	}
 
-	public void setPnlQLXM(QuanLyXeMayPanel pnlQLXM) {
-		this.pnlQLXM = pnlQLXM;
-	}
-
-	public TrangChuPanel getPnlTrangChu() {
-		return pnlTrangChu;
-	}
-
-	public void setPnlTrangChu(TrangChuPanel pnlTrangChu) {
-		this.pnlTrangChu = pnlTrangChu;
-	}
-
 	public QuanLyKhachHangPanel getPnlQLKH() {
 		return pnlQLKH;
 	}
 
-	public void setPnlQLKH(QuanLyKhachHangPanel pnlQLKH) {
-		this.pnlQLKH = pnlQLKH;
+	public QuanLyNhanVienPanel getPnlQLNV() {
+		return pnlQLNV;
 	}
 
 	private JButton btnPrevious;
