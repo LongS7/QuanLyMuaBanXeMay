@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -14,62 +15,13 @@ import entity.NhanVien;
 import entity.XeMay;
 
 public class DanhSachCTHD {
-	private ArrayList<ChiTietHD> dsCTHD;
 
-	public ArrayList<ChiTietHD> getDsCTHD() {
-		return dsCTHD;
-	}
-	
-	public DanhSachCTHD() {
-		dsCTHD = new ArrayList<ChiTietHD>();
-	}
-	
-	public boolean themChiTietHD(ChiTietHD cthd) {
-		if(dsCTHD.contains(cthd))
-			return false;
-		dsCTHD.add(cthd);
-		return true;
-	}
-	
-	public boolean xoaChiTietHD(ChiTietHD cthd) {
-		if(dsCTHD.contains(cthd))
-			return false;
-		dsCTHD.remove(cthd);
-		return true;
-	}
-	
-	public boolean suaChiTietHD(ChiTietHD cthdCu, ChiTietHD cthdMoi) {
-		if(!dsCTHD.contains(cthdCu))
-			return false;
-		dsCTHD.set(dsCTHD.indexOf(cthdCu), cthdMoi);
-		return true;
-	}
-	
-	public ArrayList<ChiTietHD> layDanhSach() {
-		return dsCTHD;
-	}
-
-	@Override
-	public String toString() {
-		return "DanhSachChiTietHD [dsHD=" + dsCTHD + "]";
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	public XeMay getXeMay(String maXeMay) throws SQLException {
-		Connection con = null;
-		con = DatabaseConnection.getConnection();
+	private XeMay getXeMay(Connection con, String maXeMay) throws SQLException {
 		String query = "select * from XeMay where maXe = '" + maXeMay + "'";
 		Statement stmt = con.createStatement();
 		ResultSet result = stmt.executeQuery(query);
-		
-		
-		if(result.next()) {
+
+		if (result.next()) {
 			String maxe = result.getString(1);
 			String tenxe = result.getString(2);
 			String loaixe = result.getString(3);
@@ -79,115 +31,124 @@ public class DanhSachCTHD {
 			String nuocsx = result.getString(7);
 			int slt = result.getInt(8);
 			double dongia = result.getDouble(9);
-			
+
 			XeMay xm = new XeMay(maxe, tenxe, loaixe, hangxe, dungtich, mauxe, nuocsx, slt, dongia);
 			return xm;
 		} else
-			return null;	
+			return null;
 	}
-	
-	public HoaDon getHoaDon(String maHoaDon) throws SQLException{
-		Connection con = null;
-		con = DatabaseConnection.getConnection();
+
+	private HoaDon getHoaDon(Connection con, String maHoaDon) throws SQLException {
 		String query = "select * from HoaDon where maHD = '" + maHoaDon + "'";
 		Statement stmt = con.createStatement();
 		ResultSet result = stmt.executeQuery(query);
 		
-		KhachHang kh = null;
-		NhanVien nv = null;
-		
-		while(result.next()) {
-			String makh = result.getString(2);
-			String manv = result.getString(3);
-			kh = getKhachHang(makh);
-			nv = getNhanVien(manv);
-		}
-		
-		con.close();
-		
-		
-		con = DatabaseConnection.getConnection();
-		query = "select * from HoaDon where maHD = '" + maHoaDon + "'";
-		stmt = con.createStatement();
-		result = stmt.executeQuery(query);
-		
+		String maKH = "";
+		String maNV = "";
 		LocalDate ngayLap = null;
-		if(result.next()) {
+
+		if (result.next()) {
+			maKH = result.getString(2);
+			maNV = result.getString(3);
 			ngayLap = LocalDate.parse(result.getDate(4).toString());
 		}
+
+		NhanVien nv = getNhanVien(con, maNV);
+		KhachHang kh = getKhachHang(con, maKH);
+
 		HoaDon hd = new HoaDon(maHoaDon, nv, kh, ngayLap);
+		
 		return hd;
 	}
-	
-	public KhachHang getKhachHang(String maHoaDon) throws SQLException{
-		Connection conn = null;
-		conn = DatabaseConnection.getConnection();
-		String query = "select * from KhachHang";
-		Statement stmt = conn.createStatement();
-		ResultSet result = stmt.executeQuery(query);
-		
-		if(result.next()) {
-			String maKH =  result.getString("ma");
+
+	public KhachHang getKhachHang(Connection conn, String maKH) throws SQLException {
+		String query = "select * from KhachHang where ma = ?";
+		PreparedStatement stmt = conn.prepareStatement(query);
+		stmt.setString(1, maKH);
+		ResultSet result = stmt.executeQuery();
+
+		if (result.next()) {
 			String hoTen = result.getString("hoTen");
 			String diaChi = result.getString("diaChi");
 			boolean gioiTinh = result.getBoolean("gioiTinh");
 			String email = result.getString("email");
 			String sdt = result.getString("sdt");
-			
+
 			KhachHang kh = new KhachHang(maKH, hoTen, gioiTinh, diaChi, sdt, email);
 			return kh;
-		}else 
-		return null;
+		} else
+			return null;
 	}
-	
-	public NhanVien getNhanVien(String maNhanVien) throws SQLException{
-		 Connection conn = null ;
-	        conn = DatabaseConnection.getConnection();
-	        String query = "select * from NhanVien";
-	        Statement stmt = conn.createStatement();
-	        ResultSet result = stmt.executeQuery(query);
-	        
-	        if(result.next())
-	        {
-	            String maNV = result.getString("ma");
-	            String hoTen = result.getString("hoTen");
-	            boolean gioiTinh = result.getBoolean("gioiTinh");
-	            String diaChi = result.getString("diaChi");
-	            String sdt = result.getString("sdt");
-	            String email = result.getString("email");
-	            boolean quanLyVien = result.getBoolean("quanLyVien");
-	            
-	            NhanVien nv = new NhanVien(maNV,hoTen,gioiTinh,diaChi,sdt,email,quanLyVien);
-	            return nv;
-	        }else
-	        return null;
+
+	public NhanVien getNhanVien(Connection conn, String maNhanVien) throws SQLException {
+		String query = "select * from KhachHang where ma = ?";
+		PreparedStatement stmt = conn.prepareStatement(query);
+		stmt.setString(1, maNhanVien);
+		
+		ResultSet result = stmt.executeQuery();
+
+		if (result.next()) {
+			String maNV = result.getString("ma");
+			String hoTen = result.getString("hoTen");
+			boolean gioiTinh = result.getBoolean("gioiTinh");
+			String diaChi = result.getString("diaChi");
+			String sdt = result.getString("sdt");
+			String email = result.getString("email");
+			boolean quanLyVien = result.getBoolean("quanLyVien");
+
+			NhanVien nv = new NhanVien(maNV, hoTen, gioiTinh, diaChi, sdt, email, quanLyVien);
+			return nv;
+		} else
+			return null;
 	}
-	
-	
-	public ArrayList<ChiTietHD> getAll() throws SQLException{
-		ArrayList<ChiTietHD> dscthd = new ArrayList<ChiTietHD>();
+
+	public ArrayList<ChiTietHD> timTheoMaHD(String ma) throws SQLException {
+		ArrayList<ChiTietHD> dsCTHD = new ArrayList<ChiTietHD>();
 		Connection conn = null;
 
 		conn = DatabaseConnection.getConnection();
 
-		String query = "select * from ChiTietHD";
+		String query = "select * from ChiTietHD where maHD = ?";
 
-		Statement stmt = conn.createStatement();
-		ResultSet result = stmt.executeQuery(query);
-	
-		while(result.next()) {
-			String mahd = result.getString(1);
-			String maxm = result.getString(2);
-			int soluong = result.getInt(3);
-			double dongia = result.getDouble(4);
+		PreparedStatement pst = conn.prepareStatement(query);
+		pst.setString(1, ma);
+
+		ResultSet result = pst.executeQuery();
+		
+		ArrayList<ArrayList<Object>> list = new ArrayList<ArrayList<Object>>();
+
+		String maHD = "";
+		String maXM = "";
+		while (result.next()) {
+			ArrayList<Object> l = new ArrayList<Object>();
+			maHD = result.getString(1);
+			maXM = result.getString(2);
+			int soLuong = result.getInt(3);
+			double donGia = result.getDouble(4);
 			
-			HoaDon hd = getHoaDon(mahd);
-			XeMay xm = getXeMay(maxm);
-			ChiTietHD chitietHD = new ChiTietHD(soluong, dongia, hd, xm);
-			if(!dscthd.contains(chitietHD))
-				dscthd.add(chitietHD);
+			l.add(maHD);
+			l.add(maXM);
+			l.add(soLuong);
+			l.add(donGia);
+			
+			list.add(l);
 		}
+		
+		HoaDon hd = getHoaDon(conn, ma);
+		
+		for (ArrayList<Object> arrayList : list) {
+			ChiTietHD cthd = new ChiTietHD();
+			XeMay xm = getXeMay(conn, (String)arrayList.get(1));
+			
+			cthd.setHoaDon(hd);
+			cthd.setXeMay(xm);
+			cthd.setSoLuong((int)arrayList.get(2));
+			cthd.setDonGia((double)arrayList.get(3));
+			
+			dsCTHD.add(cthd);
+		}
+
 		conn.close();
-		return dscthd;
+		return dsCTHD;
 	}
 }

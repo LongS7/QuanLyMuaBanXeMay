@@ -13,7 +13,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.SQLException;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -175,7 +174,6 @@ public class MainFrame extends JFrame implements ActionListener {
 			public void mouseClicked(MouseEvent e) {
 				changePanel(pnlQLHD);
 				pnlQLHD.loadAllDataToTable();
-				pnlQLHD.loadAllDataToChiTietHDTable();
 			}
 		});
 		menuQLXM.addMouseListener(new MouseAdapter() {
@@ -196,7 +194,7 @@ public class MainFrame extends JFrame implements ActionListener {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				changePanel(pnlProfile);
-				pnlProfile.LoadDataFromDatabaseToPanel();
+				pnlProfile.loadDataFromDatabaseToPanel();
 			}
 		});
 		menuTrangChu.addMouseListener(new MouseAdapter() {
