@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -31,6 +32,8 @@ import javax.swing.table.DefaultTableModel;
 
 import dao.DanhSachCTHD;
 import dao.DanhSachHoaDon;
+import dao.DanhSachKhachHang;
+import dao.DanhSachNhanVien;
 import dao.DatabaseConnection;
 import entity.ChiTietHD;
 import entity.HoaDon;
@@ -93,9 +96,9 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			modelHoaDon.removeRow(0);
 		}
 	}
-	
+
 	private void deleteDataInTableCTHD() {
-		while(modelCTHD.getRowCount() > 0) {
+		while (modelCTHD.getRowCount() > 0) {
 			modelCTHD.removeRow(0);
 		}
 	}
@@ -118,22 +121,22 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			return;
 		}
 	}
-	
+
 	public void loadDataToChiTietHDTable(String ma) {
 		try {
-			
+
 			deleteDataInTableCTHD();
-			
+
 			ArrayList<ChiTietHD> list = dsCTHD.timTheoMaHD(ma);
-			
+
 			for (ChiTietHD item : list) {
 				XeMay xm = item.getXeMay();
-				modelCTHD.addRow(new Object[] {
-						xm.getMaXe(), item.getSoLuong(), item.getDonGia(), item.getSoLuong()*item.getDonGia()
-				});
+				modelCTHD.addRow(new Object[] { xm.getMaXe(), item.getSoLuong(),
+						NumberFormat.getInstance().format(item.getDonGia()),
+						NumberFormat.getInstance().format(item.getSoLuong() * item.getDonGia()) });
 			}
 		} catch (SQLException e) {
-			//JOptionPane.showMessageDialog(this, "Lỗi kết nối!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Lỗi trong khi truy xuất dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
 	}
@@ -196,17 +199,55 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			xoaRong();
 		if (o.equals(btnTimKiem))
 			timKiem();
+		if (o.equals(btnSuaHD))
+			suaHoaDon();
 	}
-	
+
+	private void suaHoaDon() {
+		if (!isValidData())
+			return;
+		String maHD = txtMaHD.getText().trim();
+		String maKH = txtMaKH.getText().trim();
+		String maNV = txtMaNV.getText().trim();
+		String ngayLap = txtNgayLap.getText().trim();
+
+		try {
+			NhanVien nv = new DanhSachNhanVien().timTheoMaNhanVien(maNV);
+			if (nv == null) {
+				JOptionPane.showMessageDialog(this, "Mã nhân viên không tồn tại!", "Lỗi", JOptionPane.WARNING_MESSAGE);
+				txtMaNV.requestFocus();
+				return;
+			}
+			KhachHang kh = new DanhSachKhachHang().timKHTheoMa(maKH);
+			if (kh == null) {
+				JOptionPane.showMessageDialog(this, "Mã khách hàng không tồn tại!", "Lỗi", JOptionPane.WARNING_MESSAGE);
+				txtMaKH.requestFocus();
+				return;
+			}
+			HoaDon hd = new HoaDon(maHD, nv, kh, LocalDate.parse(ngayLap));
+			if (dsHD.suaHoaDon(maHD, hd)) {
+				JOptionPane.showMessageDialog(this, "Sửa hóa đơn thành công!", "Thông báo",
+						JOptionPane.INFORMATION_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(this, "Không thể sửa hóa đơn!", "Thông báo",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "Lỗi khi tìm kiếm dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+	}
+
 	private void updateCTHDTable() {
 		int selected = tableHoaDon.getSelectedRow();
 		if (selected == -1 || tableHoaDon.getSelectedRows().length > 1) {
 			deleteDataInTableCTHD();
 			return;
 		}
-		
+
 		String maHD = (String) tableHoaDon.getValueAt(selected, 0);
-		
+
 		loadDataToChiTietHDTable(maHD);
 	}
 
@@ -239,7 +280,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 				JOptionPane.showMessageDialog(this, "Lỗi khi tìm kiếm dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
 			}
 		}
-		
+
 		loadDataToTable(list);
 	}
 
@@ -314,7 +355,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 				JOptionPane.INFORMATION_MESSAGE);
 	}
 
-	private void themHoaDon() {
+	private boolean isValidData() {
 		String maHD = txtMaHD.getText().trim();
 
 		if (maHD.isEmpty() || !maHD.matches("HD\\d{2,3}")) {
@@ -322,7 +363,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 					"Mã hóa đơn không được bỏ trống và phải bắt đầu bằng 'HD', theo sau là 2 đến 3 kí tự số!",
 					"Cảnh báo", JOptionPane.WARNING_MESSAGE);
 			txtMaHD.requestFocus();
-			return;
+			return false;
 		}
 
 		String maKH = txtMaKH.getText().trim();
@@ -332,8 +373,25 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 					"Mã khách hàng không được bỏ trống và phải bắt đầu bằng 'KH', theo sau là 2 đến 5 kí tự số!",
 					"Cảnh báo", JOptionPane.WARNING_MESSAGE);
 			txtMaKH.requestFocus();
-			return;
+			return false;
 		}
+
+		String ngayLap = txtNgayLap.getText().trim();
+		if (!ngayLap.matches("\\d{4}-\\d{1,2}-\\d{1,2}")) {
+			JOptionPane.showMessageDialog(this, "Ngày lập phải theo đinh dạng YYYY-MM-DD!", "Cảnh báo",
+					JOptionPane.WARNING_MESSAGE);
+			txtNgayLap.requestFocus();
+			return false;
+		}
+		return true;
+	}
+
+	private void themHoaDon() {
+		if (!isValidData())
+			return;
+
+		String maHD = txtMaHD.getText().trim();
+		String maKH = txtMaKH.getText().trim();
 
 		NhanVien nv = new NhanVien(DatabaseConnection.userName.toUpperCase());
 		KhachHang kh = new KhachHang(maKH);
@@ -410,7 +468,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 	private JTextField addInputItemTo(Box box, String name) {
 		JLabel label = new JLabel(name);
 		label.setFont(NORMAL_FONT);
-		if(name != "Mã xe máy" && name != "Số lượng" && name != "Đơn giá")
+		if (name != "Mã xe máy" && name != "Số lượng" && name != "Đơn giá")
 			label.setPreferredSize(new Dimension(90, 25));
 		JTextField text = new JTextField();
 		text.setFont(NORMAL_FONT);
@@ -510,7 +568,6 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		txtMaNV.setEditable(false);
 		txtMaKH = addInputItemTo(boxLeft, "Mã khách hàng");
 		txtNgayLap = addInputItemTo(boxRight, "Ngày lập");
-		txtNgayLap.setEditable(false);
 
 		JLabel lblChiTietHD = new JLabel("Chi tiết hóa đơn");
 		lblChiTietHD.setFont(NORMAL_FONT);

@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -62,16 +63,31 @@ public class DanhSachHoaDon {
 		return list;
 	}
 
+	/***
+	 * Kiểm tra hóa đơn có tồn tại trong dữ liệu hay chưa
+	 * @param conn
+	 * @param maHD
+	 * @return true nếu đã tồn tại, false nếu chưa tôn tại
+	 * @throws SQLException
+	 */
+	private boolean kiemTraHD(Connection conn, String maHD) throws SQLException {
+		String query = "select * from HoaDon where maHD = ?";
+		PreparedStatement st = conn.prepareStatement(query);
+		st.setString(1, maHD);
+		if (st.executeQuery().next())
+			return true;
+		
+		return false;
+	}
+	
 	public String themHoaDon(HoaDon hd) throws SQLException {
 		Connection conn = DatabaseConnection.getConnection();
 
-		String query = "select * from HoaDon where maHD = ?";
-		PreparedStatement st = conn.prepareStatement(query);
-		st.setString(1, hd.getMaHD());
-		if (st.executeQuery().next())
+		if(kiemTraHD(conn, hd.getMaHD()))
 			return "Mã hóa đơn bị trùng!";
 
-		query = "select * from KhachHang where ma = ?";
+		String query = "select * from KhachHang where ma = ?";
+		PreparedStatement st = conn.prepareStatement(query);
 		st = conn.prepareStatement(query);
 		st.setString(1, hd.getKhachHang().getMaKH());
 
@@ -83,10 +99,12 @@ public class DanhSachHoaDon {
 		st.setString(1, hd.getMaHD());
 		st.setString(2, hd.getKhachHang().getMaKH());
 		st.setString(3, hd.getNhanVien().getMaNV());
-		st.setDate(4, java.sql.Date.valueOf(hd.getNgayLap()));
+		st.setDate(4, Date.valueOf(hd.getNgayLap()));
 
 		st.execute();
 
+		conn.close();
+		
 		return null;
 	}
 
@@ -103,11 +121,30 @@ public class DanhSachHoaDon {
 		st = conn.prepareStatement(query);
 		st.setString(1, maHD);
 		st.execute();
+		
+		conn.close();
+		
 		return true;
 	}
 
-	public boolean suaHoaDon(HoaDon hdCu, HoaDon hdMoi) {
-
+	public boolean suaHoaDon(String maHDCu, HoaDon hdMoi) throws SQLException {
+		Connection conn = DatabaseConnection.getConnection();
+		
+		if(!kiemTraHD(conn, maHDCu))
+			return false;
+		
+		String query = "update HoaDon set maKH = ?, maNV = ?, ngayLap = ? where maHD = ?";
+		
+		PreparedStatement pst = conn.prepareStatement(query);
+		pst.setString(1, hdMoi.getKhachHang().getMaKH());
+		pst.setString(2, hdMoi.getNhanVien().getMaNV());
+		pst.setDate(3, Date.valueOf(hdMoi.getNgayLap()));
+		pst.setString(4, maHDCu);
+		
+		pst.execute();
+		
+		conn.close();
+		
 		return true;
 	}
 
