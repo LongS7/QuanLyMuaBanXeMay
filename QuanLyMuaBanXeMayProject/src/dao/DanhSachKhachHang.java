@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import entity.HoaDon;
 import entity.KhachHang;
+import entity.XeMay;
 
 public class DanhSachKhachHang {
 	private ArrayList<KhachHang> dsKH;
@@ -73,8 +74,27 @@ public class DanhSachKhachHang {
 		return false;
 	}
 	
+	public KhachHang timKHTheoMa(String maKH) throws SQLException {
+		Connection con = DatabaseConnection.getConnection();
+		
+		String query = "select * from KhachHang where ma = '" + maKH + "'";
+		Statement stmt = con.createStatement();
+		ResultSet result = stmt.executeQuery(query);
+
+		if (result.next()) {
+			String ma =  result.getString("ma");
+			String hoTen = result.getString("hoTen");
+			String diaChi = result.getString("diaChi");
+			boolean gioiTinh = result.getBoolean("gioiTinh");
+			String email = result.getString("email");
+			String sdt = result.getString("sdt");
+			
+			KhachHang kh = new KhachHang(ma, hoTen, gioiTinh, diaChi, sdt, email);
+			return kh;
+		} else
+			return null;
+	}
 	
-	// sửa
 	public boolean suaKhachHang(KhachHang khCu, KhachHang khMoi) {
 		if (!dsKH.contains(khCu))
 			return false;
