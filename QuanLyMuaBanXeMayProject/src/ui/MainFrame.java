@@ -288,6 +288,14 @@ public class MainFrame extends JFrame implements ActionListener {
 			menuQLXM.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuQLXM;
 		}
+		if (panel.equals(pnlQLNV)) {
+			menuQLNV.setBackground(ACTIVE_COLOR);
+			selectedMenuItem = menuQLNV;
+		}
+		if (panel.equals(pnlThongKeDoanhThu)) {
+			menuTKDT.setBackground(ACTIVE_COLOR);
+			selectedMenuItem = menuTKDT;
+		}
 
 	}
 
