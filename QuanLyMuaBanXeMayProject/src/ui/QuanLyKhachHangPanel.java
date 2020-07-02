@@ -5,8 +5,15 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -18,6 +25,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -30,8 +38,9 @@ import javax.swing.table.DefaultTableModel;
 import dao.DanhSachKhachHang;
 import entity.HoaDon;
 import entity.KhachHang;
+import entity.XeMay;
 
-public class QuanLyKhachHangPanel extends JPanel {
+public class QuanLyKhachHangPanel extends JPanel implements ActionListener,MouseListener{
 	/**
 	 * 
 	 */
@@ -53,8 +62,9 @@ public class QuanLyKhachHangPanel extends JPanel {
 	private JTable tableKhachHang;
 	private DefaultTableModel modelKhachHang;
 	private JComboBox<String> jcbGioiTinh;
-	private DanhSachKhachHang dsKH = new DanhSachKhachHang();
+
 	private final Font NORMAL_FONT = new Font("Arial", Font.PLAIN, 13);
+	private DanhSachKhachHang dsKH;
 
 	public QuanLyKhachHangPanel() {
 		setLookAndFeel();
@@ -204,6 +214,14 @@ public class QuanLyKhachHangPanel extends JPanel {
 		this.add(boxCenter, BorderLayout.CENTER);
 		this.add(boxEast, BorderLayout.EAST);
 		this.setPreferredSize(new Dimension(500, 600));
+		
+		dsKH = new DanhSachKhachHang();
+		btnThem.addActionListener(this);
+		btnXoa.addActionListener(this);
+		btnSua.addActionListener(this);
+		btnQuayLai.addActionListener(this);
+		btnTimKiem.addActionListener(this);
+		tableKhachHang.addMouseListener(this);
 
 	}
 
@@ -233,15 +251,16 @@ public class QuanLyKhachHangPanel extends JPanel {
 	}
 
 	public void loadDataToTable() {
-		deleteDataInTable();
+		
 		try {
+			deleteDataInTable();
 			dsKH.getAll();
 
-			ArrayList<KhachHang> list = dsKH.getDsKH();
+			List<KhachHang> list = dsKH.getAll();
 
 			for (KhachHang item : list) {
 				String[] row = { item.getMaKH(), item.getHoTenKH(), item.getDiaChiKH(),
-						item.isGioiTinhKH() ? "Nam" : "Nữ", item.getSdtKH(), item.getEmailKH() };
+						item.isGioiTinhKH() ? "Nam" : "Nữ", item.getSdtKH(), item.getEmailKH()};
 
 				modelKhachHang.addRow(row);
 			}
@@ -256,5 +275,239 @@ public class QuanLyKhachHangPanel extends JPanel {
 		while (modelKhachHang.getRowCount() > 0) {
 			modelKhachHang.removeRow(0);
 		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object o = e.getSource();
+		try {
+			if(o.equals(btnThem))
+				themKhachHang();
+			else if(o.equals(btnXoa))
+				xoaKhachHang();
+			else if(o.equals(btnSua))
+				suaKhachHang();
+			else if(o.equals(btnTimKiem) && radTimTheoMa.isSelected()) {
+				timTheoMa();
+			}
+			else if(o.equals(btnTimKiem) && radTimTheoTen.isSelected())
+				timTheoTen();
+				
+		}catch(Exception ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage());
+		}
+		
+	}
+	
+	
+	private void timTheoTen() throws SQLException {
+		if(txtTimKiem.getText().trim().equals(""))
+			loadDataToTable();
+		else {
+			List<KhachHang> dskh = new ArrayList<KhachHang>();
+			dskh = dsKH.timTheoTenKhachHang(txtTimKiem.getText().trim());
+			if(dskh == null){
+				JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng");
+			}
+			else {
+				deleteDataInTable();
+				for(KhachHang kh : dskh) {
+					modelKhachHang.addRow(new Object[] {kh.getMaKH(),kh.getHoTenKH(),
+							kh.getDiaChiKH(),kh.isGioiTinhKH() ? "Nam" : "Nữ",kh.getSdtKH(),kh.getEmailKH()});
+				}
+			}
+		}
+		
+	}
+
+	private void timTheoMa() throws SQLException {
+		if(txtTimKiem.getText().trim().equals(""))
+			loadDataToTable();
+		else {
+			KhachHang kh = new KhachHang();
+			kh = dsKH.timTheoMa(txtTimKiem.getText().trim());
+			if(kh == null)
+				JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng!");
+			else {
+				deleteDataInTable();
+				modelKhachHang.addRow(new Object[] {kh.getMaKH(),kh.getHoTenKH(),
+						kh.getDiaChiKH(),kh.isGioiTinhKH() ? "Nam" : "Nữ",kh.getSdtKH(),kh.getEmailKH()});
+			}
+		}
+		
+	}
+
+	private void suaKhachHang() throws SQLException{
+		int row = tableKhachHang.getSelectedRow();
+		if(row == - 1)
+			JOptionPane.showMessageDialog(this, "Chọn khách hàng cần sửa");
+		else {
+			String ma = txtMa.getText().trim();
+			String hoTen = txtTen.getText().trim();
+			boolean gioiTinh = jcbGioiTinh.getSelectedItem().toString().equals("Nam") ? true : false;
+			String diaChi = txtDiaChi.getText().trim();
+			String sdt = txtSdt.getText().trim();
+			String email = txtEmail.getText().trim();
+			KhachHang kh = new KhachHang(ma, hoTen, gioiTinh, diaChi, sdt, email);
+			if(!kh.getMaKH().equalsIgnoreCase(tableKhachHang.getValueAt(row, 0).toString()))
+				JOptionPane.showMessageDialog(this, "Không được sửa mã xe máy!!");
+			else {
+				if(dsKH.suaTTKhachHang(kh)) {
+					loadDataToTable();
+					JOptionPane.showMessageDialog(this, "Sửa thành công");
+				}
+				else
+					JOptionPane.showMessageDialog(this, "Sửa không thành công");
+			}
+			
+			
+		}
+		
+	}
+
+	private void xoaKhachHang() throws SQLException {
+		int row = tableKhachHang.getSelectedRow();
+		if(row == -1)
+			JOptionPane.showMessageDialog(this, "Phải chọn khách hàng cần xóa");
+		else {
+			int replay = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa dòng này ?",
+					"Cảnh báo",JOptionPane.YES_NO_OPTION);
+			if(replay == JOptionPane.YES_OPTION) {
+				List<KhachHang> dskh = dsKH.getAll();
+				int rows = tableKhachHang.getSelectedRow();
+				if(rows >= 0 || rows < dskh.size()) {
+					KhachHang kh = dskh.get(rows);
+					if(dsKH.xoaKhachHang(kh)) {
+						loadDataToTable();
+						xoaTrang();
+						JOptionPane.showMessageDialog(this, "Xóa thành công");
+					}else
+						JOptionPane.showMessageDialog(this, "Xóa không thành công");
+				}
+			}
+		}
+		
+	}
+
+	private void themKhachHang() throws SQLException { //////////////
+		if(validData()) {
+			String ma = txtMa.getText().trim();
+			String hoTen = txtTen.getText().trim();
+			boolean gioiTinh = jcbGioiTinh.getSelectedItem().toString().equals("Nam") ? true : false;
+			String diaChi = txtDiaChi.getText().trim();
+			String sdt = txtSdt.getText().trim();
+			String email = txtEmail.getText().trim();
+			
+			KhachHang kh = new KhachHang(ma, hoTen, gioiTinh, diaChi, sdt, email);
+			if(dsKH.themKhachHang(kh)) {
+				loadDataToTable();
+				xoaTrang();
+				JOptionPane.showMessageDialog(this, "Thêm thành công");
+			}
+			else
+				JOptionPane.showMessageDialog(this, "Thêm thất bại");
+		}
+		
+	}
+
+	private void xoaTrang() {
+		txtMa.setText("");
+		txtTen.setText("");
+		txtDiaChi.setText("");
+		jcbGioiTinh.setSelectedItem("Nam");
+		txtEmail.setText("");
+		txtSdt.setText("");
+		
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		int row = tableKhachHang.getSelectedRow();
+		txtMa.setText(tableKhachHang.getValueAt(row, 0).toString());
+		txtTen.setText(tableKhachHang.getValueAt(row, 1).toString());
+		txtDiaChi.setText(tableKhachHang.getValueAt(row, 2).toString());
+		jcbGioiTinh.setSelectedItem(tableKhachHang.getValueAt(row, 3).toString().equals("Nam") ? true : false);
+		
+		Object sdt = tableKhachHang.getValueAt(row, 4);
+		Object email = tableKhachHang.getValueAt(row, 5);
+		if(sdt != null)
+			txtSdt.setText(sdt.toString());
+		if(email != null)
+			txtEmail.setText(email.toString());
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private boolean validData() {
+		String ma = txtMa.getText().trim();
+		String hoTen = txtTen.getText().trim();
+		String diaChi = txtDiaChi.getText().trim();
+		String std = txtSdt.getText().trim();
+		String email = txtEmail.getText().trim();
+	
+		
+		Pattern pattern = Pattern.compile("KH[0-9]{2,5}", Pattern.CASE_INSENSITIVE);
+		Matcher matcher = pattern.matcher(ma);
+		boolean match_ma = matcher.matches();
+		if(ma.length() < 1) {
+			JOptionPane.showMessageDialog(this, "Mã khách hàng không được để trống");
+			return false;
+		}
+		else if(!match_ma){
+			JOptionPane.showMessageDialog(this, "Mã khách hàng không đúng định dạng");
+			return false;
+		}
+		else if(hoTen.length() < 1) {
+			JOptionPane.showMessageDialog(this, "Tên không được để trống");
+			return false;
+		}
+		else if(!hoTen.matches("[a-zA-Z ]+")) {
+			JOptionPane.showMessageDialog(this, "Tên không chứa số và kí tự đặc biệt");
+			return false;
+		}
+		else if(diaChi.length() < 1) {
+			JOptionPane.showMessageDialog(this, "Địa chỉ không được để trống");
+			return false;
+		}
+		else if(!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+			JOptionPane.showMessageDialog(this, "Email không đúng định dạng");
+			return false;
+		}
+		else if(!std.matches("0[0-9]{9}")) {
+			JOptionPane.showMessageDialog(this, "Số điện thoại không đúng");
+			return false;
+		}
+		
+		return true;
+	}
+	public void setPopupMenu(JPopupMenu popup) {
+		txtMa.setComponentPopupMenu(popup);
+		txtTen.setComponentPopupMenu(popup);
+		txtDiaChi.setComponentPopupMenu(popup);
+		txtEmail.setComponentPopupMenu(popup);
+		txtSdt.setComponentPopupMenu(popup);
 	}
 }

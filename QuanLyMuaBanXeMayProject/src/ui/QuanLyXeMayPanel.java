@@ -236,6 +236,7 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 				timTheoHangXe();
 			else if(o.equals(btnSearch) && radTimTheoMa.isSelected())
 				timTheoMa();
+			
 			else
 				xoaTrang();
 		}catch (Exception ex) {
@@ -314,7 +315,6 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 			defaultTable.removeRow(0);
 		}
 	}
-	
 	public void setPopupMenu(JPopupMenu popup) {
 		txtMaXe.setComponentPopupMenu(popup);
 		txtTenXe.setComponentPopupMenu(popup);
