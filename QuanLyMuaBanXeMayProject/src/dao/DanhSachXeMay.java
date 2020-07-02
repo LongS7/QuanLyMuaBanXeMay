@@ -66,7 +66,7 @@ public class DanhSachXeMay {
 			if (n > 0)
 				return true;
 		} catch (SQLException e) {
-			throw new SQLException(e);
+			JOptionPane.showMessageDialog(null, "Trùng mã xe!!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 		}
 		return false;
 	}
@@ -133,62 +133,56 @@ public class DanhSachXeMay {
 
 	public List<XeMay> timTheoDungTich(int dungtich) throws SQLException {
 		List<XeMay> dsxm = new ArrayList<XeMay>();
-		try {
-			String query = "select * from XeMay where dungTich <= " + dungtich;
-			Statement stmt = con.createStatement();
-			ResultSet result = stmt.executeQuery(query);
+		
+		String query = "select * from XeMay where dungTich <= " + dungtich;
+		Statement stmt = con.createStatement();
+		ResultSet result = stmt.executeQuery(query);
 
-			while (result.next()) {
-				String maxe = result.getString("maXe");
-				String tenxe = result.getString("tenXe");
-				String loaixe = result.getString("loaiXe");
-				String hangxe = result.getString("hangXe");
-				int dt = Integer.parseInt(result.getString("dungTich"));
-				String mauxe = result.getString("mauXe");
-				String nuocsx = result.getString("nuocSX");
-				int soluongton = Integer.parseInt(result.getString("soLuongTon"));
-				double dongia = result.getDouble("donGia");
+		while (result.next()) {
+			String maxe = result.getString("maXe");
+			String tenxe = result.getString("tenXe");
+			String loaixe = result.getString("loaiXe");
+			String hangxe = result.getString("hangXe");
+			int dt = Integer.parseInt(result.getString("dungTich"));
+			String mauxe = result.getString("mauXe");
+			String nuocsx = result.getString("nuocSX");
+			int soluongton = Integer.parseInt(result.getString("soLuongTon"));
+			double dongia = result.getDouble("donGia");
 
-				XeMay xm = new XeMay(maxe, tenxe, loaixe, hangxe, dt, mauxe, nuocsx, soluongton, dongia);
-				dsxm.add(xm);
-			}
-			if (dsxm.size() > 0)
-				return dsxm;
-			else
-				return null;
-		} catch (SQLException e) {
-			throw new SQLException(e);
+			XeMay xm = new XeMay(maxe, tenxe, loaixe, hangxe, dt, mauxe, nuocsx, soluongton, dongia);
+			dsxm.add(xm);
 		}
+		if (dsxm.size() > 0)
+			return dsxm;
+		else
+			return null;
 	}
 
 	public List<XeMay> timTheoHangXe(String HangXe) throws SQLException {
 		List<XeMay> dsxm = new ArrayList<XeMay>();
-		try {
-			String query = "select * from XeMay where hangXe = '" + HangXe + "'";
-			Statement stmt = con.createStatement();
-			ResultSet result = stmt.executeQuery(query);
+		
+		String query = "select * from XeMay where hangXe = '" + HangXe + "'";
+		Statement stmt = con.createStatement();
+		ResultSet result = stmt.executeQuery(query);
 
-			while (result.next()) {
-				String maxe = result.getString("maXe");
-				String tenxe = result.getString("tenXe");
-				String loaixe = result.getString("loaiXe");
-				String hangxe = result.getString("hangXe");
-				int dungtich = Integer.parseInt(result.getString("dungTich"));
-				String mauxe = result.getString("mauXe");
-				String nuocsx = result.getString("nuocSX");
-				int soluongton = Integer.parseInt(result.getString("soLuongTon"));
-				double dongia = result.getDouble("donGia");
+		while (result.next()) {
+			String maxe = result.getString("maXe");
+			String tenxe = result.getString("tenXe");
+			String loaixe = result.getString("loaiXe");
+			String hangxe = result.getString("hangXe");
+			int dungtich = Integer.parseInt(result.getString("dungTich"));
+			String mauxe = result.getString("mauXe");
+			String nuocsx = result.getString("nuocSX");
+			int soluongton = Integer.parseInt(result.getString("soLuongTon"));
+			double dongia = result.getDouble("donGia");
 
-				XeMay xm = new XeMay(maxe, tenxe, loaixe, hangxe, dungtich, mauxe, nuocsx, soluongton, dongia);
-				dsxm.add(xm);
-			}
-			if (dsxm.size() > 0)
-				return dsxm;
-			else
-				return null;
-		} catch (SQLException e) {
-			throw new SQLException(e);
+			XeMay xm = new XeMay(maxe, tenxe, loaixe, hangxe, dungtich, mauxe, nuocsx, soluongton, dongia);
+			dsxm.add(xm);
 		}
+		if (dsxm.size() > 0)
+			return dsxm;
+		else
+			return null;
 	}
 	
 	

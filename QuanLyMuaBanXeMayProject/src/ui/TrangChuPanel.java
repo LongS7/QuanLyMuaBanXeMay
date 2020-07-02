@@ -103,8 +103,8 @@ public class TrangChuPanel extends JPanel {
 		pnlQLKH = createPanel(pnlCenter, "Quản lý khách hàng", "Images/customers.png");
 		if(isManager)
 			pnlQLNV = createPanel(pnlCenter, "Quản lý nhân viên", "Images/employees.png");
-		pnlQLXM = createPanel(pnlCenter, "Quản lý xe máy", "Images/motobikes.png");
-		pnlQLHD = createPanel(pnlCenter, "Quản lý hóa đơn", "Images/orders.png");
+			pnlQLXM = createPanel(pnlCenter, "Quản lý xe máy", "Images/motobikes.png");
+			pnlQLHD = createPanel(pnlCenter, "Quản lý hóa đơn", "Images/orders.png");
 		if(isManager) {
 			createPanel(pnlCenter, "", "");
 			pnlTKDT = createPanel(pnlCenter, "Thống kê doanh thu", "Images/revenue.png");

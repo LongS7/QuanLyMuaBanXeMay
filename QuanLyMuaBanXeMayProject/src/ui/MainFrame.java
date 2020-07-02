@@ -271,6 +271,8 @@ public class MainFrame extends JFrame implements ActionListener {
 			pnlTrangChu.focus();
 		if (panel.equals(pnlQLHD))
 			pnlQLHD.focus();
+		if(panel.equals(pnlQLXM))
+			pnlQLXM.focus();
 		getCenter().revalidate();
 		getCenter().repaint();
 
@@ -280,6 +282,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		if (panel.equals(pnlQLKH)) {
 			menuQLKH.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuQLKH;
+			
 		}
 		if (panel.equals(pnlQLHD)) {
 			menuQLHD.setBackground(ACTIVE_COLOR);
@@ -288,6 +291,14 @@ public class MainFrame extends JFrame implements ActionListener {
 		if (panel.equals(pnlQLXM)) {
 			menuQLXM.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuQLXM;
+		}
+		if (panel.equals(pnlQLNV)) {
+			menuQLNV.setBackground(ACTIVE_COLOR);
+			selectedMenuItem = menuQLNV;
+		}
+		if (panel.equals(pnlThongKeDoanhThu)) {
+			menuTKDT.setBackground(ACTIVE_COLOR);
+			selectedMenuItem = menuTKDT;
 		}
 
 	}
