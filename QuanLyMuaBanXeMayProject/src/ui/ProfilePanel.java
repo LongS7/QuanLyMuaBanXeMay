@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.NumberFormat;
@@ -29,8 +32,9 @@ import entity.XeMay;
 import dao.QuanLyHoSo;
 
 
-public class ProfilePanel extends JPanel{
+public class ProfilePanel extends JPanel implements ActionListener{
 	
+	private static final long serialVersionUID = 1L;
 	private final Font HEADER_FONT = new Font("Times new roman", Font.BOLD, 20);
 	private final Font NORMAL_FONT = new Font("Arial", Font.PLAIN, 13);
 	private final Color HEADER_COLOR = new Color(0x1E1346);
@@ -51,6 +55,9 @@ public class ProfilePanel extends JPanel{
 		setLookAndFeel();
 		
 		addNorth();
+		
+		btnChinhSua.addActionListener(this);
+		btnLuu.addActionListener(this);
 	}
 	private void addNorth(){
 		Dimension dLabel = new Dimension(90,25);
@@ -116,7 +123,9 @@ public class ProfilePanel extends JPanel{
 		txtHoTen = addInputItemTo(boxRight, "Họ tên");
 		txtHoTen.setEditable(false);
 		boxLeft.add(boxGioiTinh);
+		ckbGioiTinh.setEnabled(false);
 		boxRight.add(boxChucVu);
+		ckbChucVu.setEnabled(false);
 		txtSoDienThoai = addInputItemTo(boxLeft, "Số điện thoại");
 		txtSoDienThoai.setEditable(false);
 		txtEmail = addInputItemTo(boxRight, "Email");
@@ -199,5 +208,32 @@ public class ProfilePanel extends JPanel{
 			JOptionPane.showMessageDialog(this, "Lỗi kết nối!", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
 		
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object o = e.getSource();
+		if(o.equals(btnChinhSua))
+			chinhSua();
+		else if(o.equals(btnLuu))
+			luu();
+	}
+	private void chinhSua() {
+		txtHoTen.setEditable(true);
+		txtDiaChi.setEditable(true);	
+		txtSoDienThoai.setEditable(true);	
+		txtEmail.setEditable(true);	
+		ckbGioiTinh.setEnabled(true);
+		ckbChucVu.setEnabled(true);
+	}
+	
+	private void luu() {
+		
+		
+		txtHoTen.setEditable(false);
+		txtDiaChi.setEditable(false);	
+		txtSoDienThoai.setEditable(false);	
+		txtEmail.setEditable(false);	
+		ckbGioiTinh.setEnabled(false);
+		ckbChucVu.setEnabled(false);
 	}
 }
