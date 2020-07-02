@@ -31,6 +31,10 @@ public class NhanVien {
         this.quanLyVien = quanLyVien;
     }
 
+    public NhanVien(String trim, String trim0) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     public String getMaNV() {
         return maNV;
     }

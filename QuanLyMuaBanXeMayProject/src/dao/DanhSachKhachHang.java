@@ -8,7 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import entity.HoaDon;
-import entity.KhachHang;
+import entity.KhachHang; 
 import entity.XeMay;
 
 public class DanhSachKhachHang {

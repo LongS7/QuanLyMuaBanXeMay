@@ -6,7 +6,6 @@
 package ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -16,7 +15,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -27,28 +25,51 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
 
-public class QuanLyNhanVienPanel extends JPanel {
+import entity.NhanVien;
+import dao.DanhSachNhanVien;
+import entity.XeMay;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.swing.JOptionPane;
+public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ItemListener,ActionListener{
 	private JButton btnThem, btnXoa, btnSua, btnQuayLai, btnTim;
 	private Font NORMAL_FONT;
 	private JTable tableNhanVien;
 	private DefaultTableModel tableModel;
 	private JLabel lblHeader, lblMaNV, lblHoTen, lblGioiTinh, lblDiaChi, lblSDT, lblEmail, lblQuanLyVien;
 	private JTextField txtTim, txtMaNV, txtHoTen, txtDiaChi, txtSDT, txtEmail;
-	private JCheckBox cbGioiTinh, cbQuanLyVien;
+	private JCheckBox cbQuanLyVien;
 	private JComboBox<String> jcbGioiTinh;
 	private JRadioButton radTimTheoMa;
 	private JRadioButton radTimTheoTen;
 	private ButtonGroup buttonGroup;
+        private DanhSachNhanVien dsNV = new DanhSachNhanVien();
 
 	public QuanLyNhanVienPanel() {
 		setPreferredSize(new Dimension(500, 600));
 		setLayout(new BorderLayout());
-		setLookAndFeel();
-		addNorth();
+		setLookAndFeel();       
+                addNorth();
 		addCenter();
 		addEast();
-		focus();
-	}
+                loadDataToTable();
+                dsNV = new DanhSachNhanVien();
+                tableNhanVien.addMouseListener(this);
+                cbQuanLyVien.addItemListener(this);
+       
+                btnSua.addActionListener(this);
+                btnXoa.addActionListener(this);
+                btnThem.addActionListener(this);
+        }
 
 	private void addNorth() {
 		Box boxNorth = Box.createVerticalBox();
@@ -144,7 +165,7 @@ public class QuanLyNhanVienPanel extends JPanel {
 	}
 
 	private void addCenter() {
-		String[] headers = { "Mã NV", "Họ tên NV", "Địa chỉ", "Giới tính", "SDT", "Email", "Quản lý viên" };
+		String[] headers = { "Mã NV", "Họ tên NV", "Giới tính", "Địa chỉ", "SDT", "Email", "Chức vụ" };
 		tableModel = new DefaultTableModel(headers, 0);
 		tableNhanVien = new JTable(tableModel);
 		JScrollPane sp = new JScrollPane(tableNhanVien);
@@ -153,7 +174,17 @@ public class QuanLyNhanVienPanel extends JPanel {
 		add(sp, BorderLayout.CENTER);
 
 	}
-
+      
+        
+        private void xoaTrang() {
+		txtMaNV.setText("");
+		txtHoTen.setText("");
+		jcbGioiTinh.setSelectedItem("");
+		txtDiaChi.setText("");
+		txtSDT.setText("");
+		cbQuanLyVien.isSelected();
+		
+	}
 	private void addEast() {
 		Box boxEast = Box.createVerticalBox();
 		this.add(boxEast, BorderLayout.EAST);
@@ -201,5 +232,232 @@ public class QuanLyNhanVienPanel extends JPanel {
 	public void focus() {
 		txtTim.requestFocus();
 	}
+        
+        public void loadDataToTable()
+        {
+            deleDataInTable();
+            try
+            {
+                dsNV.getAll();
+                ArrayList<NhanVien> list = dsNV.getDsNV();
+                
+                for (NhanVien nhanVien : list) {
+                    String[] row = {nhanVien.getMaNV(),nhanVien.getHoTenNV(),nhanVien.isGioiTinh()?"Nam":"Nữ",nhanVien.getDiaChi(),nhanVien.getSDT()
+                            ,nhanVien.getEmail(),nhanVien.isQuanLyVien()?"Quản lý viên":"Nhân viên bán hàng"};
+                       tableModel.addRow(row);
+                }
+            }catch(SQLException e)
+            {
+                JOptionPane.showMessageDialog(this, "Lỗi kết nối","Lỗi",JOptionPane.ERROR_MESSAGE);
+            }
+            
+            
+        }
+        
+        private void deleDataInTable()
+        {
+            while(tableModel.getRowCount()>0)
+            {
+                tableModel.removeRow(0);
+            }
+        }
+          private void themNhanVien() throws SQLException {
+                if(validData()){
+                  NhanVien nv = new NhanVien(txtMaNV.getText().trim(),txtHoTen.getText().trim(),
+                         jcbGioiTinh.getSelectedItem()== "Nam" ? true:false,txtDiaChi.getText().trim() ,txtSDT.getText().trim(),
+                             txtEmail.getText().trim(),cbQuanLyVien.isSelected());
+                
+                  if(dsNV.themNhanVien(nv)) {
+			String [] st = {nv.getMaNV(),nv.getHoTenNV(),nv.isGioiTinh()?"Nam":"Nữ",nv.getDiaChi(),
+                                        nv.getSDT(),nv.getEmail(),nv.isQuanLyVien()?"Quản lý viên":"Nhân viên bán hàng"};
+                        tableModel.addRow(st);
+			xoaTrang();
+			JOptionPane.showMessageDialog(this, "Thêm thành công");
+		}else 
+			JOptionPane.showMessageDialog(this, "Thêm không thành công");
+	}}
+        private void SuaTTNhanVien() throws SQLException
+        {  
+            int row = tableNhanVien.getSelectedRow();
+            //String gt = tableNhanVien.getValueAt(row, 6).toString();
+                
+            if(row == -1)
+            {
+                JOptionPane.showMessageDialog(this, "Phải chọn Nhân viên cần sửa");
+            }
+            else
+            {
+                NhanVien nv = new NhanVien(txtMaNV.getText().trim(),txtHoTen.getText().trim(),
+                         jcbGioiTinh.getSelectedItem()== "Nam" ? true:false,txtDiaChi.getText().trim() ,txtSDT.getText().trim(),
+                             txtEmail.getText().trim(),cbQuanLyVien.isSelected() );
+                if(!nv.getMaNV().equalsIgnoreCase(tableNhanVien.getValueAt(row,0).toString()))
+                    JOptionPane.showMessageDialog(this,"Không được sửa mã Nhân viên");
+                else
+                {
+                    if(dsNV.suaTTNhanVien(nv))
+                    {
+                      
+                       tableModel.setValueAt(nv.getMaNV(), row, 0);
+                       tableModel.setValueAt(nv.getHoTenNV(), row, 1);
+                       tableModel.setValueAt(nv.isGioiTinh()?"Nam":"Nữ", row, 2);
+                       tableModel.setValueAt(nv.getDiaChi(), row, 3);
+                       tableModel.setValueAt(nv.getSDT(), row, 4);
+                       tableModel.setValueAt(nv.getEmail(), row, 5);
+                       tableModel.setValueAt(nv.isQuanLyVien()?"Quản lý viên":"Nhân viên bán hàng", row, 6);
+                       
+                       
+                       JOptionPane.showMessageDialog(this, "Sửa thành công");
+                        
+                    }
+                    else
+                    {
+                        JOptionPane.showMessageDialog(this, "Sửa không thành công");
+                    }
+                }
+            }
+        }
+        private void xoaNhanVien() {
+		int selectedRow = tableNhanVien.getSelectedRow();
 
-}
+		if (selectedRow == -1) {
+			JOptionPane.showMessageDialog(this,
+					"Bạn chưa chọn Nhân Viên cần xóa, nhấp chọn vào Nhân Viên cần xóa trong bảng!", "Thông báo",
+					JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+
+		if (JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa!", "Xác nhận",
+				JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION)
+			return;
+
+		int count = 0;
+		while (tableNhanVien.getSelectedRow() != -1) {
+			int selected = tableNhanVien.getSelectedRow();
+			String maNV = (String) tableNhanVien.getValueAt(selected, 0);
+
+			try {
+				if (dsNV.xoaNhanVien(maNV)) {
+                                        tableModel.removeRow(selected);
+					count++;
+				}
+			} catch (SQLException e) {
+				JOptionPane.showMessageDialog(this, "Lỗi trong khi xóa!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
+
+		JOptionPane.showMessageDialog(this, "Xóa thành công " + count + " Nhân Viên!", "Thông báo",
+				JOptionPane.INFORMATION_MESSAGE);
+	}
+        private boolean validData() {
+		String maNV = txtMaNV.getText().trim();
+		String hoTenNV = txtHoTen.getText().trim();
+		String diaChi = txtDiaChi.getText().trim();
+		String SDT = txtSDT.getText().trim();
+		String email = txtEmail.getText().trim();
+	
+		
+		Pattern pattern = Pattern.compile("NV[0-9]{2,3}", Pattern.CASE_INSENSITIVE);
+		Matcher matcher = pattern.matcher(maNV);
+		boolean match_maNV = matcher.matches();
+		if(maNV.length() < 1) {
+			JOptionPane.showMessageDialog(this, "Mã khách hàng không được để trống");
+			return false;
+		}
+		else if(!match_maNV){
+			JOptionPane.showMessageDialog(this, "Mã khách hàng không đúng định dạng");
+			return false;
+		}
+		else if(hoTenNV.length() < 1) {
+			JOptionPane.showMessageDialog(this, "Tên không được để trống");
+			return false;
+		}
+		else if(!hoTenNV.matches("[a-zA-Z ]+")) {
+			JOptionPane.showMessageDialog(this, "Tên không chứa số và kí tự đặc biệt");
+			return false;
+		}
+		else if(diaChi.length() < 1) {
+			JOptionPane.showMessageDialog(this, "Địa chỉ không được để trống");
+			return false;
+		}
+/*		else if(!email.matches("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\\\.[A-Z]{2,6}$")) {
+			JOptionPane.showMessageDialog(this, "Email không đúng định dạng");
+			return false;
+		}*/
+		else if(!SDT.matches("0[0-9]{9}")) {
+			JOptionPane.showMessageDialog(this, "Số điện thoại không đúng");
+			return false;
+		}
+		
+		return true;
+	}
+
+        
+    @Override
+    public void mouseClicked(MouseEvent e) {        
+        int row = tableNhanVien.getSelectedRow();
+        txtMaNV.setText(tableNhanVien.getValueAt(row,0).toString());
+        txtHoTen.setText(tableNhanVien.getValueAt(row,1).toString());
+        txtDiaChi.setText(tableNhanVien.getValueAt(row,2).toString());
+        jcbGioiTinh.setSelectedItem(tableNhanVien.getValueAt(row, 3).toString());
+        txtSDT.setText(tableNhanVien.getValueAt(row,4).toString());
+        txtEmail.setText(tableNhanVien.getValueAt(row,5).toString());
+        String cv = tableNhanVien.getValueAt(row, 6).toString();
+        if(cv == "Quản lý viên")
+            cbQuanLyVien.setSelected(true);
+        else
+            cbQuanLyVien.setSelected(false);
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+      
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+      
+    }
+    
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object o = e.getSource();
+       try
+       {
+           if(o.equals(btnSua))
+           {
+               SuaTTNhanVien();
+           }
+           else if(o.equals(btnXoa))
+           {
+               xoaNhanVien();
+           }
+           else if(o.equals(btnThem))
+           {
+               themNhanVien();
+           }
+       }
+       catch(Exception ex)
+       {
+           JOptionPane.showMessageDialog(null, ex.getMessage());
+       }
+    }
+
+   
+ }
+
