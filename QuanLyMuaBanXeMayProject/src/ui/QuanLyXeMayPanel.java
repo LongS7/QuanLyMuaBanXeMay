@@ -190,7 +190,18 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 		
 		String[] header = {"Mã xe", "Tên xe", "Loại xe", "Hãng xe", "Dung tích", "Màu xe", "Nước sản xuất", "Số lượng tồn", "Đơn giá"};
 		defaultTable = new DefaultTableModel(header, 0);
-		tableXeMay = new JTable(defaultTable);
+		tableXeMay = new JTable(defaultTable) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		};
 		tableXeMay.setFont(NORMAL_FONT);
 		tableXeMay.setRowHeight(25);
 		scroll = new JScrollPane(tableXeMay, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
