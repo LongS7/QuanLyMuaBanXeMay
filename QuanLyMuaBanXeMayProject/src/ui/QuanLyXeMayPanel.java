@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -52,7 +51,6 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 	private JButton btnThem;
 	private JButton btnXoa;
 	private JButton btnSua;
-	private JButton btnQuayLai;
 	private JButton btnXoaTrang;
 	private JTable tableXeMay;
 	private JScrollPane scroll;
@@ -81,7 +79,6 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 		btnXoa.addActionListener(this);
 		btnXoaTrang.addActionListener(this);
 		btnSua.addActionListener(this);
-		btnQuayLai.addActionListener(this);
 		
 	}
 	private void addNorth() {
@@ -193,7 +190,18 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 		
 		String[] header = {"Mã xe", "Tên xe", "Loại xe", "Hãng xe", "Dung tích", "Màu xe", "Nước sản xuất", "Số lượng tồn", "Đơn giá"};
 		defaultTable = new DefaultTableModel(header, 0);
-		tableXeMay = new JTable(defaultTable);
+		tableXeMay = new JTable(defaultTable) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		};
 		tableXeMay.setFont(NORMAL_FONT);
 		tableXeMay.setRowHeight(25);
 		scroll = new JScrollPane(tableXeMay, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -209,7 +217,6 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 		btnThem = addButtonTo(boxButton, "Thêm");
 		btnSua = addButtonTo(boxButton, "Sửa");
 		btnXoa = addButtonTo(boxButton, "Xoá");
-		btnQuayLai = addButtonTo(boxButton, "Quay lại");
 		btnXoaTrang = addButtonTo(boxButton, "Xoá trắng");
 		
 		this.add(boxButton, BorderLayout.EAST);
@@ -328,7 +335,10 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 	}
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		
 		int row = tableXeMay.getSelectedRow();
+		String temp = tableXeMay.getValueAt(row, 8).toString();
+		temp = temp.replace(",","");
 		txtMaXe.setText(tableXeMay.getValueAt(row, 0).toString());
 		txtTenXe.setText(tableXeMay.getValueAt(row, 1).toString());
 		txtLoaiXe.setText(tableXeMay.getValueAt(row, 2).toString());
@@ -337,7 +347,7 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 		txtMauXe.setText(tableXeMay.getValueAt(row, 5).toString());
 		txtNuocSanXuat.setText(tableXeMay.getValueAt(row, 6).toString());
 		txtSoLuongTon.setText(tableXeMay.getValueAt(row, 7).toString());
-		txtDonGia.setText(tableXeMay.getValueAt(row, 8).toString());
+		txtDonGia.setText(temp);
 	}
 	@Override
 	public void mousePressed(MouseEvent e) {
@@ -360,24 +370,27 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 		
 	}
 	private void themXeMay() throws SQLException {
-		XeMay xm = new XeMay(txtMaXe.getText().trim(),
-				txtTenXe.getText().trim(), txtLoaiXe.getText().trim(),
-				ckbHangXe.getSelectedItem().toString(), Integer.parseInt(txtDungTich.getText()),
-				txtMauXe.getText().trim(), txtNuocSanXuat.getText().trim(),
-				Integer.parseInt(txtSoLuongTon.getText()), Double.parseDouble(txtDonGia.getText()));
-		if(listXeMay.themXeMay(xm)) {
-			loadDataToTable();
-			xoaTrang();
-			JOptionPane.showMessageDialog(this, "Thêm thành công");
-		}else 
-			JOptionPane.showMessageDialog(this, "Thêm không thành công");
+		if(validData()) {
+			XeMay xm = new XeMay(txtMaXe.getText().trim(),
+					txtTenXe.getText().trim(), txtLoaiXe.getText().trim(),
+					ckbHangXe.getSelectedItem().toString(), Integer.parseInt(txtDungTich.getText()),
+					txtMauXe.getText().trim(), txtNuocSanXuat.getText().trim(),
+					Integer.parseInt(txtSoLuongTon.getText()), Double.parseDouble(txtDonGia.getText()));
+			if(listXeMay.themXeMay(xm)) {
+				loadDataToTable();
+				xoaTrang();
+				JOptionPane.showMessageDialog(this, "Thêm thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+			}else 
+				JOptionPane.showMessageDialog(this, "Thêm không thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+		}else
+			return;
 	}
 	private void xoaXeMay() throws SQLException{
 		int row = tableXeMay.getSelectedRow();
 		if(row == -1)
-			JOptionPane.showMessageDialog(this, "Phải chọn xe cần xoá");
+			JOptionPane.showMessageDialog(this, "Phải chọn xe cần xoá", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 		else {
-			int replay = JOptionPane.showConfirmDialog(this, "Bạn chó chắc muốn xoá dòng này!!", "Cảnh báo", JOptionPane.YES_NO_OPTION);
+			int replay = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xoá dòng này!!", "Cảnh báo", JOptionPane.YES_NO_OPTION);
 			if(replay == JOptionPane.YES_OPTION) {
 				List<XeMay> dsxm = listXeMay.getAll();
 				int rows = tableXeMay.getSelectedRow();
@@ -386,9 +399,9 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 					if(listXeMay.xoaXeMay(xm)) {
 						loadDataToTable();
 						xoaTrang();
-						JOptionPane.showMessageDialog(this, "Xoá thành công");
+						JOptionPane.showMessageDialog(this, "Xoá thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 					}else
-						JOptionPane.showMessageDialog(this, "Xoá không thành công");
+						JOptionPane.showMessageDialog(this, "Xoá không thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
 			return;
@@ -397,22 +410,26 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 	private void suaTTXeMay() throws SQLException {
 		int row = tableXeMay.getSelectedRow();
 		if(row == -1)
-			JOptionPane.showMessageDialog(this, "Phải chọn xe cần sửa");
+			JOptionPane.showMessageDialog(this, "Phải chọn xe cần sửa", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 		else {
-			XeMay xm = new XeMay(txtMaXe.getText().trim(),
-					txtTenXe.getText().trim(), txtLoaiXe.getText().trim(),
-					ckbHangXe.getSelectedItem().toString(), Integer.parseInt(txtDungTich.getText()),
-					txtMauXe.getText().trim(), txtNuocSanXuat.getText().trim(),
-					Integer.parseInt(txtSoLuongTon.getText()), Double.parseDouble(txtDonGia.getText()));
-			if(!xm.getMaXe().equalsIgnoreCase(tableXeMay.getValueAt(row, 0).toString()))
-				JOptionPane.showMessageDialog(this, "Không được sửa mã xe máy!!");
-			else {
-				if(listXeMay.suaTTXeMay(xm)) {
-					loadDataToTable();
-					JOptionPane.showMessageDialog(this, "Sửa thành công");
-			}else 
-				JOptionPane.showMessageDialog(this, "Sửa không thành công");
-			}
+				if(validData()) {
+					XeMay xm = new XeMay(txtMaXe.getText().trim(),
+							txtTenXe.getText().trim(), txtLoaiXe.getText().trim(),
+							ckbHangXe.getSelectedItem().toString(), Integer.parseInt(txtDungTich.getText()),
+							txtMauXe.getText().trim(), txtNuocSanXuat.getText().trim(),
+							Integer.parseInt(txtSoLuongTon.getText()), Double.parseDouble(txtDonGia.getText()));
+					if(!xm.getMaXe().equalsIgnoreCase(tableXeMay.getValueAt(row, 0).toString())) {
+						JOptionPane.showMessageDialog(this, "Không được sửa mã xe máy!!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+						txtMaXe.setText(tableXeMay.getValueAt(row, 0).toString());
+					}
+					else {
+						if(listXeMay.suaTTXeMay(xm)) {
+							loadDataToTable();
+							JOptionPane.showMessageDialog(this, "Sửa thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+					}else 
+						JOptionPane.showMessageDialog(this, "Sửa không thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+					}
+				}
 		}
 	}
 	private void xoaTrang() {
@@ -434,7 +451,7 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 			XeMay xeMay = new XeMay();
 			xeMay = listXeMay.timTheoMa(txtSearch.getText());
 			if(xeMay == null)
-				JOptionPane.showMessageDialog(this, "Không tìm thấy!");
+				JOptionPane.showMessageDialog(this, "Không tìm thấy!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 			else {
 				deleteDataInTable();
 				NumberFormat nf = NumberFormat.getInstance(new Locale("vn", "VN"));
@@ -453,7 +470,7 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 			List<XeMay> dsxm = new ArrayList<XeMay>();
 			dsxm = listXeMay.timTheoDungTich(Integer.parseInt(txtSearch.getText()));
 			if(dsxm == null)
-				JOptionPane.showMessageDialog(this, "Không tìm thấy!");
+				JOptionPane.showMessageDialog(this, "Không tìm thấy!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 			else {
 				deleteDataInTable();
 				NumberFormat nf = NumberFormat.getInstance(new Locale("vn", "VN"));
@@ -467,25 +484,136 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 			}
 		}
 	}
-		private void timTheoHangXe() throws SQLException {
-			if(txtSearch.getText().equals(""))
-				loadDataToTable();
+	private void timTheoHangXe() throws SQLException {
+		if(txtSearch.getText().equals(""))
+			loadDataToTable();
+		else {
+			List<XeMay> dsxm = new ArrayList<XeMay>();
+			dsxm = listXeMay.timTheoHangXe(txtSearch.getText());
+			if(dsxm == null)
+				JOptionPane.showMessageDialog(this, "Không tìm thấy!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 			else {
-				List<XeMay> dsxm = new ArrayList<XeMay>();
-				dsxm = listXeMay.timTheoHangXe(txtSearch.getText());
-				if(dsxm == null)
-					JOptionPane.showMessageDialog(this, "Không tìm thấy!");
-				else {
-					deleteDataInTable();
-					NumberFormat nf = NumberFormat.getInstance(new Locale("vn", "VN"));
-					for (XeMay xeMay : dsxm) {
-						String donGia = nf.format(xeMay.getDonGia());
-						defaultTable.addRow(new Object[] {
-								xeMay.getMaXe(), xeMay.getTenXe(), xeMay.getLoaiXe(),
-								xeMay.getHangXe(), xeMay.getDungTich(), xeMay.getMauXe(),
-								xeMay.getNuocSanXuat(), xeMay.getSoLuongTon(), donGia});
-					}
+				deleteDataInTable();
+				NumberFormat nf = NumberFormat.getInstance(new Locale("vn", "VN"));
+				for (XeMay xeMay : dsxm) {
+					String donGia = nf.format(xeMay.getDonGia());
+					defaultTable.addRow(new Object[] {
+							xeMay.getMaXe(), xeMay.getTenXe(), xeMay.getLoaiXe(),
+							xeMay.getHangXe(), xeMay.getDungTich(), xeMay.getMauXe(),
+							xeMay.getNuocSanXuat(), xeMay.getSoLuongTon(), donGia});
 				}
 			}
+		}
+	}
+	private boolean validData() {
+		String maxe = txtMaXe.getText().trim();
+		String tenxe = txtTenXe.getText().trim();
+		String loaixe = txtLoaiXe.getText().trim();
+		String dungtich = txtDungTich.getText().trim();
+		String mauxe = txtMauXe.getText().trim();
+		String nuocsanxuat = txtNuocSanXuat.getText().trim();
+		String soluongton = txtSoLuongTon.getText().trim();
+		String dongia = txtDonGia.getText().trim();
+		
+		//Mã xe không được bỏ trống và phải bắt đầu bằng 'XM', theo sau là 2 đến 3 kí tự số! 
+		if(!(!maxe.isEmpty() && maxe.matches("XM\\d{2,3}"))) {
+			JOptionPane.showMessageDialog(this,
+					"Mã xe không được bỏ trống và phải bắt đầu bằng 'XM', theo sau là 2 đến 3 kí tự số!",
+					"Cảnh báo", JOptionPane.WARNING_MESSAGE);
+			txtMaXe.requestFocus();
+			return false;
+		}
+		
+		//Tên xe không được bỏ trống, có thể gồm nhiều từ cách nhau bởi khoảng trắng
+		//Không chứa ký tự đặc biệt
+		if(!(!tenxe.isEmpty() && tenxe.matches("[\\p{L}0-9\\s]+"))) {
+			JOptionPane.showMessageDialog(this,
+					"Tên xe không được bỏ trống. Tên xe có thể gồm nhiều từ cách nhau bởi khoảng trắng và không chứa ký tự đặc biệt",
+					"Cảnh báo", JOptionPane.WARNING_MESSAGE);
+			txtTenXe.requestFocus();
+			return false;
+		}
+		
+		//Loại xe không được bỏ trống, có thể gồm nhiều từ cách nhau bởi khoảng trắng
+		//Không chứa ký tự đặc biệt
+		if(!(!loaixe.isEmpty() && loaixe.matches("[\\p{L}0-9\\s]+"))) {
+			JOptionPane.showMessageDialog(this,
+					"Loại xe không được bỏ trống. Loại xe có thể gồm nhiều từ cách nhau bởi khoảng trắng và không chứa ký tự đặc biệt",
+					"Cảnh báo", JOptionPane.WARNING_MESSAGE);
+			txtLoaiXe.requestFocus();
+			return false;
+		}
+		
+		//Dung tích không được bỏ trống, dung tích phải lớn hơn 0
+		if(!dungtich.isEmpty()) {
+			try {
+				int dt = Integer.parseInt(dungtich);
+				if(dt < 0) {
+					JOptionPane.showMessageDialog(this, "Dung tích phải lớn hơn hoặc bằng 0", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+					return false;
+				}
+			}catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(this, "Dung tích phải nhập số", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+				return false;
+			}
+		}else {
+			JOptionPane.showMessageDialog(this, "Dung tích không được bỏ trống", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		
+		//Màu xe không được bỏ trống, có thể gồm nhiều từ cách nhau bởi khoảng trắng
+		//Không chứa ký tự đặc biệt
+		if(!(!mauxe.isEmpty() && mauxe.matches("[\\p{L}0-9\\s]+"))) {
+			JOptionPane.showMessageDialog(this,
+					"Màu xe không được bỏ trống. Màu xe có thể gồm nhiều từ cách nhau bởi khoảng trắng và không chứa ký tự đặc biệt",
+					"Cảnh báo", JOptionPane.WARNING_MESSAGE);
+			txtMauXe.requestFocus();
+			return false;
+		}
+		
+		//Nước sản xuất không được bỏ trống, có thể gồm nhiều từ cách nhau bởi khoảng trắng
+		//Không chứa ký tự đặc biệt
+		if(!(!nuocsanxuat.isEmpty() && nuocsanxuat.matches("[\\p{L}0-9\\s]+"))) {
+			JOptionPane.showMessageDialog(this,
+					"Nước sản xuất không được bỏ trống. Nước sản xuất có thể gồm nhiều từ cách nhau bởi khoảng trắng và không chứa ký tự đặc biệt",
+					"Cảnh báo", JOptionPane.WARNING_MESSAGE);
+			txtNuocSanXuat.requestFocus();
+			return false;
+		}
+		
+		//Số lượng tồn không được bỏ trống, số lượng tồn phải lớn hơn hoặc bằng 0
+		if(!soluongton.isEmpty()) {
+			try {
+				int slt = Integer.parseInt(soluongton);
+				if(slt < 0) {
+					JOptionPane.showMessageDialog(this, "Số lượng tồn phải lớn hơn hoặc bằng 0", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+					return false;
+				}
+			}catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(this, "Số lượng tồn phải nhập số", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+				return false;
+			}
+		}else {
+			JOptionPane.showMessageDialog(this, "Số lượng tồn không được bỏ trống", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		
+		//Đơn giá không được bỏ trống, đơn giá phải lớn hơn hoặc bằng 0
+		if(!dongia.isEmpty()) {
+			try {
+				double dg = Double.parseDouble(dongia);
+				if(dg < 0) {
+					JOptionPane.showMessageDialog(this, "Đơn giá phải lớn hơn hoặc bằng 0", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+					return false;
+				}
+			}catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(this, "Đơn giá phải nhập số", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+				return false;
+			}
+		}else {
+			JOptionPane.showMessageDialog(this, "Đơn giá không được bỏ trống", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		return true;
 	}
 }
