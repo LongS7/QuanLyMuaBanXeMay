@@ -83,13 +83,11 @@ public class DanhSachNhanVien {
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			stmt.setString(1, nv.getMaNV());
 			stmt.setString(2, nv.getHoTenNV());
-			stmt.setBoolean(3, nv.isGioiTinh());
-			stmt.setString(4, nv.getDiaChi());
+                        stmt.setBoolean(3, nv.isGioiTinh());
+			stmt.setString(4 , nv.getDiaChi());
 			stmt.setString(5, nv.getSDT());
 			stmt.setString(6, nv.getEmail());
 			stmt.setBoolean(7, nv.isQuanLyVien());
-			
-
 			int n = stmt.executeUpdate();
 			if (n > 0)
 				return true;

@@ -165,7 +165,7 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ItemLis
 	}
 
 	private void addCenter() {
-		String[] headers = { "Mã NV", "Họ tên NV", "Giới tính", "Địa chỉ", "SDT", "Email", "Chức vụ" };
+		String[] headers = { "Mã NV", "Họ tên NV","Giới tính","Địa chỉ", "SDT", "Email", "Chức vụ" };
 		tableModel = new DefaultTableModel(headers, 0);
 		tableNhanVien = new JTable(tableModel);
 		JScrollPane sp = new JScrollPane(tableNhanVien);
