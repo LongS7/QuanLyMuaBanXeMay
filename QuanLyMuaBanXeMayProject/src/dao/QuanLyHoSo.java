@@ -2,7 +2,11 @@ package dao;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import javax.swing.JOptionPane;
+
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import entity.NhanVien;
@@ -17,15 +21,7 @@ public class QuanLyHoSo {
 	public void setnhanVien(NhanVien nhanVien) {
 		this.nhanVien = nhanVien;
 	}
-	public void suanhanVien(NhanVien New) {
-		nhanVien.setMaNV(New.getMaNV());
-		nhanVien.setHoTenNV(New.getHoTenNV());
-		nhanVien.setGioiTinh(New.isGioiTinh());
-		nhanVien.setDiaChi(New.getDiaChi());
-		nhanVien.setSDT(New.getSDT());
-		nhanVien.setEmail(New.getEmail());
-		nhanVien.setQuanLyVien(New.isQuanLyVien());
-	}
+
 	public void getProfile() throws SQLException{
 		
 		Connection con = DatabaseConnection.getConnection();
@@ -47,5 +43,26 @@ public class QuanLyHoSo {
 		}
 		
 		con.close();
+	}
+	
+	public boolean modifiedProfile(NhanVien nv) throws SQLException{
+			Connection con = DatabaseConnection.getConnection();
+			String userName = DatabaseConnection.userName;
+			String query = "update NhanVien set hoTen = ?, gioiTinh = ?,diaChi = ?,sdt = ?,email = ?,quanLyVien = ? where ma = '"
+	                + userName + "'" ;
+			PreparedStatement stmt = con.prepareStatement(query);
+			 stmt.setString(1,nv.getHoTenNV());
+	         stmt.setBoolean(2,nv.isGioiTinh());
+	         stmt.setString(3,nv.getDiaChi());
+	         stmt.setString(4,nv.getSDT().toString());
+	         stmt.setString(5,nv.getEmail().toString());
+	         stmt.setBoolean(6,nv.isQuanLyVien());
+	         int n = stmt.executeUpdate();
+	         if(n>0) {
+	        	 con.close();
+	             return true;
+	         }
+	    con.close();
+		return false;
 	}
 }

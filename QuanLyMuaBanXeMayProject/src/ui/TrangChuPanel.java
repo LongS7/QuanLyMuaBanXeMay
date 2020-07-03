@@ -139,6 +139,7 @@ public class TrangChuPanel extends JPanel {
 				
 				if(o.equals(pnlQLHD))
 					mainFrame.changePanel(mainFrame.getPnlQLHD());
+					
 				if(o.equals(pnlQLKH))
 					mainFrame.changePanel(mainFrame.getPnlQLKH());
 				if(o.equals(pnlQLXM))
@@ -176,5 +177,6 @@ public class TrangChuPanel extends JPanel {
 	}
 	
 	public void focus() {
+		
 	}
 }

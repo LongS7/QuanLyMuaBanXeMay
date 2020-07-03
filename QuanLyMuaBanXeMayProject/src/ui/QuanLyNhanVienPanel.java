@@ -1,5 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
+  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
-public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ItemListener,ActionListener{
+public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionListener{
 	private JButton btnThem, btnXoa, btnSua, btnQuayLai, btnTim;
 	private Font NORMAL_FONT;
 	private JTable tableNhanVien;
@@ -64,8 +64,6 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ItemLis
                 loadDataToTable();
                 dsNV = new DanhSachNhanVien();
                 tableNhanVien.addMouseListener(this);
-                cbQuanLyVien.addItemListener(this);
-       
                 btnSua.addActionListener(this);
                 btnXoa.addActionListener(this);
                 btnThem.addActionListener(this);
@@ -279,7 +277,6 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ItemLis
         private void SuaTTNhanVien() throws SQLException
         {  
             int row = tableNhanVien.getSelectedRow();
-            //String gt = tableNhanVien.getValueAt(row, 6).toString();
                 
             if(row == -1)
             {
@@ -429,10 +426,7 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ItemLis
       
     }
     
-    @Override
-    public void itemStateChanged(ItemEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+   
 
     @Override
     public void actionPerformed(ActionEvent e) {
