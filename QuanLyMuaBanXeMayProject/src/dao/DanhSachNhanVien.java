@@ -6,17 +6,20 @@ import java.util.ArrayList;
 
 import entity.KhachHang;
 import entity.NhanVien;
+import java.awt.event.MouseListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import javax.swing.JOptionPane;
 
 public class DanhSachNhanVien {
 	private ArrayList<NhanVien> dsNV;
-
-	public DanhSachNhanVien() {
+	private Connection conn;
+        public DanhSachNhanVien() {
 		dsNV = new ArrayList<NhanVien>();
-	}
+                    
+        }
 
 	public ArrayList<NhanVien> getDsNV() {
 		return dsNV;
@@ -26,9 +29,9 @@ public class DanhSachNhanVien {
 		this.dsNV = dsNV;
 	}
 
-	public void getAll() throws SQLException {
-		Connection conn = null;
-		conn = DatabaseConnection.getConnection();
+       	public void getAll() throws SQLException {
+                conn = null;
+                conn = DatabaseConnection.getConnection();
 		String query = "select * from NhanVien";
 		Statement stmt = conn.createStatement();
 		ResultSet result = stmt.executeQuery(query);
@@ -46,37 +49,55 @@ public class DanhSachNhanVien {
 			if (!dsNV.contains(nv)) {
 				dsNV.add(nv);
 			}
-
 		}
-		conn.close();
+            conn.close();
 	}
 
-	public boolean themNhanVien(NhanVien nv) throws SQLException {
+
+
+	public boolean xoaNhanVien(String maNV) throws SQLException {
 		Connection conn = DatabaseConnection.getConnection();
 
-		String query = "select Count(*) from NhanVien where ma = ?";
-
-		PreparedStatement pstmt = conn.prepareStatement(query);
-		pstmt.setString(1, nv.getMaNV());
-		ResultSet rs = pstmt.executeQuery(query);
-
-		if (dsNV.contains(nv)) {
+		String query = "select * from NhanVien where ma = ?";
+		PreparedStatement st = conn.prepareStatement(query);
+		st.setString(1, maNV);
+		if (!st.executeQuery().next())
 			return false;
 
-		}
-		dsNV.add(nv);
+		query = "delete from NhanVien where ma = ?";
+		st = conn.prepareStatement(query);
+		st.setString(1, maNV);
+		st.execute();
+		
+		conn.close();
+		
 		return true;
 	}
-
-	public boolean xoaNhanVien(String maNV) {
-		for (NhanVien nhanVien : dsNV) {
-			if (nhanVien.getMaNV().equalsIgnoreCase(maNV)) {
-				dsNV.remove(nhanVien);
+        
+        public boolean themNhanVien(NhanVien nv) throws SQLException {
+		conn = DatabaseConnection.getConnection();
+                String sql = "insert into NhanVien values(?,?,?,?,?,?,?)";
+	//	Statement st = conn.createStatement();
+                
+                try {
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, nv.getMaNV());
+			stmt.setString(2, nv.getHoTenNV());
+                        stmt.setBoolean(3, nv.isGioiTinh());
+			stmt.setString(4 , nv.getDiaChi());
+			stmt.setString(5, nv.getSDT());
+			stmt.setString(6, nv.getEmail());
+			stmt.setBoolean(7, nv.isQuanLyVien());
+			int n = stmt.executeUpdate();
+			if (n > 0)
 				return true;
-			}
+		} catch (SQLException e) {
+                    throw new SQLException(e);
+                        
 		}
 		return false;
 	}
+
 
 	public NhanVien timTheoMaNhanVien(String maNV) throws SQLException {
 		Connection con = DatabaseConnection.getConnection();
@@ -110,12 +131,28 @@ public class DanhSachNhanVien {
 		return list;
 	}
 
-	public boolean suaNhanVien(NhanVien nvCu, NhanVien nvMoi) {
-		if (!dsNV.contains(nvCu)) {
-			return false;
-		}
-		dsNV.set(dsNV.indexOf(nvCu), nvMoi);
-		return true;
+	public boolean suaTTNhanVien(NhanVien nv) throws SQLException{
+                conn = DatabaseConnection.getConnection();
+		try
+                {
+                   String sql = "update NhanVien set hoTen = ?, gioiTinh = ?,diaChi = ?,sdt = ?,email = ?,quanLyVien = ? where ma = '"
+                          + nv.getMaNV() + "'" ;
+                   PreparedStatement stmt = conn.prepareStatement(sql);
+                   stmt.setString(1,nv.getHoTenNV());
+                   stmt.setBoolean(2,nv.isGioiTinh());
+                   stmt.setString(3,nv.getDiaChi());
+                   stmt.setString(4,nv.getSDT().toString());
+                   stmt.setString(5,nv.getEmail().toString());
+                   stmt.setBoolean(6,nv.isQuanLyVien());
+                
+                   int n = stmt.executeUpdate();
+                   if(n>0)
+                       return true;
+                }catch(SQLException e)
+                {
+                    throw new SQLException(e);
+                }
+                return false;
 	}
 
 	public ArrayList<NhanVien> layDanhSach() {

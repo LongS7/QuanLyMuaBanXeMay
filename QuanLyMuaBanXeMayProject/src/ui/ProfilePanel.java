@@ -6,17 +6,11 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Locale;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -25,10 +19,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import dao.DatabaseConnection;
-import dao.QuanLyDangNhap;
 import entity.NhanVien;
-import entity.XeMay;
 import dao.QuanLyHoSo;
 
 
@@ -70,7 +61,7 @@ public class ProfilePanel extends JPanel implements ActionListener{
 		pnlImage.add(lblImage);
 		
 		JPanel pnlTitle = new JPanel();
-		JLabel lblHeader = new JLabel("Hồ sơ của tôi");
+		JLabel lblHeader = new JLabel("HỒ SƠ CỦA TÔI");
 		lblHeader.setFont(HEADER_FONT);
 		lblHeader.setForeground(HEADER_COLOR);
 		pnlTitle.add(lblHeader);

@@ -11,7 +11,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import entity.HoaDon;
-import entity.KhachHang;
+import entity.KhachHang; 
 import entity.XeMay;
 
 public class DanhSachKhachHang {
