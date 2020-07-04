@@ -34,6 +34,7 @@ import dao.DanhSachCTHD;
 import dao.DanhSachHoaDon;
 import dao.DanhSachKhachHang;
 import dao.DanhSachNhanVien;
+import dao.DanhSachXeMay;
 import dao.DatabaseConnection;
 import entity.ChiTietHD;
 import entity.HoaDon;
@@ -60,7 +61,6 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 	private JButton btnSuaCTHD;
 	private JTextField txtMaXeMay;
 	private JTextField txtSoLuong;
-	private JTextField txtDonGia;
 	private DefaultTableModel modelHoaDon;
 	private JTable tableHoaDon;
 	private JButton btnThemHD;
@@ -157,7 +157,6 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 	}
 
 	public void setPopupMenu(JPopupMenu popup) {
-		txtDonGia.setComponentPopupMenu(popup);
 		txtMaHD.setComponentPopupMenu(popup);
 		txtMaKH.setComponentPopupMenu(popup);
 		txtMaNV.setComponentPopupMenu(popup);
@@ -185,6 +184,13 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 				updateCTHDTable();
 			}
 		});
+		tableCTHD.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				changeCTHDText();
+			}
+		});
 	}
 
 	@Override
@@ -201,6 +207,90 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			timKiem();
 		if (o.equals(btnSuaHD))
 			suaHoaDon();
+		if (o.equals(btnThemCTHD))
+			themCTHD();
+		if (o.equals(btnSuaCTHD))
+			suaCTHD();
+		if (o.equals(btnXoaCTHD))
+			xoaCTHD();
+	}
+
+	private void xoaCTHD() {
+		int i;
+		while ((i = tableCTHD.getSelectedRow()) != -1) {
+			String maHD = tableHoaDon.getValueAt(tableHoaDon.getSelectedRow(), 0).toString();
+			try {
+				if(dsCTHD.xoaCTHD(maHD, tableCTHD.getValueAt(i, 0).toString())) {
+					JOptionPane.showMessageDialog(this, "Xoá thành công!!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+					modelCTHD.removeRow(i);
+				}
+				else {
+					JOptionPane.showMessageDialog(this, "Xoá không thành công!!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+				}
+				
+			} catch (SQLException e) {
+				JOptionPane.showMessageDialog(this, "Lỗi khi xóa dữ liệu!!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
+	}
+
+	private void suaCTHD() {
+		
+		
+	}
+
+	private void themCTHD() {
+		if(tableHoaDon.getSelectedRow() == -1) {
+			JOptionPane.showMessageDialog(this, "Chưa chọn hóa đơn!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		String maHD = tableHoaDon.getValueAt(tableHoaDon.getSelectedRow(), 0).toString();
+		
+		String maXe = txtMaXeMay.getText().trim();
+		int soLuong = 0;
+		double donGia = 0;
+		XeMay xm = null;
+		HoaDon hd = null;
+
+		try {
+			soLuong = Integer.parseInt(txtSoLuong.getText());
+			
+			xm = new DanhSachXeMay().timTheoMa(maXe);
+			if(xm == null) {
+				JOptionPane.showMessageDialog(this, "Mã xe máy không tồn tại!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
+			donGia = xm.getDonGia();
+			
+			hd = new DanhSachHoaDon().timTheoMaHD(maHD).get(0);
+			
+			if(hd == null) {
+				JOptionPane.showMessageDialog(this, "Mã hóa đơn không tồn tại!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
+
+			ChiTietHD cthd = new ChiTietHD(soLuong, donGia, hd, xm);
+			
+			if(dsCTHD.themCTHD(cthd)) {
+				JOptionPane.showMessageDialog(this, "Thêm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+				modelCTHD.addRow(new Object[] {
+					cthd.getXeMay().getMaXe(), cthd.getSoLuong(), cthd.getDonGia(), cthd.tinhThanhTien()
+				});
+			
+			} else {
+				JOptionPane.showMessageDialog(this, "Đã tồn tại CTHD này!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+			}
+			
+		}catch(NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "Số lượng phải nhập số nguyên lớn hơn 0!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			return;
+			
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "Lỗi khi truy xuất dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
 	}
 
 	private void suaHoaDon() {
@@ -214,7 +304,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		try {
 			NhanVien nv = new DanhSachNhanVien().timTheoMaNhanVien(maNV);
 			if (nv == null) {
-				JOptionPane.showMessageDialog(this, "Mã nhân viên không tồn tại!", "Lỗi", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Mã nhân viên không tồn tại!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
 				txtMaNV.requestFocus();
 				return;
 			}
@@ -289,7 +379,6 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		txtMaNV.setText("");
 		txtMaKH.setText("");
 		txtNgayLap.setText("");
-		txtDonGia.setText("");
 		txtSoLuong.setText("");
 		txtMaXeMay.setText("");
 		txtTimKiem.setText("");
@@ -298,6 +387,20 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		while (tableCTHD.getSelectedRow() != -1)
 			tableCTHD.removeRowSelectionInterval(tableCTHD.getSelectedRow(), tableCTHD.getSelectedRow());
 
+	}
+
+	private void changeCTHDText() {
+		int selected = tableCTHD.getSelectedRow();
+		if (selected == -1)
+			return;
+		if (tableHoaDon.getSelectedRows().length > 1) {
+			txtMaXeMay.setText("");
+			txtSoLuong.setText("");
+			return;
+		}
+
+		txtMaXeMay.setText(tableCTHD.getValueAt(selected, 0).toString());
+		txtSoLuong.setText(tableCTHD.getValueAt(selected, 1).toString());
 	}
 
 	private void changeText() {
@@ -309,7 +412,6 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			txtMaNV.setText("");
 			txtMaKH.setText("");
 			txtNgayLap.setText("");
-			txtDonGia.setText("");
 			txtSoLuong.setText("");
 			txtMaXeMay.setText("");
 			return;
@@ -600,8 +702,6 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		txtMaXeMay = addInputItemTo(boxCTHDInput, "Mã xe máy");
 		boxCTHDInput.add(Box.createHorizontalStrut(5));
 		txtSoLuong = addInputItemTo(boxCTHDInput, "Số lượng");
-		boxCTHDInput.add(Box.createHorizontalStrut(5));
-		txtDonGia = addInputItemTo(boxCTHDInput, "Đơn giá");
 		boxCTHDInput.add(Box.createHorizontalStrut(10));
 
 		String[] cthdHeader = { "Mã xe máy", "Số lượng", "Đơn giá", "Thành tiền" };
