@@ -27,6 +27,7 @@ import javax.swing.table.DefaultTableModel;
 
 import entity.NhanVien;
 import dao.DanhSachNhanVien;
+import entity.KhachHang;
 import entity.XeMay;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,6 +41,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionListener{
 	private JButton btnThem, btnXoa, btnSua, btnQuayLai, btnTim;
 	private Font NORMAL_FONT;
@@ -67,6 +69,7 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionL
                 btnSua.addActionListener(this);
                 btnXoa.addActionListener(this);
                 btnThem.addActionListener(this);
+                btnTim.addActionListener(this);
         }
 
 	private void addNorth() {
@@ -262,7 +265,7 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionL
           private void themNhanVien() throws SQLException {
                 if(validData()){
                   NhanVien nv = new NhanVien(txtMaNV.getText().trim(),txtHoTen.getText().trim(),
-                         jcbGioiTinh.getSelectedItem()== "Nam" ? true:false,txtDiaChi.getText().trim() ,txtSDT.getText().trim(),
+                         jcbGioiTinh.getSelectedItem().toString().equals("Nam")?true:false,txtDiaChi.getText().trim() ,txtSDT.getText().trim(),
                              txtEmail.getText().trim(),cbQuanLyVien.isSelected());
                 
                   if(dsNV.themNhanVien(nv)) {
@@ -312,7 +315,26 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionL
                     }
                 }
             }
-        }
+        }private void timTheoTen() throws SQLException {
+		if(txtTim.getText().trim().equals(""))
+			loadDataToTable();
+		else {
+			ArrayList<NhanVien> dsnv = new ArrayList<NhanVien>();
+			dsnv = dsNV.timTheoTenNhanVien(txtTim.getText().trim());
+			if(dsnv == null){
+				JOptionPane.showMessageDialog(this, "Không tìm thấy Nhân Viên");
+			}
+			else {
+				deleteDataInTable();
+				         for (NhanVien nhanVien : dsnv) {
+					tableModel.addRow(new Object[] {nhanVien.getMaNV(),nhanVien.getHoTenNV(),
+						nhanVien.isGioiTinh() ? "Nam" : "Nữ",nhanVien.getDiaChi(),nhanVien.getSDT(),nhanVien.getEmail(),nhanVien.isQuanLyVien()?"Quản lý viên":"Nhân viên bán hàng"});
+				}
+			}
+		}
+		
+	}
+        
         private void xoaNhanVien() {
 		int selectedRow = tableNhanVien.getSelectedRow();
 
@@ -377,10 +399,10 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionL
 			JOptionPane.showMessageDialog(this, "Địa chỉ không được để trống");
 			return false;
 		}
-/*		else if(!email.matches("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\\\.[A-Z]{2,6}$")) {
+		else if(!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
 			JOptionPane.showMessageDialog(this, "Email không đúng định dạng");
 			return false;
-		}*/
+		}
 		else if(!SDT.matches("0[0-9]{9}")) {
 			JOptionPane.showMessageDialog(this, "Số điện thoại không đúng");
 			return false;
@@ -388,8 +410,34 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionL
 		
 		return true;
 	}
-
-        
+	private void timTheoMaNhanVien() throws SQLException {
+		if(txtTim.getText().trim().equals(""))
+			loadDataToTable();
+		else {
+			NhanVien nv = new NhanVien();
+			nv = dsNV.timTheoMaNhanVien(txtTim.getText().trim());
+			if(nv == null)
+				JOptionPane.showMessageDialog(this, "Không tìm thấy Nhân Viên!");
+			else {
+				deleteDataInTable();
+				tableModel.addRow(new Object[] {nv.getMaNV(),nv.getHoTenNV(),
+						nv.isGioiTinh() ? "Nam" : "Nữ",nv.getDiaChi(),nv.getSDT(),nv.getEmail(),nv.isQuanLyVien()?"Quản lý viên":"Nhân viên bán hàng"});
+			}
+		}
+		
+	}
+        private void deleteDataInTable() {
+		while (tableModel.getRowCount() > 0) {
+                    tableModel.removeRow(0);
+		}
+	}
+        public void setPopupMenu(JPopupMenu popup) {
+		txtMaNV.setComponentPopupMenu(popup);
+		txtHoTen.setComponentPopupMenu(popup);
+		txtDiaChi.setComponentPopupMenu(popup);
+		txtSDT.setComponentPopupMenu(popup);
+		txtEmail.setComponentPopupMenu(popup);
+	}
     @Override
     public void mouseClicked(MouseEvent e) {        
         int row = tableNhanVien.getSelectedRow();
@@ -445,6 +493,14 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionL
            {
                themNhanVien();
            }
+          else if(o.equals(btnTim) && radTimTheoMa.isSelected())
+          {	
+              timTheoMaNhanVien();    
+          }
+	  else if(o.equals(btnTim) && radTimTheoTen.isSelected())
+          {
+              timTheoTen();
+          }
        }
        catch(Exception ex)
        {

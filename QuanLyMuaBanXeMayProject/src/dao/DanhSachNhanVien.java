@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.List;
 import javax.swing.JOptionPane;
 
 public class DanhSachNhanVien {
@@ -121,15 +122,37 @@ public class DanhSachNhanVien {
 			return null;
 	}
 
-	public ArrayList<NhanVien> timTheoTenNhanVien(String hoTen) {
-		ArrayList<NhanVien> list = new ArrayList<NhanVien>();
-		for (NhanVien nhanVien : dsNV) {
-			if (nhanVien.getHoTenNV().equalsIgnoreCase(hoTen)) {
-				list.add(nhanVien);
+	public ArrayList<NhanVien> timTheoTenNhanVien(String tenNV) throws SQLException{
+                Connection conn = DatabaseConnection.getConnection();
+		ArrayList<NhanVien> dsNV  = new ArrayList<NhanVien>();
+		try {
+			String query = "select * from NhanVien where hoTen like " + "'%" + tenNV + "%'";
+			Statement stmt = conn.createStatement();
+			ResultSet result = stmt.executeQuery(query);
+			while(result.next()) {
+				String ma = result.getString("ma");
+                                String hoTen = result.getString("hoTen");
+                                String diaChi = result.getString("diaChi");
+                                boolean gioiTinh = result.getBoolean("gioiTinh");
+                                String email = result.getString("email");
+                                String sdt = result.getString("sdt");
+                                boolean isManager = result.getBoolean("quanLyVien");				
+				
+				NhanVien nv = new NhanVien(ma, hoTen, gioiTinh, diaChi, sdt, email, isManager);
+				dsNV.add(nv);
+				
 			}
+			if(dsNV.size() > 0)
+				return dsNV;
+			else 
+				return null;
+			
+		}catch(Exception e) {
+			throw new SQLException(e);
 		}
-		return list;
+		
 	}
+	
 
 	public boolean suaTTNhanVien(NhanVien nv) throws SQLException{
                 conn = DatabaseConnection.getConnection();
