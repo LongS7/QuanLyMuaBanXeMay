@@ -171,6 +171,7 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionL
 		String[] headers = { "Mã NV", "Họ tên NV","Giới tính","Địa chỉ", "SDT", "Email", "Chức vụ" };
 		tableModel = new DefaultTableModel(headers, 0);
 		tableNhanVien = new JTable(tableModel);
+		tableNhanVien.setRowHeight(25);
 		JScrollPane sp = new JScrollPane(tableNhanVien);
 		sp.setPreferredSize(new Dimension(sp.getPreferredSize().width, 300));
 		sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);

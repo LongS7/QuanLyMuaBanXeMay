@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -83,7 +84,7 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 	}
 	private void addNorth() {
 		Box boxNorth, boxSearch, boxLineRad;
-		btnSearch = new JButton("Tìm");
+		btnSearch = new JButton("", new ImageIcon("Images/search.png"));
 		btnSearch.setFont(NORMAL_FONT);
 		txtSearch = new JTextField();
 		pnlTitle = new JPanel();
@@ -214,10 +215,10 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 		
 		boxButton = Box.createVerticalBox();
 		boxButton.add(Box.createVerticalStrut(50));
-		btnThem = addButtonTo(boxButton, "Thêm");
-		btnSua = addButtonTo(boxButton, "Sửa");
-		btnXoa = addButtonTo(boxButton, "Xoá");
-		btnXoaTrang = addButtonTo(boxButton, "Xoá trắng");
+		btnThem = addButtonTo(boxButton, "Thêm", "Images/add.png");
+		btnSua = addButtonTo(boxButton, "Sửa", "Images/update.png");
+		btnXoa = addButtonTo(boxButton, "Xoá", "Images/delete.png");
+		btnXoaTrang = addButtonTo(boxButton, "Xoá trắng", "Images/erase.png");
 		
 		this.add(boxButton, BorderLayout.EAST);
 	}
@@ -266,16 +267,16 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 			}
 		}
 	}
-	private JButton addButtonTo(Box box, String name) {
-		JButton btn = new JButton(name); 
+	private JButton addButtonTo(Box box, String name, String iconPath) {
+		JButton btn = new JButton(name, new ImageIcon(iconPath));
 		btn.setFont(NORMAL_FONT);
-		btn.setPreferredSize(new Dimension(130, 25));
-		
+		btn.setPreferredSize(new Dimension(150, 25));
+
 		Box boxButton = Box.createHorizontalBox();
 		boxButton.add(Box.createHorizontalGlue());
 		boxButton.add(btn);
 		boxButton.add(Box.createHorizontalGlue());
-		
+
 		box.add(Box.createVerticalStrut(5));
 		box.add(boxButton);
 		box.add(Box.createVerticalStrut(5));

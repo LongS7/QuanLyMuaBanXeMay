@@ -313,6 +313,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		if(panel.equals(pnlProfile)) {
 			menuHoSo.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuHoSo;
+			pnlProfile.loadDataFromDatabaseToPanel();
 		}
 		if(panel.equals(pnlTKDT)) {
 			menuTKDT.setBackground(ACTIVE_COLOR);

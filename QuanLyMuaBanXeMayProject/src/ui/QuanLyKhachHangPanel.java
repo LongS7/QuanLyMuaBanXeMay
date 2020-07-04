@@ -68,7 +68,7 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 		JPanel pnlNorth = new JPanel();
 		pnlNorth.setLayout(new BoxLayout(pnlNorth, BoxLayout.Y_AXIS));
 
-		JLabel lblTitle = new JLabel("Quản lý khách hàng");
+		JLabel lblTitle = new JLabel("QUẢN LÝ KHÁCH HÀNG");
 		lblTitle.setFont(new Font("Times new roman", Font.BOLD, 20));
 		JPanel pnlTitle = new JPanel();
 		pnlTitle.add(lblTitle);
