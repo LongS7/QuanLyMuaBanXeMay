@@ -13,6 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -32,6 +33,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+
+import dao.QuanLyHoSo;
 
 public class MainFrame extends JFrame implements ActionListener {
 
@@ -99,6 +102,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	
 	private JButton btnPrevious;
 	private JPanel previousPanel = null;
+	private JLabel lblUserName;
 	
 
 	/**
@@ -128,7 +132,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
 		ImageIcon icon = new ImageIcon("Images/moto.png");
 		setIconImage(icon.getImage());
-
+		
 		popMenu = new JPopupMenu();
 
 		miCut = new JMenuItem("Cut", new ImageIcon("Images/cut.png"));
@@ -153,6 +157,18 @@ public class MainFrame extends JFrame implements ActionListener {
 		pnlQLNV = new QuanLyNhanVienPanel();
 		pnlTKDT = new ThongKeDoanhThuPanel();
 
+		setUser();
+	}
+	
+	private void setUser() {
+		QuanLyHoSo qlhs = new QuanLyHoSo();
+		try {
+			qlhs.getProfile();
+			lblUserName.setText(qlhs.getNhanVien().getHoTenNV());
+			
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "Lỗi kết nối!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+		}
 	}
 
 	private void warningBeforeClose() {
@@ -434,17 +450,38 @@ public class MainFrame extends JFrame implements ActionListener {
 		JLabel lbHeader = new JLabel("CỬA HÀNG MUA BÁN XE MÁY HONDO");
 		lbHeader.setFont(H1_FONT);
 		lbHeader.setForeground(H1_COLOR);
+		lbHeader.setHorizontalAlignment(JLabel.CENTER);
 
-		Box boxNorth = Box.createHorizontalBox();
+		JPanel pnlNorth = new JPanel(new BorderLayout());
+		pnlNorth.setBackground(null);
 
 		pnlNorthOfCenter.add(Box.createVerticalStrut(5));
-		pnlNorthOfCenter.add(boxNorth);
+		pnlNorthOfCenter.add(pnlNorth);
 		pnlNorthOfCenter.add(Box.createVerticalStrut(5));
 
-		boxNorth.add(boxMenuButton);
-		boxNorth.add(Box.createHorizontalGlue());
-		boxNorth.add(lbHeader);
-		boxNorth.add(Box.createHorizontalGlue());
+		
+		JButton btnUser = new JButton();
+		btnUser.setLayout(new BoxLayout(btnUser, BoxLayout.Y_AXIS));
+		
+		JLabel lblUserIcon = new JLabel(new ImageIcon("Images/user.png"));
+		lblUserName = new JLabel("User name");
+		
+		Box boxUserIcon = Box.createHorizontalBox();
+		boxUserIcon.add(Box.createHorizontalGlue());
+		boxUserIcon.add(lblUserIcon);
+		boxUserIcon.add(Box.createHorizontalGlue());
+		
+		Box boxUserName = Box.createHorizontalBox();
+		boxUserName.add(Box.createHorizontalGlue());
+		boxUserName.add(lblUserName);
+		boxUserName.add(Box.createHorizontalGlue());
+		
+		btnUser.add(boxUserIcon);
+		btnUser.add(boxUserName);
+		
+		pnlNorth.add(boxMenuButton, BorderLayout.WEST);
+		pnlNorth.add(lbHeader, BorderLayout.CENTER);
+		pnlNorth.add(btnUser, BorderLayout.EAST);
 
 	}
 
