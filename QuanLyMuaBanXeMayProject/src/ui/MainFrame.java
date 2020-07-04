@@ -317,6 +317,10 @@ public class MainFrame extends JFrame implements ActionListener {
 			menuTKDT.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuTKDT;
 		}
+		if(panel.equals(pnlTrangChu)) {
+			menuTrangChu.setBackground(ACTIVE_COLOR);
+			selectedMenuItem = menuTrangChu;
+		}
 	}
 
 	private void setLookAndFeel() {
@@ -478,8 +482,12 @@ public class MainFrame extends JFrame implements ActionListener {
 		pnl.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER)
-					;
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					if (selectedMenuItem != null)
+						if (pnl.equals(selectedMenuItem))
+							return;
+					pnl.setBackground(ACTIVE_COLOR);
+				}
 			}
 		});
 		pnl.addMouseListener(new MouseAdapter() {

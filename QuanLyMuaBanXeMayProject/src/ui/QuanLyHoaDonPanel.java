@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -522,10 +523,10 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		Box boxEast = Box.createVerticalBox();
 		this.add(boxEast, BorderLayout.EAST);
 
-		btnThemHD = addButtonTo(boxEast, "Thêm hóa đơn");
-		btnXoaHD = addButtonTo(boxEast, "Xóa hóa đơn");
-		btnSuaHD = addButtonTo(boxEast, "Sửa hóa đơn");
-		btnXoaRong = addButtonTo(boxEast, "Xoá rỗng");
+		btnThemHD = addButtonTo(boxEast, "Thêm hóa đơn", "Images/add.png");
+		btnXoaHD = addButtonTo(boxEast, "Xóa hóa đơn", "Images/delete.png");
+		btnSuaHD = addButtonTo(boxEast, "Sửa hóa đơn", "Images/update.png");
+		btnXoaRong = addButtonTo(boxEast, "Xoá rỗng", "Images/erase.png");
 	}
 
 	private void addCenter() {
@@ -612,7 +613,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 
 		txtTimKiem = new JTextField();
 		txtTimKiem.setFont(NORMAL_FONT);
-		btnTimKiem = new JButton("Tìm");
+		btnTimKiem = new JButton(new ImageIcon("Images/search.png"));
 		btnTimKiem.setFont(NORMAL_FONT);
 
 		boxSearch.add(Box.createHorizontalGlue());
@@ -718,17 +719,17 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		pnlChiTietHD.add(boxCTHDButton, BorderLayout.EAST);
 
 		boxCTHDButton.add(Box.createVerticalStrut(5));
-		btnThemCTHD = addButtonTo(boxCTHDButton, "Thêm chi tiết");
-		btnXoaCTHD = addButtonTo(boxCTHDButton, "Xóa chi tiết");
-		btnSuaCTHD = addButtonTo(boxCTHDButton, "Sửa chi tiết");
+		btnThemCTHD = addButtonTo(boxCTHDButton, "Thêm chi tiết", "Images/add.png");
+		btnXoaCTHD = addButtonTo(boxCTHDButton, "Xóa chi tiết", "Images/delete.png");
+		btnSuaCTHD = addButtonTo(boxCTHDButton, "Sửa chi tiết", "Images/update.png");
 
 		boxNorth.add(Box.createVerticalStrut(20));
 	}
 
-	private JButton addButtonTo(Box box, String name) {
-		JButton btn = new JButton(name);
+	private JButton addButtonTo(Box box, String name, String iconPath) {
+		JButton btn = new JButton(name, new ImageIcon(iconPath));
 		btn.setFont(NORMAL_FONT);
-		btn.setPreferredSize(new Dimension(130, 25));
+		btn.setPreferredSize(new Dimension(150, 25));
 
 		Box boxButton = Box.createHorizontalBox();
 		boxButton.add(Box.createHorizontalGlue());
