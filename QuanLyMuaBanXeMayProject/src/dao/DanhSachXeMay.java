@@ -63,7 +63,7 @@ public class DanhSachXeMay {
 			stmt.setDouble(9, xm.getDonGia());
 
 			int n = stmt.executeUpdate();
-			if (n > 0)
+			if (n > 0) 
 				return true;
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(null, "Trùng mã xe!!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);

@@ -56,12 +56,17 @@ public class MainFrame extends JFrame implements ActionListener {
 	private QuanLyHoaDonPanel pnlQLHD;
 	private QuanLyXeMayPanel pnlQLXM;
 	private ProfilePanel pnlProfile;
+	private QuanLyKhachHangPanel pnlQLKH;
+	private QuanLyNhanVienPanel pnlQLNV;
+	private ThongKeDoanhThuPanel pnlTKDT;
 	private JPanel menuTrangChu;
 	private JPanel menuHoSo;
 	private JPanel menuQLKH;
 	private JPanel menuQLNV;
 	private JPanel menuQLHD;
 	private JPanel menuQLXM;
+	private JPanel menuTKDT;
+	private JPanel menuDX;
 	private TrangChuPanel pnlTrangChu;
 	private boolean isManager;
 	private JPopupMenu popMenu;
@@ -69,7 +74,6 @@ public class MainFrame extends JFrame implements ActionListener {
 	private JMenuItem miCopy;
 	private JMenuItem miPaste;
 	private String tempData = "";
-	private QuanLyKhachHangPanel pnlQLKH;
 	
 	public QuanLyHoaDonPanel getPnlQLHD() {
 		return pnlQLHD;
@@ -86,12 +90,16 @@ public class MainFrame extends JFrame implements ActionListener {
 	public QuanLyNhanVienPanel getPnlQLNV() {
 		return pnlQLNV;
 	}
-
+	public ProfilePanel getPnlProfile() {
+		return pnlProfile;
+	}
+	public ThongKeDoanhThuPanel getPnlTKDT() {
+		return pnlTKDT;
+	}
+	
 	private JButton btnPrevious;
 	private JPanel previousPanel = null;
-	private JPanel menuTKDT;
-	private QuanLyNhanVienPanel pnlQLNV;
-	private ThongKeDoanhThuPanel pnlThongKeDoanhThu;
+	
 
 	/**
 	 * Hàm khởi tạo
@@ -141,8 +149,9 @@ public class MainFrame extends JFrame implements ActionListener {
 		pnlProfile = new ProfilePanel();
 		pnlQLHD.setPopupMenu(popMenu);
 		pnlQLXM.setPopupMenu(popMenu);
+		pnlQLKH.setPopupMenu(popMenu);
 		pnlQLNV = new QuanLyNhanVienPanel();
-		pnlThongKeDoanhThu = new ThongKeDoanhThuPanel();
+		pnlTKDT = new ThongKeDoanhThuPanel();
 
 	}
 
@@ -203,6 +212,12 @@ public class MainFrame extends JFrame implements ActionListener {
 				changePanel(pnlTrangChu);
 			}
 		});
+		menuDX.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				dangXuat();
+			}
+		});
 		if(isManager) {
 			menuQLNV.addMouseListener(new MouseAdapter() {
 				@Override
@@ -213,7 +228,7 @@ public class MainFrame extends JFrame implements ActionListener {
 			menuTKDT.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					changePanel(pnlThongKeDoanhThu);
+					changePanel(pnlTKDT);
 				}
 			});
 		}
@@ -281,7 +296,6 @@ public class MainFrame extends JFrame implements ActionListener {
 		if (panel.equals(pnlQLKH)) {
 			menuQLKH.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuQLKH;
-			
 		}
 		if (panel.equals(pnlQLHD)) {
 			menuQLHD.setBackground(ACTIVE_COLOR);
@@ -295,11 +309,14 @@ public class MainFrame extends JFrame implements ActionListener {
 			menuQLNV.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuQLNV;
 		}
-		if (panel.equals(pnlThongKeDoanhThu)) {
+		if(panel.equals(pnlProfile)) {
+			menuHoSo.setBackground(ACTIVE_COLOR);
+			selectedMenuItem = menuHoSo;
+		}
+		if(panel.equals(pnlTKDT)) {
 			menuTKDT.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuTKDT;
 		}
-
 	}
 
 	private void setLookAndFeel() {
@@ -371,6 +388,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		menuQLXM = addMenuItem("Quản lý xe máy", "Images/product_white.png");
 		if (isManager) 
 			menuTKDT = addMenuItem("Thống kê doanh thu", "Images/ledger.png");
+		menuDX = addMenuItem("Đăng xuất", "Images/logout.png");
 	}
 
 	private void addSouth() {
@@ -547,5 +565,12 @@ public class MainFrame extends JFrame implements ActionListener {
 			miPaste.setEnabled(true);
 		}
 	}
-
+	private void dangXuat() {
+		int replay = JOptionPane.showConfirmDialog(this, "Bạn có muốn đăng xuất?", "Cảnh báo", JOptionPane.YES_NO_OPTION);
+		if(replay == JOptionPane.YES_OPTION) {
+			this.setVisible(false);
+			new DangNhapFrame().setVisible(true);
+		}else
+			return;	
+	}
 }

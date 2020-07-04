@@ -6,17 +6,11 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Locale;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -25,10 +19,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import dao.DatabaseConnection;
-import dao.QuanLyDangNhap;
 import entity.NhanVien;
-import entity.XeMay;
 import dao.QuanLyHoSo;
 
 
@@ -70,7 +61,7 @@ public class ProfilePanel extends JPanel implements ActionListener{
 		pnlImage.add(lblImage);
 		
 		JPanel pnlTitle = new JPanel();
-		JLabel lblHeader = new JLabel("Hồ sơ của tôi");
+		JLabel lblHeader = new JLabel("HỒ SƠ CỦA TÔI");
 		lblHeader.setFont(HEADER_FONT);
 		lblHeader.setForeground(HEADER_COLOR);
 		pnlTitle.add(lblHeader);
@@ -210,12 +201,16 @@ public class ProfilePanel extends JPanel implements ActionListener{
 		
 	}
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent e){
 		Object o = e.getSource();
 		if(o.equals(btnChinhSua))
 			chinhSua();
 		else if(o.equals(btnLuu))
-			luu();
+			try {
+				luu();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 	}
 	private void chinhSua() {
 		txtHoTen.setEditable(true);
@@ -226,14 +221,62 @@ public class ProfilePanel extends JPanel implements ActionListener{
 		ckbChucVu.setEnabled(true);
 	}
 	
-	private void luu() {
+	private void luu() throws SQLException{
+		if(validData()) {
+			NhanVien nv = new NhanVien(txtMaNhanVien.getText().trim(), txtHoTen.getText().trim(), 
+					ckbGioiTinh.getSelectedItem().toString().equals("Nam") ? true : false, txtDiaChi.getText().trim(),
+					txtSoDienThoai.getText().trim(), txtEmail.getText().trim(), ckbChucVu.getSelectedItem().toString().equals("Quản lý viên") ? true : false);
+			if(hoSo.modifiedProfile(nv)) {
+				JOptionPane.showMessageDialog(this, "Sửa thông tin thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+				txtHoTen.setEditable(false);
+				txtDiaChi.setEditable(false);	
+				txtSoDienThoai.setEditable(false);	
+				txtEmail.setEditable(false);	
+				ckbGioiTinh.setEnabled(false);
+				ckbChucVu.setEnabled(false);	
+			} else {
+				JOptionPane.showMessageDialog(this, "Sửa nhân thông tin không thành công", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+			}
+		}
+	}
+		
+	public boolean validData() {
+			
+		String tennv = txtHoTen.getText().trim();
+		String diachi = txtDiaChi.getText().trim();
+		String email = txtEmail.getText().trim();
+			
+		//Tên nhân viên không được bỏ trống, có thể gồm nhiều từ cách nhau bởi khoảng trắng
+		//Không chứa ký tự đặc biệt và số
+		if(tennv.isEmpty() || !tennv.matches("[\\p{L}\\s]+")) {
+			JOptionPane.showMessageDialog(this,
+					"Tên xe không được bỏ trống. Tên xe có thể gồm nhiều từ cách nhau bởi khoảng trắng và không chứa ký tự đặc biệt và số",
+					"Cảnh báo", JOptionPane.WARNING_MESSAGE);
+			txtHoTen.requestFocus();
+			return false;
+		}
+		
+		//Địa chỉ không được bỏ trống, có thể gồm nhiều từ cách nhau bởi khoảng trắng
+		//Được chứa ký tự '-', '(', ')' và số
+		if(diachi.isEmpty() || !diachi.matches("[\\p{L}0-9\\s-(),]+")) {
+			JOptionPane.showMessageDialog(this,
+					"Địa chỉ không được bỏ trống. Địa chỉ có thể gồm nhiều từ cách nhau bởi khoảng trắng"
+					+ "Được chứa ký tự '-', '(', ')' và số",
+					"Cảnh báo", JOptionPane.WARNING_MESSAGE);
+			txtDiaChi.requestFocus();
+			return false;
+		}
 		
 		
-		txtHoTen.setEditable(false);
-		txtDiaChi.setEditable(false);	
-		txtSoDienThoai.setEditable(false);	
-		txtEmail.setEditable(false);	
-		ckbGioiTinh.setEnabled(false);
-		ckbChucVu.setEnabled(false);
+		if(email.isEmpty() || !email.matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*"
+				+ "@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")) {
+			JOptionPane.showMessageDialog(this,
+					"email không được bỏ trống. email có thể gồm nhiều từ, không được chứa khoảng trắng. "
+					+ "Tên hộp thư được chưa các ký tự . và -, tên miền được chứa ký tự .",
+					"Cảnh báo", JOptionPane.WARNING_MESSAGE);
+			txtEmail.requestFocus();
+			return false;
+		}
+		return true;
 	}
 }

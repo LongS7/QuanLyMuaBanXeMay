@@ -35,6 +35,7 @@ public class TrangChuPanel extends JPanel {
 	private boolean isManager;
 	private MainFrame mainFrame;
 	private JPanel pnlTKDT;
+	private JPanel pnlHoSo;
 
 	public TrangChuPanel(MainFrame mainFrame, boolean isManager) {
 		this.mainFrame = mainFrame;
@@ -101,19 +102,14 @@ public class TrangChuPanel extends JPanel {
 		this.add(boxFixedCenterVertical, BorderLayout.CENTER);
 		
 		pnlQLKH = createPanel(pnlCenter, "Quản lý khách hàng", "Images/customers.png");
+		pnlHoSo = createPanel(pnlCenter, "Hồ sơ của tôi", "Images/profile2.png");
 		if(isManager)
 			pnlQLNV = createPanel(pnlCenter, "Quản lý nhân viên", "Images/employees.png");
 			pnlQLXM = createPanel(pnlCenter, "Quản lý xe máy", "Images/motobikes.png");
 			pnlQLHD = createPanel(pnlCenter, "Quản lý hóa đơn", "Images/orders.png");
 		if(isManager) {
-			createPanel(pnlCenter, "", "");
 			pnlTKDT = createPanel(pnlCenter, "Thống kê doanh thu", "Images/revenue.png");
 		}
-		else {
-			createPanel(pnlCenter, "", "");
-		}
-		
-		
 	}
 	
 	private JPanel createPanel(Container container, String name, String iconPath) {
@@ -143,14 +139,16 @@ public class TrangChuPanel extends JPanel {
 				
 				if(o.equals(pnlQLHD))
 					mainFrame.changePanel(mainFrame.getPnlQLHD());
+					
 				if(o.equals(pnlQLKH))
 					mainFrame.changePanel(mainFrame.getPnlQLKH());
 				if(o.equals(pnlQLXM))
 					mainFrame.changePanel(mainFrame.getPnlQLXM());
 				if(o.equals(pnlQLNV))
 					mainFrame.changePanel(mainFrame.getPnlQLNV());
+				if(o.equals(pnlHoSo))
+					mainFrame.changePanel(mainFrame.getPnlProfile());
 				if(o.equals(pnlTKDT));
-				
 			}
 		});
 		
@@ -179,6 +177,6 @@ public class TrangChuPanel extends JPanel {
 	}
 	
 	public void focus() {
+		
 	}
-
 }
