@@ -4,15 +4,11 @@ package dao;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import entity.KhachHang;
 import entity.NhanVien;
-import java.awt.event.MouseListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.List;
-import javax.swing.JOptionPane;
 
 public class DanhSachNhanVien {
 	private ArrayList<NhanVien> dsNV;

@@ -182,21 +182,18 @@ public class MainFrame extends JFrame implements ActionListener {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				changePanel(pnlQLHD);
-				pnlQLHD.loadAllDataToTable();
 			}
 		});
 		menuQLXM.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				changePanel(pnlQLXM);
-				pnlQLXM.loadDataToTable();
 			}
 		});
 		menuQLKH.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				changePanel(pnlQLKH);
-				pnlQLKH.loadDataToTable();
 			}
 		});
 		menuHoSo.addMouseListener(new MouseAdapter() {
@@ -296,18 +293,22 @@ public class MainFrame extends JFrame implements ActionListener {
 		if (panel.equals(pnlQLKH)) {
 			menuQLKH.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuQLKH;
+			pnlQLKH.loadDataToTable();
 		}
 		if (panel.equals(pnlQLHD)) {
 			menuQLHD.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuQLHD;
+			pnlQLHD.loadAllDataToTable();
 		}
 		if (panel.equals(pnlQLXM)) {
 			menuQLXM.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuQLXM;
+			pnlQLXM.loadDataToTable();
 		}
 		if (panel.equals(pnlQLNV)) {
 			menuQLNV.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuQLNV;
+			pnlQLNV.loadDataToTable();
 		}
 		if(panel.equals(pnlProfile)) {
 			menuHoSo.setBackground(ACTIVE_COLOR);

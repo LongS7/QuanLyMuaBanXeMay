@@ -84,6 +84,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		addNorth();
 		addCenter();
 		addEast();
+		setBackground(null);
 
 		addEvent();
 

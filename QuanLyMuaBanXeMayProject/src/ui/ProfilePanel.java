@@ -49,7 +49,9 @@ public class ProfilePanel extends JPanel implements ActionListener{
 		
 		btnChinhSua.addActionListener(this);
 		btnLuu.addActionListener(this);
+		
 	}
+	
 	private void addNorth(){
 		Dimension dLabel = new Dimension(90,25);
 		Box boxNorth, boxGroup, boxGioiTinh, boxChucVu, boxDiaChi, boxLeft, boxRight;

@@ -27,23 +27,25 @@ import javax.swing.table.DefaultTableModel;
 
 import entity.NhanVien;
 import dao.DanhSachNhanVien;
-import entity.KhachHang;
-import entity.XeMay;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionListener{
-	private JButton btnThem, btnXoa, btnSua, btnQuayLai, btnTim;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JButton btnThem;
+	private JButton btnXoa;
+	private JButton btnSua;
+	private JButton btnTim;
 	private Font NORMAL_FONT;
 	private JTable tableNhanVien;
 	private DefaultTableModel tableModel;
@@ -196,7 +198,6 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionL
 		boxEast.add(Box.createVerticalStrut(10));
 		btnXoa = addButtonTo(boxEast, "Xoá nhân viên");
 		boxEast.add(Box.createVerticalStrut(10));
-		btnQuayLai = addButtonTo(boxEast, "Quay lại");
 	}
 
 	private JButton addButtonTo(Box box, String name) {

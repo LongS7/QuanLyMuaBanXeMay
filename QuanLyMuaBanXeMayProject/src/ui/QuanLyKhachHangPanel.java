@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -20,8 +19,6 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -36,9 +33,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
 
 import dao.DanhSachKhachHang;
-import entity.HoaDon;
 import entity.KhachHang;
-import entity.XeMay;
 
 public class QuanLyKhachHangPanel extends JPanel implements ActionListener,MouseListener{
 	/**
@@ -223,10 +218,6 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 		btnTimKiem.addActionListener(this);
 		tableKhachHang.addMouseListener(this);
 
-	}
-
-	private void setFontComponent(JComponent c) {
-		c.setFont(NORMAL_FONT);
 	}
 
 	private void setLookAndFeel() {
