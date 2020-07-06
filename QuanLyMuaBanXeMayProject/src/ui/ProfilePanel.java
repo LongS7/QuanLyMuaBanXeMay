@@ -138,10 +138,10 @@ public class ProfilePanel extends JPanel implements ActionListener{
 		boxNorth.add(boxDiaChi);
 		
 		Box boxButton;
-		btnChinhSua = new JButton("Chỉnh sửa");
+		btnChinhSua = new JButton("Chỉnh sửa", new ImageIcon("Images/update.png"));
 		btnChinhSua.setPreferredSize(new Dimension(100,40));
 		btnChinhSua.setFont(NORMAL_FONT);
-		btnLuu = new JButton("Lưu");
+		btnLuu = new JButton("Lưu", new ImageIcon("Images/save.png"));
 		btnLuu.setPreferredSize(new Dimension(100,40));
 		btnLuu.setFont(NORMAL_FONT);
 		
