@@ -1,6 +1,9 @@
 package entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+
+import dao.DanhSachCTHD;
 
 public class HoaDon {
 	private String maHD;

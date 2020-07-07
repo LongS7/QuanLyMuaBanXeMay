@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -14,7 +16,9 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -34,6 +38,7 @@ import dao.DanhSachCTHD;
 import dao.DanhSachHoaDon;
 import dao.DanhSachKhachHang;
 import dao.DanhSachNhanVien;
+import dao.DanhSachXeMay;
 import dao.DatabaseConnection;
 import entity.ChiTietHD;
 import entity.HoaDon;
@@ -60,7 +65,6 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 	private JButton btnSuaCTHD;
 	private JTextField txtMaXeMay;
 	private JTextField txtSoLuong;
-	private JTextField txtDonGia;
 	private DefaultTableModel modelHoaDon;
 	private JTable tableHoaDon;
 	private JButton btnThemHD;
@@ -74,6 +78,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 	private JButton btnXoaRong;
 	private DanhSachHoaDon dsHD;
 	private DanhSachCTHD dsCTHD;
+	private JButton btnXuatHoaDon;
 
 	public QuanLyHoaDonPanel() {
 		setPreferredSize(new Dimension(500, 600));
@@ -83,6 +88,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		addNorth();
 		addCenter();
 		addEast();
+		setBackground(null);
 
 		addEvent();
 
@@ -157,7 +163,6 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 	}
 
 	public void setPopupMenu(JPopupMenu popup) {
-		txtDonGia.setComponentPopupMenu(popup);
 		txtMaHD.setComponentPopupMenu(popup);
 		txtMaKH.setComponentPopupMenu(popup);
 		txtMaNV.setComponentPopupMenu(popup);
@@ -178,11 +183,19 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		btnThemCTHD.addActionListener(this);
 		btnXoaCTHD.addActionListener(this);
 		btnSuaCTHD.addActionListener(this);
+		btnXuatHoaDon.addActionListener(this);
 		tableHoaDon.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				changeText();
 				updateCTHDTable();
+			}
+		});
+		tableCTHD.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				changeCTHDText();
 			}
 		});
 	}
@@ -201,6 +214,175 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			timKiem();
 		if (o.equals(btnSuaHD))
 			suaHoaDon();
+		if (o.equals(btnThemCTHD))
+			themCTHD();
+		if (o.equals(btnSuaCTHD))
+			suaCTHD();
+		if (o.equals(btnXoaCTHD))
+			xoaCTHD();
+		if (o.equals(btnXuatHoaDon))
+			xuatHD();
+	}
+
+	private void xuatHD() {
+		int selectedRow = tableHoaDon.getSelectedRow();
+
+		if (selectedRow == -1) {
+			JOptionPane.showMessageDialog(this,
+					"Bạn chưa chọn hóa đơn cần xuất, nhấp chọn vào hóa đơn cần xóa trong bảng!", "Thông báo",
+					JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+		
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fileChooser.setAcceptAllFileFilterUsed(true);
+		int result = fileChooser.showSaveDialog(this);
+		if(result == JFileChooser.APPROVE_OPTION) {
+			File selectedFile = fileChooser.getSelectedFile();
+			try {
+				dsHD.xuatHoaDon(tableHoaDon.getValueAt(selectedRow, 0).toString(), selectedFile);
+				
+			} catch (SQLException e) {
+				JOptionPane.showMessageDialog(this, "Lỗi kết nối", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(this, "Lỗi file", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+		
+	}
+
+	private void xoaCTHD() {
+		if(tableCTHD.getSelectedRow() == -1) {
+			JOptionPane.showMessageDialog(this, "Chưa chọn chi tiết hóa đơn cần xóa!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		int i;
+		while ((i = tableCTHD.getSelectedRow()) != -1) {
+			String maHD = tableHoaDon.getValueAt(tableHoaDon.getSelectedRow(), 0).toString();
+			try {
+				if(dsCTHD.xoaCTHD(maHD, tableCTHD.getValueAt(i, 0).toString())) {
+					JOptionPane.showMessageDialog(this, "Xoá thành công!!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+					modelCTHD.removeRow(i);
+				}
+				else {
+					JOptionPane.showMessageDialog(this, "Xoá không thành công!!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+				}
+				
+			} catch (SQLException e) {
+				JOptionPane.showMessageDialog(this, "Lỗi khi xóa dữ liệu!!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
+	}
+
+	private void suaCTHD() {
+		int i = tableCTHD.getSelectedRow();
+		if(i == -1) {
+			JOptionPane.showMessageDialog(this, "Chưa chọn chi tiết hóa đơn cần sửa!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		String maHD = tableHoaDon.getValueAt(i, 0).toString();
+		
+		String maXe = txtMaXeMay.getText().trim();
+		int soLuong = 0;
+		double donGia = 0;
+		XeMay xm = null;
+		HoaDon hd = null;
+
+		try {
+			soLuong = Integer.parseInt(txtSoLuong.getText());
+			
+			xm = new DanhSachXeMay().timTheoMa(maXe);
+			if(xm == null) {
+				JOptionPane.showMessageDialog(this, "Mã xe máy không tồn tại!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
+			donGia = xm.getDonGia();
+			
+			hd = dsHD.timTheoMaHD(maHD);
+			
+			if(hd == null) {
+				JOptionPane.showMessageDialog(this, "Mã hóa đơn không tồn tại!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
+
+			ChiTietHD cthd = new ChiTietHD(soLuong, donGia, hd, xm);
+			
+			if(dsCTHD.suaCTHD(maHD, xm.getMaXe(), cthd)) {
+				modelCTHD.setValueAt(cthd.getXeMay().getMaXe(), i, 0);
+				modelCTHD.setValueAt(cthd.getSoLuong(), i, 1);
+				modelCTHD.setValueAt(cthd.getDonGia(), i, 2);
+				modelCTHD.setValueAt(cthd.tinhThanhTien(), i, 3);
+				JOptionPane.showMessageDialog(this, "Sửa thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+				
+			
+			} else {
+				JOptionPane.showMessageDialog(this, "Không thể sửa!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+			}
+			
+		}catch(NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "Số lượng phải nhập số nguyên lớn hơn 0!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			return;
+			
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "Lỗi khi truy xuất dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+	}
+
+	private void themCTHD() {
+		if(tableHoaDon.getSelectedRow() == -1) {
+			JOptionPane.showMessageDialog(this, "Chưa chọn hóa đơn!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		String maHD = tableHoaDon.getValueAt(tableHoaDon.getSelectedRow(), 0).toString();
+		
+		String maXe = txtMaXeMay.getText().trim();
+		int soLuong = 0;
+		double donGia = 0;
+		XeMay xm = null;
+		HoaDon hd = null;
+
+		try {
+			soLuong = Integer.parseInt(txtSoLuong.getText());
+			
+			xm = new DanhSachXeMay().timTheoMa(maXe);
+			if(xm == null) {
+				JOptionPane.showMessageDialog(this, "Mã xe máy không tồn tại!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
+			donGia = xm.getDonGia();
+			
+			hd = dsHD.timTheoMaHD(maHD);
+			
+			if(hd == null) {
+				JOptionPane.showMessageDialog(this, "Mã hóa đơn không tồn tại!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
+
+			ChiTietHD cthd = new ChiTietHD(soLuong, donGia, hd, xm);
+			
+			if(dsCTHD.themCTHD(cthd)) {
+				modelCTHD.addRow(new Object[] {
+						cthd.getXeMay().getMaXe(), cthd.getSoLuong(), cthd.getDonGia(), cthd.tinhThanhTien()
+					});
+				JOptionPane.showMessageDialog(this, "Thêm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+				
+			
+			} else {
+				JOptionPane.showMessageDialog(this, "Đã tồn tại CTHD này!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+			}
+			
+		}catch(NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "Số lượng phải nhập số nguyên lớn hơn 0!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			return;
+			
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "Lỗi khi truy xuất dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
 	}
 
 	private void suaHoaDon() {
@@ -214,7 +396,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		try {
 			NhanVien nv = new DanhSachNhanVien().timTheoMaNhanVien(maNV);
 			if (nv == null) {
-				JOptionPane.showMessageDialog(this, "Mã nhân viên không tồn tại!", "Lỗi", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "Mã nhân viên không tồn tại!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
 				txtMaNV.requestFocus();
 				return;
 			}
@@ -226,6 +408,14 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			}
 			HoaDon hd = new HoaDon(maHD, nv, kh, LocalDate.parse(ngayLap));
 			if (dsHD.suaHoaDon(maHD, hd)) {
+				for(int i = 0; i < modelHoaDon.getRowCount(); i++) {
+					if(modelHoaDon.getValueAt(i, 0).toString().equalsIgnoreCase(maHD)) {
+						modelHoaDon.setValueAt(hd.getNhanVien().getMaNV(), i, 1);
+						modelHoaDon.setValueAt(hd.getKhachHang().getMaKH(), i, 2);
+						modelHoaDon.setValueAt(hd.getNgayLap(), i, 3);
+						break;
+					}
+				}
 				JOptionPane.showMessageDialog(this, "Sửa hóa đơn thành công!", "Thông báo",
 						JOptionPane.INFORMATION_MESSAGE);
 			} else {
@@ -257,10 +447,14 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			return;
 		}
 
-		ArrayList<HoaDon> list = new ArrayList<HoaDon>();
+		ArrayList<HoaDon> list = null;
 		if (radMaHD.isSelected()) {
 			try {
-				list = dsHD.timTheoMaHD(txtTimKiem.getText().trim());
+				HoaDon hd = dsHD.timTheoMaHD(txtTimKiem.getText().trim());
+				if(hd != null) {
+					list = new ArrayList<HoaDon>();
+					list.add(hd);
+				}
 
 			} catch (SQLException e) {
 				JOptionPane.showMessageDialog(this, "Lỗi khi tìm kiếm dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -280,8 +474,12 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 				JOptionPane.showMessageDialog(this, "Lỗi khi tìm kiếm dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
 			}
 		}
-
-		loadDataToTable(list);
+		
+		if(list != null)
+			loadDataToTable(list);
+		else {
+			JOptionPane.showMessageDialog(this, "Không tìm thấy!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+		}
 	}
 
 	private void xoaRong() {
@@ -289,7 +487,6 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		txtMaNV.setText("");
 		txtMaKH.setText("");
 		txtNgayLap.setText("");
-		txtDonGia.setText("");
 		txtSoLuong.setText("");
 		txtMaXeMay.setText("");
 		txtTimKiem.setText("");
@@ -298,6 +495,20 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		while (tableCTHD.getSelectedRow() != -1)
 			tableCTHD.removeRowSelectionInterval(tableCTHD.getSelectedRow(), tableCTHD.getSelectedRow());
 
+	}
+
+	private void changeCTHDText() {
+		int selected = tableCTHD.getSelectedRow();
+		if (selected == -1)
+			return;
+		if (tableHoaDon.getSelectedRows().length > 1) {
+			txtMaXeMay.setText("");
+			txtSoLuong.setText("");
+			return;
+		}
+
+		txtMaXeMay.setText(tableCTHD.getValueAt(selected, 0).toString());
+		txtSoLuong.setText(tableCTHD.getValueAt(selected, 1).toString());
 	}
 
 	private void changeText() {
@@ -309,7 +520,6 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			txtMaNV.setText("");
 			txtMaKH.setText("");
 			txtNgayLap.setText("");
-			txtDonGia.setText("");
 			txtSoLuong.setText("");
 			txtMaXeMay.setText("");
 			return;
@@ -377,7 +587,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		}
 
 		String ngayLap = txtNgayLap.getText().trim();
-		if (!ngayLap.matches("\\d{4}-\\d{1,2}-\\d{1,2}")) {
+		if (!ngayLap.matches("\\d{4}-\\d{2}-\\d{2}")) {
 			JOptionPane.showMessageDialog(this, "Ngày lập phải theo đinh dạng YYYY-MM-DD!", "Cảnh báo",
 					JOptionPane.WARNING_MESSAGE);
 			txtNgayLap.requestFocus();
@@ -420,10 +630,11 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		Box boxEast = Box.createVerticalBox();
 		this.add(boxEast, BorderLayout.EAST);
 
-		btnThemHD = addButtonTo(boxEast, "Thêm hóa đơn");
-		btnXoaHD = addButtonTo(boxEast, "Xóa hóa đơn");
-		btnSuaHD = addButtonTo(boxEast, "Sửa hóa đơn");
-		btnXoaRong = addButtonTo(boxEast, "Xoá rỗng");
+		btnThemHD = addButtonTo(boxEast, "Thêm hóa đơn", "Images/add.png");
+		btnXoaHD = addButtonTo(boxEast, "Xóa hóa đơn", "Images/delete.png");
+		btnSuaHD = addButtonTo(boxEast, "Sửa hóa đơn", "Images/update.png");
+		btnXoaRong = addButtonTo(boxEast, "Xoá rỗng", "Images/erase.png");
+		btnXuatHoaDon = addButtonTo(boxEast, "Xuất hóa đơn", "");
 	}
 
 	private void addCenter() {
@@ -510,7 +721,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 
 		txtTimKiem = new JTextField();
 		txtTimKiem.setFont(NORMAL_FONT);
-		btnTimKiem = new JButton("Tìm");
+		btnTimKiem = new JButton(new ImageIcon("Images/search.png"));
 		btnTimKiem.setFont(NORMAL_FONT);
 
 		boxSearch.add(Box.createHorizontalGlue());
@@ -600,8 +811,6 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		txtMaXeMay = addInputItemTo(boxCTHDInput, "Mã xe máy");
 		boxCTHDInput.add(Box.createHorizontalStrut(5));
 		txtSoLuong = addInputItemTo(boxCTHDInput, "Số lượng");
-		boxCTHDInput.add(Box.createHorizontalStrut(5));
-		txtDonGia = addInputItemTo(boxCTHDInput, "Đơn giá");
 		boxCTHDInput.add(Box.createHorizontalStrut(10));
 
 		String[] cthdHeader = { "Mã xe máy", "Số lượng", "Đơn giá", "Thành tiền" };
@@ -618,17 +827,17 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		pnlChiTietHD.add(boxCTHDButton, BorderLayout.EAST);
 
 		boxCTHDButton.add(Box.createVerticalStrut(5));
-		btnThemCTHD = addButtonTo(boxCTHDButton, "Thêm chi tiết");
-		btnXoaCTHD = addButtonTo(boxCTHDButton, "Xóa chi tiết");
-		btnSuaCTHD = addButtonTo(boxCTHDButton, "Sửa chi tiết");
+		btnThemCTHD = addButtonTo(boxCTHDButton, "Thêm chi tiết", "Images/add.png");
+		btnXoaCTHD = addButtonTo(boxCTHDButton, "Xóa chi tiết", "Images/delete.png");
+		btnSuaCTHD = addButtonTo(boxCTHDButton, "Sửa chi tiết", "Images/update.png");
 
 		boxNorth.add(Box.createVerticalStrut(20));
 	}
 
-	private JButton addButtonTo(Box box, String name) {
-		JButton btn = new JButton(name);
+	private JButton addButtonTo(Box box, String name, String iconPath) {
+		JButton btn = new JButton(name, new ImageIcon(iconPath));
 		btn.setFont(NORMAL_FONT);
-		btn.setPreferredSize(new Dimension(130, 25));
+		btn.setPreferredSize(new Dimension(150, 25));
 
 		Box boxButton = Box.createHorizontalBox();
 		boxButton.add(Box.createHorizontalGlue());

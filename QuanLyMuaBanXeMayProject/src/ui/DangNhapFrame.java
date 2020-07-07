@@ -46,6 +46,8 @@ public class DangNhapFrame extends JFrame implements ActionListener, KeyListener
 		setLocationRelativeTo(null);
 		setUndecorated(true);
 		setOpacity(0.95f);
+		ImageIcon icon = new ImageIcon("Images/moto.png");
+		setIconImage(icon.getImage());
 
 		setLookAndFeel();
 

@@ -42,7 +42,7 @@ public class DanhSachCTHD {
 		String query = "select * from HoaDon where maHD = '" + maHoaDon + "'";
 		Statement stmt = con.createStatement();
 		ResultSet result = stmt.executeQuery(query);
-		
+
 		String maKH = "";
 		String maNV = "";
 		LocalDate ngayLap = null;
@@ -57,7 +57,7 @@ public class DanhSachCTHD {
 		KhachHang kh = getKhachHang(con, maKH);
 
 		HoaDon hd = new HoaDon(maHoaDon, nv, kh, ngayLap);
-		
+
 		return hd;
 	}
 
@@ -84,7 +84,7 @@ public class DanhSachCTHD {
 		String query = "select * from KhachHang where ma = ?";
 		PreparedStatement stmt = conn.prepareStatement(query);
 		stmt.setString(1, maNhanVien);
-		
+
 		ResultSet result = stmt.executeQuery();
 
 		if (result.next()) {
@@ -114,7 +114,7 @@ public class DanhSachCTHD {
 		pst.setString(1, ma);
 
 		ResultSet result = pst.executeQuery();
-		
+
 		ArrayList<ArrayList<Object>> list = new ArrayList<ArrayList<Object>>();
 
 		String maHD = "";
@@ -125,30 +125,104 @@ public class DanhSachCTHD {
 			maXM = result.getString(2);
 			int soLuong = result.getInt(3);
 			double donGia = result.getDouble(4);
-			
+
 			l.add(maHD);
 			l.add(maXM);
 			l.add(soLuong);
 			l.add(donGia);
-			
+
 			list.add(l);
 		}
-		
+
 		HoaDon hd = getHoaDon(conn, ma);
-		
+
 		for (ArrayList<Object> arrayList : list) {
 			ChiTietHD cthd = new ChiTietHD();
-			XeMay xm = getXeMay(conn, (String)arrayList.get(1));
-			
+			XeMay xm = getXeMay(conn, (String) arrayList.get(1));
+
 			cthd.setHoaDon(hd);
 			cthd.setXeMay(xm);
-			cthd.setSoLuong((int)arrayList.get(2));
-			cthd.setDonGia((double)arrayList.get(3));
-			
+			cthd.setSoLuong((int) arrayList.get(2));
+			cthd.setDonGia((double) arrayList.get(3));
+
 			dsCTHD.add(cthd);
 		}
 
 		conn.close();
 		return dsCTHD;
 	}
+
+	public boolean themCTHD(ChiTietHD cthd) throws SQLException {
+		Connection conn = DatabaseConnection.getConnection();
+
+		String query = "select * from ChiTietHD where maHD = ? and maXeMay = ?";
+		PreparedStatement pst = conn.prepareStatement(query);
+		pst.setString(1, cthd.getHoaDon().getMaHD());
+		pst.setString(2, cthd.getXeMay().getMaXe());
+
+		ResultSet rs = pst.executeQuery();
+		if (rs.next())
+			return false;
+
+		query = "insert into ChiTietHD values(?, ?, ?, ?)";
+		pst = conn.prepareStatement(query);
+		pst.setString(1, cthd.getHoaDon().getMaHD());
+		pst.setString(2, cthd.getXeMay().getMaXe());
+		pst.setInt(3, cthd.getSoLuong());
+		pst.setDouble(4, cthd.getDonGia());
+
+		pst.execute();
+
+		conn.close();
+		return true;
+	}
+
+	public boolean xoaCTHD(String maHD, String maXM) throws SQLException {
+		Connection conn = DatabaseConnection.getConnection();
+
+		String query = "select * from ChiTietHD where maHD = ? and maXeMay = ?";
+		PreparedStatement pst = conn.prepareStatement(query);
+		pst.setString(1, maHD);
+		pst.setString(2, maXM);
+
+		ResultSet rs = pst.executeQuery();
+
+		if (!rs.next())
+			return false;
+
+		query = "delete from ChiTietHD where maHD = ? and maXeMay = ?";
+		pst = conn.prepareStatement(query);
+		pst.setString(1, maHD);
+		pst.setString(2, maXM);
+
+		pst.execute();
+
+		conn.close();
+		return true;
+	}
+
+	public boolean suaCTHD(String maHD, String maXM, ChiTietHD cthdMoi) throws SQLException {
+		Connection conn = DatabaseConnection.getConnection();
+
+		String query = "select * from ChiTietHD where maHD = ? and maXeMay = ?";
+		PreparedStatement pst = conn.prepareStatement(query);
+		pst.setString(1, maHD);
+		pst.setString(2, maXM);
+
+		ResultSet rs = pst.executeQuery();
+
+		if (!rs.next())
+			return false;
+		
+		query = "update ChiTietHD set soLuong = ?, donGia = ?";
+		pst = conn.prepareStatement(query);
+		pst.setInt(1, cthdMoi.getSoLuong());
+		pst.setDouble(2, cthdMoi.getDonGia());
+		
+		pst.execute();
+		
+		conn.close();
+		return true;
+	}
+
 }

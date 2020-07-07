@@ -13,6 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -32,6 +33,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+
+import dao.QuanLyHoSo;
 
 public class MainFrame extends JFrame implements ActionListener {
 
@@ -99,6 +102,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	
 	private JButton btnPrevious;
 	private JPanel previousPanel = null;
+	private JLabel lblUserName;
 	
 
 	/**
@@ -128,7 +132,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
 		ImageIcon icon = new ImageIcon("Images/moto.png");
 		setIconImage(icon.getImage());
-
+		
 		popMenu = new JPopupMenu();
 
 		miCut = new JMenuItem("Cut", new ImageIcon("Images/cut.png"));
@@ -153,6 +157,18 @@ public class MainFrame extends JFrame implements ActionListener {
 		pnlQLNV = new QuanLyNhanVienPanel();
 		pnlTKDT = new ThongKeDoanhThuPanel();
 
+		setUser();
+	}
+	
+	private void setUser() {
+		QuanLyHoSo qlhs = new QuanLyHoSo();
+		try {
+			qlhs.getProfile();
+			lblUserName.setText(qlhs.getNhanVien().getHoTenNV());
+			
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "Lỗi kết nối!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+		}
 	}
 
 	private void warningBeforeClose() {
@@ -182,21 +198,18 @@ public class MainFrame extends JFrame implements ActionListener {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				changePanel(pnlQLHD);
-				pnlQLHD.loadAllDataToTable();
 			}
 		});
 		menuQLXM.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				changePanel(pnlQLXM);
-				pnlQLXM.loadDataToTable();
 			}
 		});
 		menuQLKH.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				changePanel(pnlQLKH);
-				pnlQLKH.loadDataToTable();
 			}
 		});
 		menuHoSo.addMouseListener(new MouseAdapter() {
@@ -296,26 +309,35 @@ public class MainFrame extends JFrame implements ActionListener {
 		if (panel.equals(pnlQLKH)) {
 			menuQLKH.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuQLKH;
+			pnlQLKH.loadDataToTable();
 		}
 		if (panel.equals(pnlQLHD)) {
 			menuQLHD.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuQLHD;
+			pnlQLHD.loadAllDataToTable();
 		}
 		if (panel.equals(pnlQLXM)) {
 			menuQLXM.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuQLXM;
+			pnlQLXM.loadDataToTable();
 		}
 		if (panel.equals(pnlQLNV)) {
 			menuQLNV.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuQLNV;
+			pnlQLNV.loadDataToTable();
 		}
 		if(panel.equals(pnlProfile)) {
 			menuHoSo.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuHoSo;
+			pnlProfile.loadDataFromDatabaseToPanel();
 		}
 		if(panel.equals(pnlTKDT)) {
 			menuTKDT.setBackground(ACTIVE_COLOR);
 			selectedMenuItem = menuTKDT;
+		}
+		if(panel.equals(pnlTrangChu)) {
+			menuTrangChu.setBackground(ACTIVE_COLOR);
+			selectedMenuItem = menuTrangChu;
 		}
 	}
 
@@ -429,17 +451,38 @@ public class MainFrame extends JFrame implements ActionListener {
 		JLabel lbHeader = new JLabel("CỬA HÀNG MUA BÁN XE MÁY HONDO");
 		lbHeader.setFont(H1_FONT);
 		lbHeader.setForeground(H1_COLOR);
+		lbHeader.setHorizontalAlignment(JLabel.CENTER);
 
-		Box boxNorth = Box.createHorizontalBox();
+		JPanel pnlNorth = new JPanel(new BorderLayout());
+		pnlNorth.setBackground(null);
 
 		pnlNorthOfCenter.add(Box.createVerticalStrut(5));
-		pnlNorthOfCenter.add(boxNorth);
+		pnlNorthOfCenter.add(pnlNorth);
 		pnlNorthOfCenter.add(Box.createVerticalStrut(5));
 
-		boxNorth.add(boxMenuButton);
-		boxNorth.add(Box.createHorizontalGlue());
-		boxNorth.add(lbHeader);
-		boxNorth.add(Box.createHorizontalGlue());
+		
+		JButton btnUser = new JButton();
+		btnUser.setLayout(new BoxLayout(btnUser, BoxLayout.Y_AXIS));
+		
+		JLabel lblUserIcon = new JLabel(new ImageIcon("Images/user.png"));
+		lblUserName = new JLabel("User name");
+		
+		Box boxUserIcon = Box.createHorizontalBox();
+		boxUserIcon.add(Box.createHorizontalGlue());
+		boxUserIcon.add(lblUserIcon);
+		boxUserIcon.add(Box.createHorizontalGlue());
+		
+		Box boxUserName = Box.createHorizontalBox();
+		boxUserName.add(Box.createHorizontalGlue());
+		boxUserName.add(lblUserName);
+		boxUserName.add(Box.createHorizontalGlue());
+		
+		btnUser.add(boxUserIcon);
+		btnUser.add(boxUserName);
+		
+		pnlNorth.add(boxMenuButton, BorderLayout.WEST);
+		pnlNorth.add(lbHeader, BorderLayout.CENTER);
+		pnlNorth.add(btnUser, BorderLayout.EAST);
 
 	}
 
@@ -478,8 +521,12 @@ public class MainFrame extends JFrame implements ActionListener {
 		pnl.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER)
-					;
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					if (selectedMenuItem != null)
+						if (pnl.equals(selectedMenuItem))
+							return;
+					pnl.setBackground(ACTIVE_COLOR);
+				}
 			}
 		});
 		pnl.addMouseListener(new MouseAdapter() {

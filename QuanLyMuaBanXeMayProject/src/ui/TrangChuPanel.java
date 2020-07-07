@@ -176,5 +176,6 @@ public class TrangChuPanel extends JPanel {
 	}
 	
 	public void focus() {
+		
 	}
 }

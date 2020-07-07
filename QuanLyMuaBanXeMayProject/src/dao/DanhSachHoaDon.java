@@ -1,5 +1,7 @@
 package dao;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -9,6 +11,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import entity.ChiTietHD;
 import entity.HoaDon;
 import entity.KhachHang;
 import entity.NhanVien;
@@ -148,20 +151,20 @@ public class DanhSachHoaDon {
 		return true;
 	}
 
-	public ArrayList<HoaDon> timTheoMaHD(String ma) throws SQLException {
-		ArrayList<HoaDon> list = new ArrayList<HoaDon>();
+	public HoaDon timTheoMaHD(String ma) throws SQLException {
 		
 		Connection conn = DatabaseConnection.getConnection();
 		
 		String query = "select * from KhachHang a join HoaDon b on a.ma = b.maKH join NhanVien c on b.maNV = c.ma "
-				+ "where maHD like ?";
+				+ "where maHD = ?";
 
 		PreparedStatement pst = conn.prepareStatement(query);
-		pst.setString(1, '%' + ma + '%');
+		pst.setString(1, ma);
 		
 		ResultSet result = pst.executeQuery();
 
-		while (result.next()) {
+		HoaDon hd = null;
+		if (result.next()) {
 			String maKH = result.getString(1);
 			String hoTenKH = result.getString(2);
 			boolean gtKH = result.getBoolean(3);
@@ -172,25 +175,23 @@ public class DanhSachHoaDon {
 			String maHD = result.getString(7);
 			LocalDate ngayLap = LocalDate.parse(result.getDate(10).toString());
 
-			String maNV = result.getString(9);
-			String hoTenNV = result.getString(11);
-			boolean gtNV = result.getBoolean(12);
-			String diaChiNV = result.getString(13);
-			String sdtNV = result.getString(14);
-			String emailNV = result.getString(15);
-			boolean quanLyVien = result.getBoolean(16);
+			String maNV = result.getString(11);
+			String hoTenNV = result.getString(12);
+			boolean gtNV = result.getBoolean(13);
+			String diaChiNV = result.getString(14);
+			String sdtNV = result.getString(15);
+			String emailNV = result.getString(16);
+			boolean quanLyVien = result.getBoolean(17);
 
 			KhachHang kh = new KhachHang(maKH, hoTenKH, gtKH, diaChiKH, sdtKH, emailKH);
 			NhanVien nv = new NhanVien(maNV, hoTenNV, gtNV, diaChiNV, sdtNV, emailNV, quanLyVien);
 
-			HoaDon hd = new HoaDon(maHD, nv, kh, ngayLap);
+			hd = new HoaDon(maHD, nv, kh, ngayLap);
 
-			if (!list.contains(hd))
-				list.add(hd);
 		}
 
 		conn.close();
-		return list;
+		return hd;
 	}
 
 	public ArrayList<HoaDon> timTheoMaKH(String ma) throws SQLException {
@@ -281,6 +282,10 @@ public class DanhSachHoaDon {
 
 		conn.close();
 		return list;
+	}
+	
+	public void xuatHoaDon(String maHD, File file) throws SQLException, IOException {
+		
 	}
 
 }
