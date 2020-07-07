@@ -155,7 +155,9 @@ public class MainFrame extends JFrame implements ActionListener {
 		pnlQLXM.setPopupMenu(popMenu);
 		pnlQLKH.setPopupMenu(popMenu);
 		pnlQLNV = new QuanLyNhanVienPanel();
-		pnlTKDT = new ThongKeDoanhThuPanel();
+		pnlQLNV.setPopupMenu(popMenu);
+                pnlTKDT = new ThongKeDoanhThuPanel();
+                
 
 		setUser();
 	}
