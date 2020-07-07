@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -60,6 +61,8 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 	private JComboBox<String> jcbGioiTinh;
 
 	private final Font NORMAL_FONT = new Font("Arial", Font.PLAIN, 13);
+	private final Color HEADER_COLOR = new Color(0x1E1346);
+	private final Font HEADER_FONT = new Font("Times new roman", Font.BOLD, 20);
 	private DanhSachKhachHang dsKH;
 
 	public QuanLyKhachHangPanel() {
@@ -71,6 +74,8 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 
 		JLabel lblTitle = new JLabel("QUẢN LÝ KHÁCH HÀNG");
 		lblTitle.setFont(new Font("Times new roman", Font.BOLD, 20));
+		lblTitle.setFont(HEADER_FONT);
+		lblTitle.setForeground(HEADER_COLOR);
 		JPanel pnlTitle = new JPanel();
 		pnlTitle.add(lblTitle);
 		JPanel pnlTimKiem = new JPanel();
