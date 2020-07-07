@@ -257,6 +257,11 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			JOptionPane.showMessageDialog(this, "Chưa chọn chi tiết hóa đơn cần xóa!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
+		
+		if (JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa!", "Xác nhận",
+				JOptionPane.OK_CANCEL_OPTION) == JOptionPane.CANCEL_OPTION)
+			return;
+		
 		int i;
 		while ((i = tableCTHD.getSelectedRow()) != -1) {
 			String maHD = tableHoaDon.getValueAt(tableHoaDon.getSelectedRow(), 0).toString();

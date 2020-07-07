@@ -147,7 +147,8 @@ public class TrangChuPanel extends JPanel {
 					mainFrame.changePanel(mainFrame.getPnlQLNV());
 				if(o.equals(pnlHoSo))
 					mainFrame.changePanel(mainFrame.getPnlProfile());
-				if(o.equals(pnlTKDT));
+				if(o.equals(pnlTKDT))
+					mainFrame.changePanel(mainFrame.getPnlTKDT());
 			}
 		});
 		

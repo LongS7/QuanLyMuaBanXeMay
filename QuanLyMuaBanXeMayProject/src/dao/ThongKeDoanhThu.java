@@ -4,29 +4,60 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class ThongKeDoanhThu {
 	public ThongKeDoanhThu() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public double thongKeTheoThang(int thang, int nam) throws SQLException {
-		double doanhThu = 0;
-		
+	public ArrayList<DoanhThuObject> thongKeTheoThang(int thang, int nam) throws SQLException {		
 		Connection conn = DatabaseConnection.getConnection();
 		
-		String query = "select SUM(soLuong * donGia) as Tong from ChiTietHD a join HoaDon b on a.maHD = b.maHD "
-				+ "where YEAR(ngayLap) = ? and MONTH(ngayLap) = ?";
+		ArrayList<DoanhThuObject> list = new ArrayList<DoanhThuObject>();
+		
+		String query = "select * from ThongKeTheoThang(?, ?)";
 		PreparedStatement pst = conn.prepareStatement(query);
-		pst.setInt(1, nam);
-		pst.setInt(2, thang);
+		pst.setInt(1, thang);
+		pst.setInt(2, nam);
 		
 		ResultSet rs = pst.executeQuery();
 		
-		if(rs.next())
-			doanhThu = rs.getDouble(1);
+		while(rs.next()) {
+			DoanhThuObject doanhThuObject = new DoanhThuObject();
+			doanhThuObject.setMaNV(rs.getString("maNV"));
+			doanhThuObject.setMaNV(rs.getString("tenNV"));
+			doanhThuObject.setSoXeDaBan(rs.getInt("soXeDaBan"));
+			doanhThuObject.setDoanhThu(rs.getDouble("doanhThu"));
+			list.add(doanhThuObject);
+		}
 		
-		return doanhThu / 1000000;
+		conn.close();
+		return list;
+	}
+	
+	public ArrayList<DoanhThuObject> thongKeTheoNam(int nam) throws SQLException {		
+		Connection conn = DatabaseConnection.getConnection();
+		
+		ArrayList<DoanhThuObject> list = new ArrayList<DoanhThuObject>();
+		
+		String query = "select * from ThongKeTheoNam(?)";
+		PreparedStatement pst = conn.prepareStatement(query);
+		pst.setInt(1, nam);
+		
+		ResultSet rs = pst.executeQuery();
+		
+		while(rs.next()) {
+			DoanhThuObject doanhThuObject = new DoanhThuObject();
+			doanhThuObject.setMaNV(rs.getString("maNV"));
+			doanhThuObject.setMaNV(rs.getString("tenNV"));
+			doanhThuObject.setSoXeDaBan(rs.getInt("soXeDaBan"));
+			doanhThuObject.setDoanhThu(rs.getDouble("doanhThu"));
+			list.add(doanhThuObject);
+		}
+		
+		conn.close();
+		return list;
 	}
 
 }

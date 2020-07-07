@@ -7,51 +7,60 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.List;
 
 import javax.swing.Box;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.table.DefaultTableModel;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.DefaultCategoryDataset;
-
+import dao.DoanhThuObject;
 import dao.ThongKeDoanhThu;
 
 import javax.swing.UIManager.LookAndFeelInfo;
 
-public class ThongKeDoanhThuPanel extends JPanel {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+public class ThongKeDoanhThuPanel extends JPanel implements ActionListener {	private static final long serialVersionUID = 1L;
 	private final Font HEADER_FONT = new Font("Times new roman", Font.BOLD, 20);
 	private final Font NORMAL_FONT = new Font("Times new roman", Font.PLAIN, 14);
 	private final Color HEADER_COLOR = new Color(0x1E1346);
-	private JTextField txtYear;
-	private JButton btnTK;
-	private ChartPanel pnlChart;
-	private JPanel pnlCenter;
+	private JButton btnThongKe;
 	private JLabel lblTongDT;
-	private double tong = 0;
+	private JComboBox<String> cbbThang;
+	private JComboBox<String> cbbNam;
+	private ThongKeDoanhThu thongKeDoanhThu;
+	private DefaultTableModel tableModel;
+	private JTable tableDoanhThu;
+	private JRadioButton radThang;
+	private JRadioButton radNam;
+	private JLabel lblThongTin;
+
 
 	public ThongKeDoanhThuPanel() {
 		setPreferredSize(new Dimension(500, 600));
 		setLayout(new BorderLayout());
 		
-		addNorth();
-		
-		pnlCenter = new JPanel(new BorderLayout());
-		add(pnlCenter, BorderLayout.CENTER);
-
 		setLookAndFeel();
+		
+		addNorth();
+		addCenter();
+		
+		addEvent();
+	}
+
+	private void addEvent() {
+		btnThongKe.addActionListener(this);
 	}
 
 	private void addNorth() {
@@ -73,33 +82,67 @@ public class ThongKeDoanhThuPanel extends JPanel {
 		boxHeader.add(lblHeader);
 		boxHeader.add(Box.createHorizontalGlue());
 		
-		Box boxYear = Box.createHorizontalBox();
+		radThang = new JRadioButton("Theo tháng"); radThang.setFont(NORMAL_FONT); radThang.setSelected(true);
+		radNam = new JRadioButton("Theo năm"); radNam.setFont(NORMAL_FONT);
 		
-		boxNorth.add(Box.createVerticalStrut(5));
-		boxNorth.add(boxYear);
-		boxNorth.add(Box.createVerticalStrut(5));
+		ButtonGroup group = new ButtonGroup();
+		group.add(radThang);
+		group.add(radNam);
 		
-		JLabel lblYear = new JLabel("Chọn năm muốn thống kê");
-		lblYear.setFont(NORMAL_FONT);
-		txtYear = new JTextField();
-		txtYear.setFont(NORMAL_FONT);
-		btnTK = new JButton("Thống kê");
-		btnTK.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				thongKe();
-			}
-		});
+		Box boxRad = Box.createHorizontalBox();
+		boxRad.add(new JLabel("Thống kê theo "));
+		boxRad.add(Box.createHorizontalGlue());
+		boxRad.add(radThang);
+		boxRad.add(Box.createHorizontalGlue());
+		boxRad.add(radNam);
+		boxRad.add(Box.createHorizontalGlue());
 		
-		boxYear.add(Box.createHorizontalGlue());
-		boxYear.add(Box.createHorizontalStrut(50));
-		boxYear.add(lblYear);
-		boxYear.add(Box.createHorizontalStrut(5));
-		boxYear.add(txtYear);
-		boxYear.add(Box.createHorizontalStrut(5));
-		boxYear.add(btnTK);
-		boxYear.add(Box.createHorizontalStrut(50));
-		boxYear.add(Box.createHorizontalGlue());
+		boxNorth.add(boxRad);
+		boxNorth.add(Box.createVerticalStrut(10));
+		
+		btnThongKe = new JButton("Thống kê");
+		btnThongKe.setFont(NORMAL_FONT);
+		
+		String thang[] = { "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8",
+				"Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12" };
+		DefaultComboBoxModel<String> cbbThangModel = new DefaultComboBoxModel<String>(thang);
+		cbbThang = new JComboBox<String>(cbbThangModel);
+		cbbThang.setFont(NORMAL_FONT);
+
+		String nam[] = new String[130];
+		for(int i = 0; i < 130; i++)
+			nam[i] = (i + 1970) + "";
+		DefaultComboBoxModel<String> cbbNamModel = new DefaultComboBoxModel<String>(nam);
+		cbbNam = new JComboBox<String>(cbbNamModel);
+		cbbNam.setFont(NORMAL_FONT);
+		cbbNam.setSelectedIndex(LocalDate.now().getYear() - 1970);
+		
+		Box boxTime = Box.createHorizontalBox();
+		
+		boxTime.add(Box.createHorizontalStrut(10));
+		boxTime.add(new JLabel("Chọn tháng "));
+		boxTime.add(cbbThang);
+		boxTime.add(Box.createHorizontalStrut(10));
+		boxTime.add(new JLabel("Chọn năm "));
+		boxTime.add(cbbNam);
+		boxTime.add(Box.createHorizontalStrut(10));
+		boxTime.add(btnThongKe);
+		boxTime.add(Box.createHorizontalStrut(10));
+		
+		boxNorth.add(boxTime);
+		boxNorth.add(Box.createVerticalStrut(10));
+		
+		lblThongTin = new JLabel("");
+		lblThongTin.setFont(new Font("Arial", Font.BOLD, 18));
+		
+		Box boxThongTin = Box.createHorizontalBox();
+		boxThongTin.add(Box.createHorizontalGlue());
+		boxThongTin.add(lblThongTin);
+		boxThongTin.add(Box.createHorizontalGlue());
+		
+		boxNorth.add(Box.createVerticalStrut(10));
+		boxNorth.add(boxThongTin);
+		boxNorth.add(Box.createVerticalStrut(10));
 		
 		JLabel lblTong = new JLabel("Tổng doanh thu: ");
 		lblTong.setFont(NORMAL_FONT);
@@ -118,48 +161,46 @@ public class ThongKeDoanhThuPanel extends JPanel {
 		boxNorth.add(Box.createVerticalStrut(10));
 	}
 	
-	private void thongKe() {
-		String namString = txtYear.getText().trim();
-		if(namString.isEmpty() || !namString.matches("[1-9]\\d{3}")) {
-			JOptionPane.showMessageDialog(this, "Năm cần thống kê không được bỏ trống và phải lớn hơn 1000", "Lỗi", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
+	String[] tbHeader = {"Mã nhân viên", "Tên nhân viên", "Số xe đã bán", "Tổng doanh thu"};
+	
+	private void addCenter() {
 		
-		int nam = Integer.parseInt(namString);
+		tableModel = new DefaultTableModel(tbHeader, 0);
 		
-		JFreeChart lineChart = ChartFactory.createLineChart("Doanh Thu Bán Hàng Năm " + nam, "Tháng", "Doanh thu (Triệu đồng)",
-				createDataSet(nam), PlotOrientation.VERTICAL, true, true, false);
+		tableDoanhThu = new JTable(tableModel);
+		tableDoanhThu.setFont(NORMAL_FONT);
 		
-		pnlChart = new ChartPanel(lineChart);
+		JScrollPane scroll = new JScrollPane(tableDoanhThu);
+		this.add(scroll, BorderLayout.CENTER);
 		
-		lblTongDT.setText(tong + " triệu đồng.");
-		tong = 0;
-		
-		pnlCenter.removeAll();
-		pnlCenter.add(pnlChart, BorderLayout.CENTER);
-		
-		revalidate();
-		repaint();
 	}
-
-	private DefaultCategoryDataset createDataSet(int nam) {
-		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-
-		ThongKeDoanhThu tkDoanhThu = new ThongKeDoanhThu();
-
-		for (int i = 1; i <= 12; i++) {
-			try {
-				double t = tkDoanhThu.thongKeTheoThang(i, nam);
-				tong += t;
-				dataset.addValue(t, "Doanh thu", i + "");
-			} catch (SQLException e) {
-				JOptionPane.showMessageDialog(this, "Lỗi trong quá trình xử lý dữ liệu!", "Lỗi",
-						JOptionPane.ERROR_MESSAGE);
-				return null;
+	
+	private void thongKe() {
+		thongKeDoanhThu = new ThongKeDoanhThu();
+		
+		int thang = cbbThang.getSelectedIndex() + 1;
+		int nam = Integer.parseInt(cbbNam.getSelectedItem().toString());
+		
+		try {
+			List<DoanhThuObject> list = null;
+			if(radThang.isSelected()) {
+				list = thongKeDoanhThu.thongKeTheoThang(thang, nam);
+				lblThongTin.setText("Kết quả thống kê doanh thu tháng " + thang + " năm " + nam);
 			}
+			else {
+				list = thongKeDoanhThu.thongKeTheoNam(nam);
+				lblThongTin.setText("Kết quả thống kê doanh thu năm " + nam);
+			}
+			tableModel.setRowCount(0);
+			for(DoanhThuObject item : list) {
+				tableModel.addRow(new Object[] {
+						item.getMaNV(), item.getTenNV(), item.getSoXeDaBan(), item.getDoanhThu()
+				});
+			}
+			
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "Có lỗi xảy ra trong quá trình thống kê!", "Lỗi", JOptionPane.ERROR_MESSAGE);
 		}
-
-		return dataset;
 	}
 
 	private void setLookAndFeel() {
@@ -176,6 +217,15 @@ public class ThongKeDoanhThuPanel extends JPanel {
 				}
 
 			}
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object o = e.getSource();
+		
+		if(o.equals(btnThongKe)) {
+			thongKe();
 		}
 	}
 
