@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -17,6 +18,7 @@ import java.util.regex.Pattern;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -50,7 +52,6 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 	private JButton btnThem;
 	private JButton btnSua;
 	private JButton btnXoa;
-	private JButton btnQuayLai;
 	private JRadioButton radTimTheoMa;
 	private JRadioButton radTimTheoTen;
 	private ButtonGroup buttonGroup;
@@ -171,18 +172,34 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 
 		Box boxEast = Box.createVerticalBox();
 
-		btnThem = new JButton("Thêm");
-		btnSua = new JButton("Sửa");
-		btnXoa = new JButton("Xóa");
-		btnQuayLai = new JButton("Quay lại");
-		boxEast.add(btnThem);
+		btnThem = new JButton("Thêm",new ImageIcon("Images/add.png"));
+		btnSua = new JButton("Sửa",new ImageIcon("Images/update.png"));
+		btnXoa = new JButton("Xóa",new ImageIcon("Images/delete.png"));
+		
+		Dimension d = new Dimension(100, 80);
+		btnThem.setPreferredSize(d);
+		btnXoa.setPreferredSize(d);
+		btnSua.setPreferredSize(d);
+		
+		Box boxThem = Box.createHorizontalBox();
+		boxThem.add(Box.createHorizontalGlue());
+		boxThem.add(btnThem);
+		boxThem.add(Box.createHorizontalGlue());
+		
+		Box boxXoa = Box.createHorizontalBox();
+		boxXoa.add(Box.createHorizontalGlue());
+		boxXoa.add(btnXoa);
+		boxXoa.add(Box.createHorizontalGlue());
+		
+		Box boxSua = Box.createHorizontalBox();
+		boxSua.add(Box.createHorizontalGlue());
+		boxSua.add(btnSua);
+		boxSua.add(Box.createHorizontalGlue());
+		
+		boxEast.add(boxThem);
 //		boxRight.add(Box.createVerticalStrut(20));
-		boxEast.add(btnSua);
-		boxEast.add(btnXoa);
-		boxEast.add(btnQuayLai);
-		btnThem.setMaximumSize(btnQuayLai.getMaximumSize());
-		btnXoa.setMaximumSize(btnQuayLai.getMaximumSize());
-		btnSua.setMaximumSize(btnQuayLai.getMaximumSize());
+		boxEast.add(boxSua);
+		boxEast.add(boxXoa);
 
 		// set font
 		txtTimKiem.setFont(NORMAL_FONT);
@@ -202,7 +219,7 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 		btnThem.setFont(NORMAL_FONT);
 		btnSua.setFont(NORMAL_FONT);
 		btnXoa.setFont(NORMAL_FONT);
-		btnQuayLai.setFont(NORMAL_FONT);
+		
 
 		this.setLayout(new BorderLayout());
 		this.add(pnlNorth, BorderLayout.NORTH);
@@ -214,7 +231,7 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 		btnThem.addActionListener(this);
 		btnXoa.addActionListener(this);
 		btnSua.addActionListener(this);
-		btnQuayLai.addActionListener(this);
+	
 		btnTimKiem.addActionListener(this);
 		tableKhachHang.addMouseListener(this);
 
@@ -380,7 +397,7 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 		
 	}
 
-	private void themKhachHang() throws SQLException { //////////////
+	private void themKhachHang() { 
 		if(validData()) {
 			String ma = txtMa.getText().trim();
 			String hoTen = txtTen.getText().trim();
@@ -390,13 +407,17 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 			String email = txtEmail.getText().trim();
 			
 			KhachHang kh = new KhachHang(ma, hoTen, gioiTinh, diaChi, sdt, email);
-			if(dsKH.themKhachHang(kh)) {
-				loadDataToTable();
-				xoaTrang();
-				JOptionPane.showMessageDialog(this, "Thêm thành công");
+			try {
+				if(dsKH.themKhachHang(kh)) {
+					loadDataToTable();
+					xoaTrang();
+					JOptionPane.showMessageDialog(this, "Thêm thành công");
+				}
+				else
+					JOptionPane.showMessageDialog(this, "Thêm thất bại");
+			} catch (HeadlessException | SQLException e) {
+				JOptionPane.showMessageDialog(this, "Trùng mã");
 			}
-			else
-				JOptionPane.showMessageDialog(this, "Thêm thất bại");
 		}
 		
 	}
@@ -423,8 +444,12 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 		Object email = tableKhachHang.getValueAt(row, 5);
 		if(sdt != null)
 			txtSdt.setText(sdt.toString());
+		else
+			txtSdt.setText("");
 		if(email != null)
 			txtEmail.setText(email.toString());
+		else 
+			txtEmail.setText("");
 		
 	}
 
@@ -475,7 +500,7 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 			JOptionPane.showMessageDialog(this, "Tên không được để trống");
 			return false;
 		}
-		else if(!hoTen.matches("[a-zA-Z ]+")) {
+		else if(!hoTen.matches("[\\p{L}a-zA-Z ]+")) {
 			JOptionPane.showMessageDialog(this, "Tên không chứa số và kí tự đặc biệt");
 			return false;
 		}
@@ -483,8 +508,15 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 			JOptionPane.showMessageDialog(this, "Địa chỉ không được để trống");
 			return false;
 		}
-		else if(!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-			JOptionPane.showMessageDialog(this, "Email không đúng định dạng");
+		
+		else if(!email.isEmpty()) {
+			if(!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+				JOptionPane.showMessageDialog(this, "Email không đúng định dạng");
+				return false;
+			}
+		}
+		else if(std.length() == 0) {
+			JOptionPane.showMessageDialog(this, "Số điện thoại không được để trống");
 			return false;
 		}
 		else if(!std.matches("0[0-9]{9}")) {

@@ -48,7 +48,6 @@ public class DanhSachKhachHang {
 	public boolean themKhachHang(KhachHang kh) throws SQLException {
 		con = DatabaseConnection.getConnection();
 		String sql = "insert into KhachHang values(?,?,?,?,?,?)";
-		try {
 			PreparedStatement stmt = con.prepareStatement(sql);
 			stmt.setString(1, kh.getMaKH());
 			stmt.setString(2, kh.getHoTenKH());
@@ -62,10 +61,6 @@ public class DanhSachKhachHang {
 				con.close();
 				return true;
 			}
-		}catch(SQLException e) {
-			throw new SQLException(e);
-			
-		}
 		con.close();
 		return false;
 	}
@@ -174,7 +169,7 @@ public class DanhSachKhachHang {
 		con = DatabaseConnection.getConnection();
 		
 		List<KhachHang> dskh = new ArrayList<KhachHang>();
-			String query = "select * from KhachHang where hoTen like " + "'%" + tenKH + "%'";
+			String query = "select * from KhachHang where hoTen like " + "N'%" + tenKH + "%'";
 			Statement stmt = con.createStatement();
 			ResultSet result = stmt.executeQuery(query);
 			while(result.next()) {
