@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import javax.swing.JOptionPane;
 
 public class DanhSachNhanVien {
 	private ArrayList<NhanVien> dsNV;
@@ -76,7 +77,7 @@ public class DanhSachNhanVien {
                 String sql = "insert into NhanVien values(?,?,?,?,?,?,?)";
 	//	Statement st = conn.createStatement();
                 
-                try {
+                
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			stmt.setString(1, nv.getMaNV());
 			stmt.setString(2, nv.getHoTenNV());
@@ -88,10 +89,9 @@ public class DanhSachNhanVien {
 			int n = stmt.executeUpdate();
 			if (n > 0)
 				return true;
-		} catch (SQLException e) {
-                    throw new SQLException(e);
-                        
-		}
+		
+                conn.close();
+               
 		return false;
 	}
 
@@ -102,7 +102,7 @@ public class DanhSachNhanVien {
 		String query = "select * from NhanVien where ma = '" + maNV + "'";
 		Statement stmt = con.createStatement();
 		ResultSet result = stmt.executeQuery(query);
-
+                NhanVien nv = null;
 		if (result.next()) {
 			String ma = result.getString("ma");
 			String hoTen = result.getString("hoTen");
@@ -112,17 +112,18 @@ public class DanhSachNhanVien {
 			String sdt = result.getString("sdt");
 			boolean isManager = result.getBoolean("quanLyVien");
 
-			NhanVien nv = new NhanVien(ma, hoTen, gioiTinh, diaChi, sdt, email, isManager);
-			return nv;
-		} else
-			return null;
+			nv = new NhanVien(ma, hoTen, gioiTinh, diaChi, sdt, email, isManager);
+			
+		} 
+		conn.close();
+                return nv;
 	}
 
-	public ArrayList<NhanVien> timTheoTenNhanVien(String tenNV) throws SQLException{
+	public ArrayList<NhanVien> timTheoTenNhanVien(String tenNV) throws SQLException {
                 Connection conn = DatabaseConnection.getConnection();
 		ArrayList<NhanVien> dsNV  = new ArrayList<NhanVien>();
-		try {
-			String query = "select * from NhanVien where hoTen like " + "'%" + tenNV + "%'";
+		
+			String query = "select * from NhanVien where hoTen like " + "N'%" + tenNV + "%'";
 			Statement stmt = conn.createStatement();
 			ResultSet result = stmt.executeQuery(query);
 			while(result.next()) {
@@ -138,17 +139,15 @@ public class DanhSachNhanVien {
 				dsNV.add(nv);
 				
 			}
+                        conn.close();
 			if(dsNV.size() > 0)
 				return dsNV;
 			else 
 				return null;
 			
-		}catch(Exception e) {
-			throw new SQLException(e);
-		}
 		
 	}
-	
+
 
 	public boolean suaTTNhanVien(NhanVien nv) throws SQLException{
                 conn = DatabaseConnection.getConnection();
@@ -171,6 +170,7 @@ public class DanhSachNhanVien {
                 {
                     throw new SQLException(e);
                 }
+                conn.close();
                 return false;
 	}
 
