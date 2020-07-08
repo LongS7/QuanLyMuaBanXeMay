@@ -241,7 +241,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		if(result == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = fileChooser.getSelectedFile();
 			try {
-				dsHD.xuatHoaDon(tableHoaDon.getValueAt(selectedRow, 0).toString(), selectedFile);
+				dsHD.xuatHoaDon(modelHoaDon.getValueAt(selectedRow, 0).toString(), selectedFile);
 				
 			} catch (SQLException e) {
 				JOptionPane.showMessageDialog(this, "Lỗi kết nối", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -264,9 +264,9 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		
 		int i;
 		while ((i = tableCTHD.getSelectedRow()) != -1) {
-			String maHD = tableHoaDon.getValueAt(tableHoaDon.getSelectedRow(), 0).toString();
+			String maHD = modelHoaDon.getValueAt(tableHoaDon.getSelectedRow(), 0).toString();
 			try {
-				if(dsCTHD.xoaCTHD(maHD, tableCTHD.getValueAt(i, 0).toString())) {
+				if(dsCTHD.xoaCTHD(maHD, modelCTHD.getValueAt(i, 0).toString())) {
 					JOptionPane.showMessageDialog(this, "Xoá thành công!!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 					modelCTHD.removeRow(i);
 				}
@@ -287,7 +287,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			JOptionPane.showMessageDialog(this, "Chưa chọn chi tiết hóa đơn cần sửa!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
-		String maHD = tableHoaDon.getValueAt(i, 0).toString();
+		String maHD = modelHoaDon.getValueAt(tableHoaDon.getSelectedRow(), 0).toString();
 		
 		String maXe = txtMaXeMay.getText().trim();
 		int soLuong = 0;
@@ -317,8 +317,8 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			if(dsCTHD.suaCTHD(maHD, xm.getMaXe(), cthd)) {
 				modelCTHD.setValueAt(cthd.getXeMay().getMaXe(), i, 0);
 				modelCTHD.setValueAt(cthd.getSoLuong(), i, 1);
-				modelCTHD.setValueAt(cthd.getDonGia(), i, 2);
-				modelCTHD.setValueAt(cthd.tinhThanhTien(), i, 3);
+				modelCTHD.setValueAt(NumberFormat.getInstance().format(cthd.getDonGia()), i, 2);
+				modelCTHD.setValueAt(NumberFormat.getInstance().format(cthd.tinhThanhTien()), i, 3);
 				JOptionPane.showMessageDialog(this, "Sửa thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 				
 			
@@ -341,7 +341,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			JOptionPane.showMessageDialog(this, "Chưa chọn hóa đơn!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
-		String maHD = tableHoaDon.getValueAt(tableHoaDon.getSelectedRow(), 0).toString();
+		String maHD = modelHoaDon.getValueAt(tableHoaDon.getSelectedRow(), 0).toString();
 		
 		String maXe = txtMaXeMay.getText().trim();
 		int soLuong = 0;
@@ -441,7 +441,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			return;
 		}
 
-		String maHD = (String) tableHoaDon.getValueAt(selected, 0);
+		String maHD = (String) modelHoaDon.getValueAt(selected, 0);
 
 		loadDataToChiTietHDTable(maHD);
 	}
@@ -512,8 +512,8 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			return;
 		}
 
-		txtMaXeMay.setText(tableCTHD.getValueAt(selected, 0).toString());
-		txtSoLuong.setText(tableCTHD.getValueAt(selected, 1).toString());
+		txtMaXeMay.setText(modelCTHD.getValueAt(selected, 0).toString());
+		txtSoLuong.setText(modelCTHD.getValueAt(selected, 1).toString());
 	}
 
 	private void changeText() {
@@ -530,10 +530,10 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 			return;
 		}
 
-		txtMaHD.setText((String) tableHoaDon.getValueAt(selected, 0));
-		txtMaNV.setText((String) tableHoaDon.getValueAt(selected, 1));
-		txtMaKH.setText((String) tableHoaDon.getValueAt(selected, 2));
-		txtNgayLap.setText((String) tableHoaDon.getValueAt(selected, 3));
+		txtMaHD.setText((String) modelHoaDon.getValueAt(selected, 0));
+		txtMaNV.setText((String) modelHoaDon.getValueAt(selected, 1));
+		txtMaKH.setText((String) modelHoaDon.getValueAt(selected, 2));
+		txtNgayLap.setText((String) modelHoaDon.getValueAt(selected, 3));
 	}
 
 	private void xoaHoaDon() {
@@ -553,7 +553,7 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		int count = 0;
 		while (tableHoaDon.getSelectedRow() != -1) {
 			int selected = tableHoaDon.getSelectedRow();
-			String maHD = (String) tableHoaDon.getValueAt(selected, 0);
+			String maHD = (String) modelHoaDon.getValueAt(selected, 0);
 
 			try {
 				if (dsHD.xoaHoaDon(maHD)) {

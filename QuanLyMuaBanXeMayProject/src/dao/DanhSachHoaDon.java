@@ -11,7 +11,6 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import entity.ChiTietHD;
 import entity.HoaDon;
 import entity.KhachHang;
 import entity.NhanVien;
