@@ -6,6 +6,7 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -46,7 +47,9 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionL
 	private JButton btnXoa;
 	private JButton btnSua;
 	private JButton btnTim;
-	private Font NORMAL_FONT;
+	private final Font HEADER_FONT = new Font("Times new roman", Font.BOLD, 20);
+	private final Font NORMAL_FONT = new Font("Arial", Font.PLAIN, 13);
+	private final Color HEADER_COLOR = new Color(0x1E1346);
 	private JTable tableNhanVien;
 	private DefaultTableModel tableModel;
 	private JLabel lblHeader, lblMaNV, lblHoTen, lblGioiTinh, lblDiaChi, lblSDT, lblEmail, lblQuanLyVien;
@@ -81,8 +84,9 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionL
 		boxNorth.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		boxNorth.add(boxHeader);
 		boxHeader.add(lblHeader = new JLabel("QUẢN LÝ NHÂN VIÊN"));
-		lblHeader.setFont(new Font("Times nem roman", 1, 25));
-		boxNorth.add(Box.createVerticalStrut(5));
+		lblHeader.setFont(HEADER_FONT);
+		lblHeader.setForeground(HEADER_COLOR);
+		boxNorth.add(Box.createVerticalStrut(10));
 
 		Box boxTim = Box.createHorizontalBox();
 		boxTim.add(Box.createHorizontalGlue());
