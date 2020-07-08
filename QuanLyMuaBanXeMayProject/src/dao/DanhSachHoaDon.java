@@ -1,6 +1,8 @@
 package dao;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
@@ -11,6 +13,15 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import entity.ChiTietHD;
 import entity.HoaDon;
 import entity.KhachHang;
 import entity.NhanVien;
@@ -283,7 +294,58 @@ public class DanhSachHoaDon {
 		return list;
 	}
 	
-	public void xuatHoaDon(String maHD, File file) throws SQLException, IOException {
+	public void xuatHoaDon(String maHD, File outFile) throws SQLException, IOException {
+		HoaDon hd = timTheoMaHD(maHD);
+		
+		File fileInput = new File("Data/MauHoaDon.xlsx");
+		
+		FileInputStream fis = new FileInputStream(fileInput);
+		
+		XSSFWorkbook workbook = new XSSFWorkbook(fis);
+		
+		XSSFSheet sheet = workbook.getSheetAt(0);
+		
+		XSSFFont font = workbook.createFont();
+		font.setFontName("Times New Roman");
+		font.setFontHeight(13);
+		
+		XSSFCellStyle cellStyle = workbook.createCellStyle();
+		cellStyle.setFont(font);
+		cellStyle.setAlignment(HorizontalAlignment.LEFT);
+		
+		XSSFCell cell = sheet.getRow(4).createCell(1); cell.setCellStyle(cellStyle);
+		cell.setCellValue(hd.getMaHD()); 
+		XSSFCell cell1 = sheet.getRow(5).createCell(1); cell1.setCellStyle(cellStyle);
+		cell1.setCellValue(hd.getKhachHang().getHoTenKH()); 
+		XSSFCell cell2 = sheet.getRow(6).createCell(1); cell2.setCellStyle(cellStyle);
+		cell2.setCellValue(hd.getNhanVien().getHoTenNV());
+		XSSFCell cell3 = sheet.getRow(7).createCell(1); cell3.setCellStyle(cellStyle);
+		cell3.setCellValue(hd.getNgayLap().toString());
+		
+		XSSFCellStyle cellStyle2 = sheet.getRow(9).getCell(0).getCellStyle();
+		
+		ArrayList<ChiTietHD> list = new DanhSachCTHD().timTheoMaHD(maHD);
+		int i = 10;
+		for(ChiTietHD item : list) {
+			XSSFRow row = sheet.createRow(i);
+			
+			XSSFCell c = row.createCell(0); c.setCellStyle(cellStyle2);
+			c.setCellValue(item.getXeMay().getMaXe());
+			XSSFCell c1 = row.createCell(1); c1.setCellStyle(cellStyle2);
+			c1.setCellValue(item.getXeMay().getTenXe());
+			XSSFCell c2 = row.createCell(2); c2.setCellStyle(cellStyle2);
+			c2.setCellValue(item.getDonGia());
+			XSSFCell c3 = row.createCell(3); c3.setCellStyle(cellStyle2);
+			c3.setCellValue(item.getSoLuong());
+			
+			i++;
+		}
+		
+		sheet.createRow(i);
+		
+		workbook.write(new FileOutputStream(outFile));
+		
+		workbook.close();
 		
 	}
 
