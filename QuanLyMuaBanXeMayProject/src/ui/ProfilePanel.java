@@ -40,7 +40,7 @@ public class ProfilePanel extends JPanel implements ActionListener{
 	private JButton btnChinhSua;
 	private JButton btnLuu;
 	
-	public ProfilePanel() {
+	public ProfilePanel(boolean isQLV) {
 		setPreferredSize(new Dimension(500,600));
 		setLayout(new BorderLayout());
 		setLookAndFeel();
@@ -49,6 +49,10 @@ public class ProfilePanel extends JPanel implements ActionListener{
 		
 		btnChinhSua.addActionListener(this);
 		btnLuu.addActionListener(this);
+		if(!isQLV) {
+			btnLuu.setEnabled(false);
+			btnChinhSua.setEnabled(false);
+		}
 		
 	}
 	
@@ -215,12 +219,12 @@ public class ProfilePanel extends JPanel implements ActionListener{
 			}
 	}
 	private void chinhSua() {
-		txtHoTen.setEditable(true);
-		txtDiaChi.setEditable(true);	
-		txtSoDienThoai.setEditable(true);	
-		txtEmail.setEditable(true);	
-		ckbGioiTinh.setEnabled(true);
-		ckbChucVu.setEnabled(true);
+			txtHoTen.setEditable(true);
+			txtDiaChi.setEditable(true);	
+			txtSoDienThoai.setEditable(true);	
+			txtEmail.setEditable(true);	
+			ckbGioiTinh.setEnabled(true);
+			ckbChucVu.setEnabled(true);
 	}
 	
 	private void luu() throws SQLException{

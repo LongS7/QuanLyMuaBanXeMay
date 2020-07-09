@@ -338,16 +338,16 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 	public void mouseClicked(MouseEvent e) {
 		
 		int row = tableXeMay.getSelectedRow();
-		String temp = tableXeMay.getValueAt(row, 8).toString();
+		String temp = defaultTable.getValueAt(row, 8).toString();
 		temp = temp.replace(",","");
-		txtMaXe.setText(tableXeMay.getValueAt(row, 0).toString());
-		txtTenXe.setText(tableXeMay.getValueAt(row, 1).toString());
-		txtLoaiXe.setText(tableXeMay.getValueAt(row, 2).toString());
-		ckbHangXe.setSelectedItem(tableXeMay.getValueAt(row, 3).toString());
-		txtDungTich.setText(tableXeMay.getValueAt(row, 4).toString());
-		txtMauXe.setText(tableXeMay.getValueAt(row, 5).toString());
-		txtNuocSanXuat.setText(tableXeMay.getValueAt(row, 6).toString());
-		txtSoLuongTon.setText(tableXeMay.getValueAt(row, 7).toString());
+		txtMaXe.setText(defaultTable.getValueAt(row, 0).toString());
+		txtTenXe.setText(defaultTable.getValueAt(row, 1).toString());
+		txtLoaiXe.setText(defaultTable.getValueAt(row, 2).toString());
+		ckbHangXe.setSelectedItem(defaultTable.getValueAt(row, 3).toString());
+		txtDungTich.setText(defaultTable.getValueAt(row, 4).toString());
+		txtMauXe.setText(defaultTable.getValueAt(row, 5).toString());
+		txtNuocSanXuat.setText(defaultTable.getValueAt(row, 6).toString());
+		txtSoLuongTon.setText(defaultTable.getValueAt(row, 7).toString());
 		txtDonGia.setText(temp);
 	}
 	@Override
@@ -419,9 +419,9 @@ public class QuanLyXeMayPanel extends JPanel implements ActionListener ,MouseLis
 							ckbHangXe.getSelectedItem().toString(), Integer.parseInt(txtDungTich.getText()),
 							txtMauXe.getText().trim(), txtNuocSanXuat.getText().trim(),
 							Integer.parseInt(txtSoLuongTon.getText()), Double.parseDouble(txtDonGia.getText()));
-					if(!xm.getMaXe().equalsIgnoreCase(tableXeMay.getValueAt(row, 0).toString())) {
+					if(!xm.getMaXe().equalsIgnoreCase(defaultTable.getValueAt(row, 0).toString())) {
 						JOptionPane.showMessageDialog(this, "Không được sửa mã xe máy!!", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-						txtMaXe.setText(tableXeMay.getValueAt(row, 0).toString());
+						txtMaXe.setText(defaultTable.getValueAt(row, 0).toString());
 					}
 					else {
 						if(listXeMay.suaTTXeMay(xm)) {
