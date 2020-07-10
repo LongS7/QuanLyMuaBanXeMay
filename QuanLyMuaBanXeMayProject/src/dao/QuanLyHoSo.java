@@ -19,7 +19,6 @@ public class QuanLyHoSo {
 	public void setnhanVien(NhanVien nhanVien) {
 		this.nhanVien = nhanVien;
 	}
-
 	public void getProfile() throws SQLException{
 		
 		Connection con = DatabaseConnection.getConnection();
