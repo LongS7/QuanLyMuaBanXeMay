@@ -13,6 +13,7 @@ import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -38,7 +39,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionListener{
+
+public class QuanLyNhanVienPanel extends JPanel implements MouseListener, ActionListener {
 	/**
 	 * 
 	 */
@@ -54,28 +56,30 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionL
 	private DefaultTableModel tableModel;
 	private JLabel lblHeader, lblMaNV, lblHoTen, lblGioiTinh, lblDiaChi, lblSDT, lblEmail, lblQuanLyVien;
 	private JTextField txtTim, txtMaNV, txtHoTen, txtDiaChi, txtSDT, txtEmail;
-	private JCheckBox cbQuanLyVien;
+	private JCheckBox chkQuanLyVien;
 	private JComboBox<String> jcbGioiTinh;
 	private JRadioButton radTimTheoMa;
 	private JRadioButton radTimTheoTen;
 	private ButtonGroup buttonGroup;
-        private DanhSachNhanVien dsNV = new DanhSachNhanVien();
+	private DanhSachNhanVien dsNV = new DanhSachNhanVien();
+	private JButton btnXoaTrang;
 
 	public QuanLyNhanVienPanel() {
 		setPreferredSize(new Dimension(500, 600));
 		setLayout(new BorderLayout());
-		setLookAndFeel();       
-                addNorth();
+		setLookAndFeel();
+		addNorth();
 		addCenter();
 		addEast();
-                loadDataToTable();
-                dsNV = new DanhSachNhanVien();
-                tableNhanVien.addMouseListener(this);
-                btnSua.addActionListener(this);
-                btnXoa.addActionListener(this);
-                btnThem.addActionListener(this);
-                btnTim.addActionListener(this);
-        }
+		loadDataToTable();
+		dsNV = new DanhSachNhanVien();
+		tableNhanVien.addMouseListener(this);
+		btnSua.addActionListener(this);
+		btnXoa.addActionListener(this);
+		btnThem.addActionListener(this);
+		btnTim.addActionListener(this);
+		btnXoaTrang.addActionListener(this);
+	}
 
 	private void addNorth() {
 		Box boxNorth = Box.createVerticalBox();
@@ -151,7 +155,7 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionL
 		pnQuanLyVien.setLayout(new FlowLayout(FlowLayout.LEFT));
 		pnQuanLyVien.add(lblQuanLyVien = new JLabel("Quản lý viên:"));
 		pnQuanLyVien.add(Box.createHorizontalStrut(8));
-		pnQuanLyVien.add(cbQuanLyVien = new JCheckBox(""));
+		pnQuanLyVien.add(chkQuanLyVien = new JCheckBox(""));
 
 		boxNhap.add(box1);
 		boxNhap.add(Box.createVerticalStrut(10));
@@ -172,7 +176,7 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionL
 	}
 
 	private void addCenter() {
-		String[] headers = { "Mã NV", "Họ tên NV","Giới tính","Địa chỉ", "SDT", "Email", "Chức vụ" };
+		String[] headers = { "Mã NV", "Họ tên NV", "Giới tính", "Địa chỉ", "SDT", "Email", "Chức vụ" };
 		tableModel = new DefaultTableModel(headers, 0);
 		tableNhanVien = new JTable(tableModel);
 		tableNhanVien.setRowHeight(25);
@@ -182,26 +186,32 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionL
 		add(sp, BorderLayout.CENTER);
 
 	}
-      
-        
-        private void xoaTrang() {
+
+	private void xoaTrang() {
 		txtMaNV.setText("");
 		txtHoTen.setText("");
 		jcbGioiTinh.setSelectedItem("");
 		txtDiaChi.setText("");
 		txtSDT.setText("");
-		cbQuanLyVien.isSelected();
-		
+		chkQuanLyVien.isSelected();
+
 	}
+
 	private void addEast() {
 		Box boxEast = Box.createVerticalBox();
 		this.add(boxEast, BorderLayout.EAST);
 		boxEast.add(Box.createVerticalStrut(100));
 		btnThem = addButtonTo(boxEast, "Thêm nhân viên");
+		btnThem.setIcon(new ImageIcon("Images/add.png"));
 		boxEast.add(Box.createVerticalStrut(10));
 		btnSua = addButtonTo(boxEast, "Sửa nhân viên");
+		btnSua.setIcon(new ImageIcon("Images/update.png"));
 		boxEast.add(Box.createVerticalStrut(10));
 		btnXoa = addButtonTo(boxEast, "Xoá nhân viên");
+		btnXoa.setIcon(new ImageIcon("Images/delete.png"));
+		boxEast.add(Box.createVerticalStrut(10));
+		btnXoaTrang = addButtonTo(boxEast, "Xoá trắng");
+		btnXoaTrang.setIcon(new ImageIcon("Images/erase.png"));
 		boxEast.add(Box.createVerticalStrut(10));
 	}
 
@@ -239,113 +249,104 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionL
 	public void focus() {
 		txtTim.requestFocus();
 	}
-        
-        public void loadDataToTable()
-        {
-            deleDataInTable();
-            try
-            {
-                dsNV.getAll();
-                ArrayList<NhanVien> list = dsNV.getDsNV();
-                
-                for (NhanVien nhanVien : list) {
-                    String[] row = {nhanVien.getMaNV(),nhanVien.getHoTenNV(),nhanVien.isGioiTinh()?"Nam":"Nữ",nhanVien.getDiaChi(),nhanVien.getSDT()
-                            ,nhanVien.getEmail(),nhanVien.isQuanLyVien()?"Quản lý viên":"Nhân viên bán hàng"};
-                       tableModel.addRow(row);
-                }
-            }catch(SQLException e)
-            {
-                JOptionPane.showMessageDialog(this, "Lỗi kết nối","Lỗi",JOptionPane.ERROR_MESSAGE);
-            }
-            
-            
-        }
-        
-        private void deleDataInTable()
-        {
-            while(tableModel.getRowCount()>0)
-            {
-                tableModel.removeRow(0);
-            }
-        }
-          private void themNhanVien() {
-                if(validData()){
-                  NhanVien nv = new NhanVien(txtMaNV.getText().trim(),txtHoTen.getText().trim(),
-                         jcbGioiTinh.getSelectedItem().toString().equals("Nam")?true:false,txtDiaChi.getText().trim() ,txtSDT.getText().trim(),
-                             txtEmail.getText().trim(),cbQuanLyVien.isSelected());
-                
-                    try {
-                        if(dsNV.themNhanVien(nv)) {
-                            String [] st = {nv.getMaNV(),nv.getHoTenNV(),nv.isGioiTinh()?"Nam":"Nữ",nv.getDiaChi(),
-                                nv.getSDT(),nv.getEmail(),nv.isQuanLyVien()?"Quản lý viên":"Nhân viên bán hàng"};
-                            tableModel.addRow(st);
-                            xoaTrang();
-                            JOptionPane.showMessageDialog(this, "Thêm thành công");
-                        }else
-                            JOptionPane.showMessageDialog(this, "Thêm không thành công");
-                    } catch (SQLException ex) {
-                            JOptionPane.showMessageDialog(this, "Trùng mã Nhân Viên");
-                    }
-	}}
-        private void SuaTTNhanVien() throws SQLException
-        {  
-            int row = tableNhanVien.getSelectedRow();
-                
-            if(row == -1)
-            {
-                JOptionPane.showMessageDialog(this, "Phải chọn Nhân viên cần sửa");
-            }
-            else
-            {
-                NhanVien nv = new NhanVien(txtMaNV.getText().trim(),txtHoTen.getText().trim(),
-                         jcbGioiTinh.getSelectedItem()== "Nam" ? true:false,txtDiaChi.getText().trim() ,txtSDT.getText().trim(),
-                             txtEmail.getText().trim(),cbQuanLyVien.isSelected() );
-                if(!nv.getMaNV().equalsIgnoreCase(tableNhanVien.getValueAt(row,0).toString()))
-                    JOptionPane.showMessageDialog(this,"Không được sửa mã Nhân viên");
-                else
-                {
-                    if(dsNV.suaTTNhanVien(nv))
-                    {
-                      
-                       tableModel.setValueAt(nv.getMaNV(), row, 0);
-                       tableModel.setValueAt(nv.getHoTenNV(), row, 1);
-                       tableModel.setValueAt(nv.isGioiTinh()?"Nam":"Nữ", row, 2);
-                       tableModel.setValueAt(nv.getDiaChi(), row, 3);
-                       tableModel.setValueAt(nv.getSDT(), row, 4);
-                       tableModel.setValueAt(nv.getEmail(), row, 5);
-                       tableModel.setValueAt(nv.isQuanLyVien()?"Quản lý viên":"Nhân viên bán hàng", row, 6);
-                       
-                       
-                       JOptionPane.showMessageDialog(this, "Sửa thành công");
-                        
-                    }
-                    else
-                    {
-                        JOptionPane.showMessageDialog(this, "Sửa không thành công");
-                    }
-                }
-            }
-        }private void timTheoTen() throws SQLException {
-		if(txtTim.getText().trim().equals(""))
+
+	public void loadDataToTable() {
+		deleDataInTable();
+		try {
+			dsNV.getAll();
+			ArrayList<NhanVien> list = dsNV.getDsNV();
+
+			for (NhanVien nhanVien : list) {
+				String[] row = { nhanVien.getMaNV(), nhanVien.getHoTenNV(), nhanVien.isGioiTinh() ? "Nam" : "Nữ",
+						nhanVien.getDiaChi(), nhanVien.getSDT(), nhanVien.getEmail(),
+						nhanVien.isQuanLyVien() ? "Quản lý viên" : "Nhân viên bán hàng" };
+				tableModel.addRow(row);
+			}
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this, "Lỗi kết nối", "Lỗi", JOptionPane.ERROR_MESSAGE);
+		}
+
+	}
+
+	private void deleDataInTable() {
+		while (tableModel.getRowCount() > 0) {
+			tableModel.removeRow(0);
+		}
+	}
+
+	private void themNhanVien() {
+		if (validData()) {
+			NhanVien nv = new NhanVien(txtMaNV.getText().trim(), txtHoTen.getText().trim(),
+					jcbGioiTinh.getSelectedItem().toString().equals("Nam") ? true : false, txtDiaChi.getText().trim(),
+					txtSDT.getText().trim(), txtEmail.getText().trim(), chkQuanLyVien.isSelected());
+
+			try {
+				if (dsNV.themNhanVien(nv)) {
+					String[] st = { nv.getMaNV(), nv.getHoTenNV(), nv.isGioiTinh() ? "Nam" : "Nữ", nv.getDiaChi(),
+							nv.getSDT(), nv.getEmail(), nv.isQuanLyVien() ? "Quản lý viên" : "Nhân viên bán hàng" };
+					tableModel.addRow(st);
+					xoaTrang();
+					JOptionPane.showMessageDialog(this, "Thêm thành công");
+				} else
+					JOptionPane.showMessageDialog(this, "Thêm không thành công");
+			} catch (SQLException ex) {
+				JOptionPane.showMessageDialog(this, "Trùng mã Nhân Viên");
+			}
+		}
+	}
+
+	private void SuaTTNhanVien() throws SQLException {
+		int row = tableNhanVien.getSelectedRow();
+
+		if (row == -1) {
+			JOptionPane.showMessageDialog(this, "Phải chọn Nhân viên cần sửa");
+		} else {
+			NhanVien nv = new NhanVien(txtMaNV.getText().trim(), txtHoTen.getText().trim(),
+					jcbGioiTinh.getSelectedItem() == "Nam" ? true : false, txtDiaChi.getText().trim(),
+					txtSDT.getText().trim(), txtEmail.getText().trim(), chkQuanLyVien.isSelected());
+			if (!nv.getMaNV().equalsIgnoreCase(tableNhanVien.getValueAt(row, 0).toString()))
+				JOptionPane.showMessageDialog(this, "Không được sửa mã Nhân viên");
+			else {
+				if (dsNV.suaTTNhanVien(nv)) {
+
+					tableModel.setValueAt(nv.getMaNV(), row, 0);
+					tableModel.setValueAt(nv.getHoTenNV(), row, 1);
+					tableModel.setValueAt(nv.isGioiTinh() ? "Nam" : "Nữ", row, 2);
+					tableModel.setValueAt(nv.getDiaChi(), row, 3);
+					tableModel.setValueAt(nv.getSDT(), row, 4);
+					tableModel.setValueAt(nv.getEmail(), row, 5);
+					tableModel.setValueAt(nv.isQuanLyVien() ? "Quản lý viên" : "Nhân viên bán hàng", row, 6);
+
+					JOptionPane.showMessageDialog(this, "Sửa thành công");
+
+				} else {
+					JOptionPane.showMessageDialog(this, "Sửa không thành công");
+				}
+			}
+		}
+	}
+
+	private void timTheoTen() throws SQLException {
+		if (txtTim.getText().trim().equals(""))
 			loadDataToTable();
 		else {
 			ArrayList<NhanVien> dsnv = new ArrayList<NhanVien>();
 			dsnv = dsNV.timTheoTenNhanVien(txtTim.getText().trim());
-			if(dsnv == null){
+			if (dsnv == null) {
 				JOptionPane.showMessageDialog(this, "Không tìm thấy Nhân Viên");
-			}
-			else {
+			} else {
 				deleteDataInTable();
-				         for (NhanVien nhanVien : dsnv) {
-					tableModel.addRow(new Object[] {nhanVien.getMaNV(),nhanVien.getHoTenNV(),
-						nhanVien.isGioiTinh() ? "Nam" : "Nữ",nhanVien.getDiaChi(),nhanVien.getSDT(),nhanVien.getEmail(),nhanVien.isQuanLyVien()?"Quản lý viên":"Nhân viên bán hàng"});
+				for (NhanVien nhanVien : dsnv) {
+					tableModel.addRow(new Object[] { nhanVien.getMaNV(), nhanVien.getHoTenNV(),
+							nhanVien.isGioiTinh() ? "Nam" : "Nữ", nhanVien.getDiaChi(), nhanVien.getSDT(),
+							nhanVien.getEmail(), nhanVien.isQuanLyVien() ? "Quản lý viên" : "Nhân viên bán hàng" });
 				}
 			}
 		}
-		
+
 	}
-        
-        private void xoaNhanVien() {
+
+	private void xoaNhanVien() {
 		int selectedRow = tableNhanVien.getSelectedRow();
 
 		if (selectedRow == -1) {
@@ -366,7 +367,7 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionL
 
 			try {
 				if (dsNV.xoaNhanVien(maNV)) {
-                                        tableModel.removeRow(selected);
+					tableModel.removeRow(selected);
 					count++;
 				}
 			} catch (SQLException e) {
@@ -378,146 +379,144 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener,ActionL
 		JOptionPane.showMessageDialog(this, "Xóa thành công " + count + " Nhân Viên!", "Thông báo",
 				JOptionPane.INFORMATION_MESSAGE);
 	}
-        private boolean validData() {
+
+	private boolean validData() {
 		String maNV = txtMaNV.getText().trim();
 		String hoTenNV = txtHoTen.getText().trim();
 		String diaChi = txtDiaChi.getText().trim();
 		String SDT = txtSDT.getText().trim();
 		String email = txtEmail.getText().trim();
-	
-		
+
 		Pattern pattern = Pattern.compile("NV[0-9]{2,3}", Pattern.CASE_INSENSITIVE);
 		Matcher matcher = pattern.matcher(maNV);
 		boolean match_maNV = matcher.matches();
-		if(maNV.length() < 1) {
+		if (maNV.length() < 1) {
 			JOptionPane.showMessageDialog(this, "Mã khách hàng không được để trống");
 			return false;
-		}
-		else if(!match_maNV){
+		} else if (!match_maNV) {
 			JOptionPane.showMessageDialog(this, "Mã khách hàng không đúng định dạng");
 			return false;
-		}
-		else if(hoTenNV.length() < 1) {
+		} else if (hoTenNV.length() < 1) {
 			JOptionPane.showMessageDialog(this, "Tên không được để trống");
 			return false;
-		}
-		else if(!hoTenNV.matches("[\\p{L}a-zA-Z ]+")) {
+		} else if (!hoTenNV.matches("[\\p{L}a-zA-Z ]+")) {
 			JOptionPane.showMessageDialog(this, "Tên không chứa số và kí tự đặc biệt");
 			return false;
-		}
-		else if(diaChi.length() < 1) {
+		} else if (diaChi.length() < 1) {
 			JOptionPane.showMessageDialog(this, "Địa chỉ không được để trống");
 			return false;
-		}
-		else if(!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+		} else if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
 			JOptionPane.showMessageDialog(this, "Email không đúng định dạng");
 			return false;
-		}
-		else if(!SDT.matches("0[0-9]{9}")) {
+		} else if (!SDT.matches("0[0-9]{9}")) {
 			JOptionPane.showMessageDialog(this, "Số điện thoại không đúng");
 			return false;
 		}
-		
+
 		return true;
 	}
+
 	private void timTheoMaNhanVien() throws SQLException {
-		if(txtTim.getText().trim().equals(""))
+		if (txtTim.getText().trim().equals(""))
 			loadDataToTable();
 		else {
 			NhanVien nv = new NhanVien();
 			nv = dsNV.timTheoMaNhanVien(txtTim.getText().trim());
-			if(nv == null)
+			if (nv == null)
 				JOptionPane.showMessageDialog(this, "Không tìm thấy Nhân Viên!");
 			else {
 				deleteDataInTable();
-				tableModel.addRow(new Object[] {nv.getMaNV(),nv.getHoTenNV(),
-						nv.isGioiTinh() ? "Nam" : "Nữ",nv.getDiaChi(),nv.getSDT(),nv.getEmail(),nv.isQuanLyVien()?"Quản lý viên":"Nhân viên bán hàng"});
+				tableModel.addRow(new Object[] { nv.getMaNV(), nv.getHoTenNV(), nv.isGioiTinh() ? "Nam" : "Nữ",
+						nv.getDiaChi(), nv.getSDT(), nv.getEmail(),
+						nv.isQuanLyVien() ? "Quản lý viên" : "Nhân viên bán hàng" });
 			}
 		}
-		
+
 	}
-        private void deleteDataInTable() {
+
+	private void deleteDataInTable() {
 		while (tableModel.getRowCount() > 0) {
-                    tableModel.removeRow(0);
+			tableModel.removeRow(0);
 		}
 	}
-        public void setPopupMenu(JPopupMenu popup) {
+
+	public void setPopupMenu(JPopupMenu popup) {
 		txtMaNV.setComponentPopupMenu(popup);
 		txtHoTen.setComponentPopupMenu(popup);
 		txtDiaChi.setComponentPopupMenu(popup);
 		txtSDT.setComponentPopupMenu(popup);
 		txtEmail.setComponentPopupMenu(popup);
 	}
-    @Override
-    public void mouseClicked(MouseEvent e) {        
-        int row = tableNhanVien.getSelectedRow();
-        txtMaNV.setText(tableNhanVien.getValueAt(row,0).toString());
-        txtHoTen.setText(tableNhanVien.getValueAt(row,1).toString());
-        txtDiaChi.setText(tableNhanVien.getValueAt(row,3).toString());
-        jcbGioiTinh.setSelectedItem(tableNhanVien.getValueAt(row, 2).toString());
-        txtSDT.setText(tableNhanVien.getValueAt(row,4).toString());
-        txtEmail.setText(tableNhanVien.getValueAt(row,5).toString());
-        String cv = tableNhanVien.getValueAt(row, 6).toString();
-        if(cv == "Quản lý viên")
-            cbQuanLyVien.setSelected(true);
-        else
-            cbQuanLyVien.setSelected(false);
-    }
 
-    @Override
-    public void mousePressed(MouseEvent e) {
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		int row = tableNhanVien.getSelectedRow();
+		txtMaNV.setText(tableNhanVien.getValueAt(row, 0).toString());
+		txtHoTen.setText(tableNhanVien.getValueAt(row, 1).toString());
+		txtDiaChi.setText(tableNhanVien.getValueAt(row, 3).toString());
+		jcbGioiTinh.setSelectedItem(tableNhanVien.getValueAt(row, 2).toString());
+		txtSDT.setText(tableNhanVien.getValueAt(row, 4).toString());
+		txtEmail.setText(tableNhanVien.getValueAt(row, 5).toString());
+		String cv = tableNhanVien.getValueAt(row, 6).toString();
+		if (cv == "Quản lý viên")
+			chkQuanLyVien.setSelected(true);
+		else
+			chkQuanLyVien.setSelected(false);
+	}
 
-    }
+	@Override
+	public void mousePressed(MouseEvent e) {
 
-    @Override
-    public void mouseReleased(MouseEvent e) {
-      
-    }
+	}
 
-    @Override
-    public void mouseEntered(MouseEvent e) {
-        
-    }
+	@Override
+	public void mouseReleased(MouseEvent e) {
 
-    @Override
-    public void mouseExited(MouseEvent e) {
-      
-    }
-    
-   
+	}
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        Object o = e.getSource();
-       try
-       {
-           if(o.equals(btnSua))
-           {
-               SuaTTNhanVien();
-           }
-           else if(o.equals(btnXoa))
-           {
-               xoaNhanVien();
-           }
-           else if(o.equals(btnThem))
-           {
-               themNhanVien();
-           }
-          else if(o.equals(btnTim) && radTimTheoMa.isSelected())
-          {	
-              timTheoMaNhanVien();    
-          }
-	  else if(o.equals(btnTim) && radTimTheoTen.isSelected())
-          {
-              timTheoTen();
-          }
-       }
-       catch(Exception ex)
-       {
-           JOptionPane.showMessageDialog(null, ex.getMessage());
-       }
-    }
+	@Override
+	public void mouseEntered(MouseEvent e) {
 
-   
- }
+	}
 
+	@Override
+	public void mouseExited(MouseEvent e) {
+
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object o = e.getSource();
+		try {
+			if (o.equals(btnSua)) {
+				SuaTTNhanVien();
+			} else if (o.equals(btnXoa)) {
+				xoaNhanVien();
+			} else if (o.equals(btnThem)) {
+				themNhanVien();
+			} else if (o.equals(btnTim) && radTimTheoMa.isSelected()) {
+				timTheoMaNhanVien();
+			} else if (o.equals(btnTim) && radTimTheoTen.isSelected()) {
+				timTheoTen();
+			} else if (o.equals(btnXoaTrang)) {
+				xoaRong();
+			}
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage());
+		}
+	}
+
+	private void xoaRong() {
+		txtMaNV.setText("");
+		txtHoTen.setText("");
+		txtDiaChi.setText("");
+		txtSDT.setText("");
+		txtEmail.setText("");
+		txtTim.setText("");
+		radTimTheoMa.setSelected(true);
+		chkQuanLyVien.setSelected(false);
+		jcbGioiTinh.setSelectedIndex(0);
+		tableNhanVien.clearSelection();
+	}
+
+}

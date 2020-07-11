@@ -32,6 +32,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 import dao.DanhSachCTHD;
@@ -236,7 +237,10 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fileChooser.setAcceptAllFileFilterUsed(true);
+		FileNameExtensionFilter excelFilter = new FileNameExtensionFilter("Excel file (*.xlsx)", "xlsx");
+		fileChooser.addChoosableFileFilter(excelFilter);
+		fileChooser.setFileFilter(excelFilter);
+		fileChooser.setSelectedFile(new File("example.xlsx"));
 		
 		int result = fileChooser.showSaveDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
@@ -511,11 +515,9 @@ public class QuanLyHoaDonPanel extends JPanel implements ActionListener {
 		txtSoLuong.setText("");
 		txtMaXeMay.setText("");
 		txtTimKiem.setText("");
-		while (tableHoaDon.getSelectedRow() != -1)
-			tableHoaDon.removeRowSelectionInterval(tableHoaDon.getSelectedRow(), tableHoaDon.getSelectedRow());
-		while (tableCTHD.getSelectedRow() != -1)
-			tableCTHD.removeRowSelectionInterval(tableCTHD.getSelectedRow(), tableCTHD.getSelectedRow());
-
+		tableHoaDon.clearSelection();
+		tableCTHD.clearSelection();
+		radMaHD.setSelected(true);
 	}
 
 	private void changeCTHDText() {

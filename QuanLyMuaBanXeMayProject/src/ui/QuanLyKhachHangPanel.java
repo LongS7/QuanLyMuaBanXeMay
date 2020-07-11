@@ -64,6 +64,7 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 	private final Color HEADER_COLOR = new Color(0x1E1346);
 	private final Font HEADER_FONT = new Font("Times new roman", Font.BOLD, 20);
 	private DanhSachKhachHang dsKH;
+	private JButton btnXoaTrang;
 
 	public QuanLyKhachHangPanel() {
 		setLookAndFeel();
@@ -81,7 +82,7 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 		JPanel pnlTimKiem = new JPanel();
 		txtTimKiem = new JTextField(50);
 		pnlTimKiem.add(txtTimKiem);
-		btnTimKiem = new JButton("Tìm kiếm");
+		btnTimKiem = new JButton("Tìm kiếm", new ImageIcon("Images/search.png"));
 		pnlTimKiem.add(btnTimKiem);
 
 		JPanel pnlTimTuyChon = new JPanel();
@@ -172,19 +173,18 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 
 		boxCenter.add(pane);
 
-//		JPanel pnlRight = new JPanel();
-//		pnlRight.setLayout(new BoxLayout(pnlRight, BoxLayout.Y_AXIS));
-
 		Box boxEast = Box.createVerticalBox();
 
 		btnThem = new JButton("Thêm",new ImageIcon("Images/add.png"));
 		btnSua = new JButton("Sửa",new ImageIcon("Images/update.png"));
 		btnXoa = new JButton("Xóa",new ImageIcon("Images/delete.png"));
+		btnXoaTrang = new JButton("Xóa trắng",new ImageIcon("Images/erase.png"));
 		
-		Dimension d = new Dimension(100, 80);
+		Dimension d = new Dimension(150, 80);
 		btnThem.setPreferredSize(d);
 		btnXoa.setPreferredSize(d);
 		btnSua.setPreferredSize(d);
+		btnXoaTrang.setPreferredSize(d);
 		
 		Box boxThem = Box.createHorizontalBox();
 		boxThem.add(Box.createHorizontalGlue());
@@ -201,10 +201,15 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 		boxSua.add(btnSua);
 		boxSua.add(Box.createHorizontalGlue());
 		
+		Box boxXoaTrang = Box.createHorizontalBox();
+		boxXoaTrang.add(Box.createHorizontalGlue());
+		boxXoaTrang.add(btnXoaTrang);
+		boxXoaTrang.add(Box.createHorizontalGlue());
+		
 		boxEast.add(boxThem);
-//		boxRight.add(Box.createVerticalStrut(20));
 		boxEast.add(boxSua);
 		boxEast.add(boxXoa);
+		boxEast.add(boxXoaTrang);
 
 		// set font
 		txtTimKiem.setFont(NORMAL_FONT);
@@ -236,6 +241,7 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 		btnThem.addActionListener(this);
 		btnXoa.addActionListener(this);
 		btnSua.addActionListener(this);
+		btnXoaTrang.addActionListener(this);
 	
 		btnTimKiem.addActionListener(this);
 		tableKhachHang.addMouseListener(this);
@@ -305,6 +311,8 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 			}
 			else if(o.equals(btnTimKiem) && radTimTheoTen.isSelected())
 				timTheoTen();
+			else if(o.equals(btnXoaTrang))
+				xoaRong();
 				
 		}catch(Exception ex) {
 			JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -313,6 +321,18 @@ public class QuanLyKhachHangPanel extends JPanel implements ActionListener,Mouse
 	}
 	
 	
+	private void xoaRong() {
+		txtMa.setText("");
+		txtTen.setText("");
+		txtTimKiem.setText("");
+		txtDiaChi.setText("");
+		txtEmail.setText("");
+		txtSdt.setText("");
+		tableKhachHang.clearSelection();
+		jcbGioiTinh.setSelectedIndex(0);
+		radTimTheoMa.setSelected(true);
+	}
+
 	private void timTheoTen() throws SQLException {
 		if(txtTimKiem.getText().trim().equals(""))
 			loadDataToTable();

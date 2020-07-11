@@ -383,7 +383,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
 		scrollMenu = new JScrollPane(pnlWest);
 		scrollMenu.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, Color.black));
-		scrollMenu.setVisible(false);
+		scrollMenu.setVisible(true);
 
 		getContentPane().add(scrollMenu, BorderLayout.WEST);
 
