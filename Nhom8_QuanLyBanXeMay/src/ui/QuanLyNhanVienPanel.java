@@ -98,6 +98,7 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener, Action
 		boxTim.add(txtTim = new JTextField());
 		boxTim.add(Box.createHorizontalStrut(5));
 		boxTim.add(btnTim = new JButton("Tìm"));
+		btnTim.setIcon(new ImageIcon("Images/search.png"));
 		boxNorth.add(boxTim);
 		boxNorth.add(Box.createVerticalStrut(10));
 
@@ -218,7 +219,7 @@ public class QuanLyNhanVienPanel extends JPanel implements MouseListener, Action
 	private JButton addButtonTo(Box box, String name) {
 		JButton btn = new JButton(name);
 		btn.setFont(NORMAL_FONT);
-		btn.setPreferredSize(new Dimension(130, 25));
+		btn.setPreferredSize(new Dimension(150, 25));
 		Box boxButton = Box.createHorizontalBox();
 		boxButton.add(Box.createHorizontalGlue());
 		boxButton.add(btn);
